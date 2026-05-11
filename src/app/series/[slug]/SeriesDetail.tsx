@@ -6,6 +6,7 @@ import { Series, Photo } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
 import Lightbox from '@/components/Lightbox';
 import VideoLightbox from '@/components/VideoLightbox';
+import TextReveal from '@/components/TextReveal';
 
 interface Props {
   series: Series;
@@ -29,7 +30,7 @@ export default function SeriesDetail({ series }: Props) {
             </span>
           </div>
           <p className="text-[13px] text-[#888888] leading-[2] max-w-2xl font-light">
-            {series.description}
+            <TextReveal delay={0.3}>{series.description}</TextReveal>
           </p>
         </header>
       </FadeIn>

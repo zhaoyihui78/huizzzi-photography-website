@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'framer-motion';
@@ -80,10 +81,33 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-10">
-        <p className="font-mono text-[8px] text-[#dddddd] tracking-[0.2em] uppercase">
+        <Clock />
+        <p className="font-mono text-[8px] text-[#dddddd] tracking-[0.2em] uppercase mt-2">
           &copy; {new Date().getFullYear()}
         </p>
       </div>
     </aside>
+  );
+}
+
+function Clock() {
+  const [time, setTime] = useState('');
+
+  useEffect(() => {
+    const update = () => {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      setTime(`${h}:${m} CST`);
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.15em]">
+      {time}
+    </p>
   );
 }
