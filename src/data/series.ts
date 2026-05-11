@@ -28,7 +28,7 @@ export interface Series {
   videos?: { src: string; poster: string; title: string }[];
 }
 
-const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
+export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const sizes: Record<string, [number, number]> = {
     '01': [800, 533], '02': [800, 269], '03': [800, 533], '04': [537, 800],
@@ -55,7 +55,7 @@ const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
   };
 });
 
-const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
+export const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const sizes: Record<string, [number, number]> = {
     '01': [534, 800], '02': [800, 450], '03': [800, 534], '04': [800, 533],
@@ -78,7 +78,7 @@ const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
   };
 });
 
-const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
+export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const sizes: Record<string, [number, number]> = {
     '01': [600, 800], '02': [800, 450],

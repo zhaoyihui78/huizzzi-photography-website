@@ -5,12 +5,13 @@ interface FilmFrameProps {
   alt: string;
   label?: string;
   className?: string;
+  rotation?: number;
   onClick?: () => void;
 }
 
-export default function FilmFrame({ src, alt, label = 'KODAK PORTRA 400', className = '', onClick }: FilmFrameProps) {
+export default function FilmFrame({ src, alt, label = 'KODAK PORTRA 400', className = '', rotation = 0, onClick }: FilmFrameProps) {
   return (
-    <div className={`relative ${className}`} style={{ transform: 'rotate(0.3deg)' }} onClick={onClick}>
+    <div className={`relative ${className}`} style={{ transform: rotation ? `rotate(${rotation}deg)` : undefined }} onClick={onClick}>
       <div className="relative bg-[#121212] p-[12px] pb-[48px] shadow-xl">
         {/* Top sprocket holes */}
         <div className="absolute top-[16px] left-[12px] right-[12px] flex justify-between pointer-events-none">
