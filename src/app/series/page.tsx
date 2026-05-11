@@ -31,9 +31,9 @@ export default function SeriesPage() {
   };
 
   return (
-    <main className="min-h-full px-8 py-10">
+    <main className="min-h-full px-10 py-14">
       <FadeIn delay={0}>
-        <h1 className="text-sm font-bold tracking-tight text-black mb-12">
+        <h1 className="font-heading text-[15px] font-normal tracking-tight text-[#111111] mb-16">
           All Series
         </h1>
       </FadeIn>
@@ -47,7 +47,7 @@ export default function SeriesPage() {
         {seriesList.map((series) => (
           <motion.div key={series.slug} variants={itemVariants}>
             <Link href={`/series/${series.slug}`} className="group block">
-              <div className="relative overflow-hidden bg-gray-100 aspect-[4/3] mb-3">
+              <div className="relative overflow-hidden bg-[#f0f0f0] aspect-[4/3] mb-4">
                 <Image
                   src={series.cover}
                   alt={series.title}
@@ -58,18 +58,18 @@ export default function SeriesPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <span className="text-white text-[10px] font-medium tracking-widest uppercase bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                  <span className="font-mono text-white text-[9px] tracking-[0.2em] uppercase bg-black/20 backdrop-blur-sm px-4 py-2">
                     Explore
                   </span>
                 </div>
               </div>
-              <h2 className="text-[12px] font-medium text-black group-hover:text-gray-500 transition-colors duration-300">
+              <h2 className="font-heading text-[13px] font-normal text-[#111111] group-hover:text-[#888888] transition-colors duration-300">
                 {series.title}
               </h2>
-              <p className="text-[11px] text-gray-400 mt-1.5 leading-[1.7] line-clamp-2">
+              <p className="text-[11px] text-[#888888] mt-2 leading-[1.7] line-clamp-2 font-light">
                 {series.description}
               </p>
-              <p className="text-[10px] text-gray-300 mt-2 tracking-wide">
+              <p className="font-mono text-[9px] text-[#cccccc] mt-3 tracking-[0.15em]">
                 {series.photos.length} photos{series.videos ? ` · ${series.videos.length} videos` : ''} · {series.year}
               </p>
             </Link>

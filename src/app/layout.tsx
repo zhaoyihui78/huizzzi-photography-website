@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Inter, Noto_Sans_SC, Space_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import PageTransition from "@/components/PageTransition";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -42,10 +43,12 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-[#faf9f7] text-[#1c1c1e] font-body">
+      <body className="min-h-full bg-white text-[#111111] font-body paper-grain">
         <Sidebar />
-        <div className="ml-[200px] min-h-full">
-          {children}
+        <div className="ml-[220px] min-h-full">
+          <PageTransition>
+            {children}
+          </PageTransition>
         </div>
       </body>
     </html>

@@ -5,21 +5,24 @@ interface FilmFrameProps {
   alt: string;
   label?: string;
   className?: string;
+  onClick?: () => void;
 }
 
-export default function FilmFrame({ src, alt, label = 'KODAK PORTRA 400', className = '' }: FilmFrameProps) {
+export default function FilmFrame({ src, alt, label = 'KODAK PORTRA 400', className = '', onClick }: FilmFrameProps) {
   return (
-    <div className={`relative ${className}`}>
-      <div className="relative bg-[#1a1a1a] p-[10px] pb-[42px] rounded-[2px]">
-        {/* Sprocket holes */}
-        <div className="absolute top-[14px] left-0 right-0 flex justify-between px-1 pointer-events-none">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="w-[6px] h-[4px] bg-[#2a2a2a] rounded-[1px]" />
+    <div className={`relative ${className}`} style={{ transform: 'rotate(0.3deg)' }} onClick={onClick}>
+      <div className="relative bg-[#121212] p-[12px] pb-[48px] shadow-xl">
+        {/* Top sprocket holes */}
+        <div className="absolute top-[16px] left-[12px] right-[12px] flex justify-between pointer-events-none">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={`top-${i}`} className="w-[5px] h-[3px] bg-[#2a2a2a] rounded-[1px] shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]" />
           ))}
         </div>
-        <div className="absolute bottom-[14px] left-0 right-0 flex justify-between px-1 pointer-events-none">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div key={i} className="w-[6px] h-[4px] bg-[#2a2a2a] rounded-[1px]" />
+
+        {/* Bottom sprocket holes */}
+        <div className="absolute bottom-[16px] left-[12px] right-[12px] flex justify-between pointer-events-none">
+          {Array.from({ length: 16 }).map((_, i) => (
+            <div key={`bottom-${i}`} className="w-[5px] h-[3px] bg-[#2a2a2a] rounded-[1px] shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]" />
           ))}
         </div>
 
@@ -34,21 +37,27 @@ export default function FilmFrame({ src, alt, label = 'KODAK PORTRA 400', classN
           />
         </div>
 
-        {/* Frame number simulation */}
-        <div className="absolute bottom-[14px] left-[14px] text-[8px] text-[#d4af37] font-mono tracking-wider">
+        {/* Frame number */}
+        <div className="absolute bottom-[16px] left-[18px] font-mono text-[8px] text-[#b8a060] tracking-[0.15em] opacity-60">
           47
         </div>
-        <div className="absolute bottom-[14px] right-[14px] text-[8px] text-[#d4af37] font-mono tracking-wider">
+        <div className="absolute bottom-[16px] right-[18px] font-mono text-[8px] text-[#b8a060] tracking-[0.15em] opacity-60">
           48
         </div>
+
+        {/* Edge line simulation */}
+        <div className="absolute bottom-[38px] left-[12px] right-[12px] h-px bg-[#2a2a2a] opacity-50" />
       </div>
 
       {/* Film label */}
-      <div className="absolute -top-[10px] left-1/2 -translate-x-1/2 bg-[#1a1a1a] px-3 py-[2px]">
-        <span className="text-[9px] text-[#d4af37] font-mono tracking-[0.2em] whitespace-nowrap">
+      <div className="absolute -top-[8px] left-1/2 -translate-x-1/2 bg-[#121212] px-4 py-[3px]">
+        <span className="font-mono text-[8px] text-[#b8a060] tracking-[0.25em] whitespace-nowrap uppercase">
           {label}
         </span>
       </div>
+
+      {/* Subtle shadow underneath */}
+      <div className="absolute -bottom-2 left-4 right-4 h-4 bg-black/5 blur-lg rounded-full -z-10" />
     </div>
   );
 }

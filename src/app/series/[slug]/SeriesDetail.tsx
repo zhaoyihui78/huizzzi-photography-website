@@ -1,185 +1,143 @@
 'use client';
 
+import { useState } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { Series } from '@/data/series';
-import FilmFrame from '@/components/FilmFrame';
+import { Series, Photo } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
-import ImageReveal from '@/components/ImageReveal';
+import Lightbox from '@/components/Lightbox';
+import VideoLightbox from '@/components/VideoLightbox';
 
 interface Props {
   series: Series;
 }
 
 export default function SeriesDetail({ series }: Props) {
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.3,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.9,
-        ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
-      },
-    },
-  };
+  const [lightboxPhoto, setLightboxPhoto] = useState<Photo | null>(null);
+  const [videoOpen, setVideoOpen] = useState<{ src: string; poster: string; title: string } | null>(null);
 
   return (
-    <main className="min-h-full px-8 py-10">
+    <main className="min-h-full px-10 py-14">
       {/* Header */}
       <FadeIn delay={0}>
-        <header className="mb-16">
+        <header className="mb-20">
           <div className="flex items-baseline justify-between mb-5">
-            <h1 className="text-lg font-bold tracking-tight text-black">
+            <h1 className="font-heading text-xl font-normal tracking-tight text-[#111111]">
               {series.title}
             </h1>
-            <span className="text-[10px] text-gray-300 tracking-wider uppercase">
+            <span className="font-mono text-[9px] text-[#cccccc] tracking-[0.2em] uppercase">
               {series.year}
             </span>
           </div>
-          <p className="text-[12px] text-gray-400 leading-[1.8] max-w-2xl">
+          <p className="text-[13px] text-[#888888] leading-[2] max-w-2xl font-light">
             {series.description}
           </p>
         </header>
       </FadeIn>
 
-      {/* Videos if exists */}
+      {/* Videos */}
       {series.videos && series.videos.length > 0 && (
         <FadeIn delay={0.15}>
-          <section className="mb-20">
-            <h2 className="text-[10px] font-medium text-gray-300 uppercase tracking-[0.2em] mb-6">
+          <section className="mb-32">
+            <h2 className="font-mono text-[9px] font-normal text-[#cccccc] uppercase tracking-[0.25em] mb-10">
               Videos
             </h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex flex-col gap-16">
               {series.videos.map((video, i) => (
-                <div
-                  key={i}
-                  className="relative bg-black aspect-video overflow-hidden group"
-                >
-                  <video
-                    controls
-                    className="w-full h-full"
-                    poster={video.poster}
-                    preload="none"
+                <FadeIn key={i} delay={i * 0.1} direction="up">
+                  <div
+                    className="relative bg-[#0a0a0a] aspect-video overflow-hidden group cursor-pointer"
+                    onClick={() => setVideoOpen(video)}
                   >
-                    <source src={video.src} type="video/mp4" />
-                  </video>
-                  <div className="absolute bottom-3 left-3 text-[10px] text-white/80 tracking-wide pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {video.title}
+                    <Image
+                      src={video.poster}
+                      alt={video.title}
+                      fill
+                      className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-[1.02]"
+                      loading={i < 2 ? 'eager' : 'lazy'}
+                      unoptimized
+                    />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/45 transition-all duration-700" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full border border-white/40 flex items-center justify-center group-hover:scale-110 group-hover:border-white/70 transition-all duration-500 ease-out">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="white" className="ml-1 opacity-80">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60 to-transparent translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                      <p className="font-heading text-[13px] text-white/90 tracking-wide mb-1">
+                        {video.title}
+                      </p>
+                      <p className="font-mono text-[8px] text-white/30 tracking-[0.2em] uppercase">
+                        {series.title} · {series.year}
+                      </p>
+                    </div>
+                    <div className="absolute top-5 right-5 font-mono text-[9px] text-white/15 tracking-[0.15em]">
+                      {String(i + 1).padStart(2, '0')}
+                    </div>
                   </div>
-                </div>
+                </FadeIn>
               ))}
             </div>
           </section>
         </FadeIn>
       )}
 
-      {/* Layout: Film */}
-      {series.layout === 'film' && (
-        <section className="flex flex-col gap-16 max-w-5xl">
-          {series.photos.map((photo, i) => (
-            <FadeIn key={i} delay={i * 0.1}>
-              <FilmFrame
-                src={photo.src}
-                alt={photo.alt}
-                className="max-w-3xl mx-auto"
-              />
-            </FadeIn>
-          ))}
-        </section>
-      )}
-
-      {/* Layout: Grid */}
-      {series.layout === 'grid' && (
-        <motion.section
-          className="grid grid-cols-4 gap-3"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {series.photos.map((photo, i) => (
-            <motion.div
-              key={i}
-              variants={itemVariants}
-              className="relative bg-gray-100 aspect-square overflow-hidden group cursor-pointer"
-            >
-              <Image
-                src={photo.thumb}
-                alt={photo.alt}
-                fill
-                className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.06] group-hover:brightness-90"
-                loading={i < 8 ? 'eager' : 'lazy'}
-                unoptimized
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end p-3">
-                <span className="text-white text-[10px] font-medium tracking-wide translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
-                  {photo.alt}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </motion.section>
-      )}
-
-      {/* Layout: Masonry */}
-      {series.layout === 'masonry' && (
-        <section className="columns-2 gap-4">
-          {series.photos.map((photo, i) => (
-            <ImageReveal key={i} delay={i * 0.1}>
-              <div className="relative bg-gray-100 mb-4 overflow-hidden group cursor-pointer break-inside-avoid">
-                <Image
-                  src={photo.thumb}
-                  alt={photo.alt}
-                  width={photo.width || 800}
-                  height={photo.height || 600}
-                  className="w-full h-auto object-cover transition-all duration-700 ease-out group-hover:scale-[1.03] group-hover:brightness-95"
-                  loading={i < 4 ? 'eager' : 'lazy'}
-                  unoptimized
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              </div>
-            </ImageReveal>
-          ))}
-        </section>
-      )}
-
-      {/* Layout: Split */}
-      {series.layout === 'split' && (
-        <section className="flex flex-col gap-20">
+      {/* Photos — 统一画册式 split 布局 */}
+      {series.photos.length > 0 && (
+        <section className="flex flex-col gap-32">
           {series.photos.map((photo, i) => (
             <FadeIn key={i} delay={0} direction={i % 2 === 0 ? 'left' : 'right'}>
               <div
-                className={`flex gap-10 items-center ${
+                className={`flex gap-16 items-center ${
                   i % 2 === 1 ? 'flex-row-reverse' : ''
                 }`}
               >
-                <div className="flex-1 overflow-hidden group cursor-pointer">
-                  <Image
-                    src={photo.src}
-                    alt={photo.alt}
-                    width={1000}
-                    height={750}
-                    className="w-full h-auto object-cover transition-all duration-700 ease-out group-hover:scale-[1.02]"
-                    loading={i < 2 ? 'eager' : 'lazy'}
-                    unoptimized
-                  />
+                {/* Photo */}
+                <div className="flex-1">
+                  <div
+                    className={`relative overflow-hidden cursor-pointer group flex items-center justify-center ${
+                      (photo.height || 800) > (photo.width || 1200)
+                        ? 'max-h-[78vh] min-h-[55vh]'
+                        : 'max-h-[60vh]'
+                    }`}
+                    onClick={() => setLightboxPhoto(photo)}
+                  >
+                    <Image
+                      src={photo.src}
+                      alt={photo.alt}
+                      width={photo.width || 1200}
+                      height={photo.height || 800}
+                      className={`w-full h-auto object-contain transition-transform duration-1000 ease-out group-hover:scale-[1.02] ${
+                        (photo.height || 800) > (photo.width || 1200)
+                          ? 'max-h-[78vh]'
+                          : 'max-h-[60vh]'
+                      }`}
+                      loading={i < 2 ? 'eager' : 'lazy'}
+                      unoptimized
+                    />
+                  </div>
                 </div>
-                <div className="w-[240px]">
-                  <p className="text-[11px] text-gray-400 leading-[1.8]">
+
+                {/* Text side */}
+                <div className="w-[260px] shrink-0">
+                  <p className="font-heading text-[15px] text-[#111111] tracking-wide mb-3">
                     {photo.alt}
                   </p>
-                  <div className="mt-4 w-8 h-px bg-gray-200" />
+                  {photo.exif && (
+                    <>
+                      <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.12em] leading-relaxed">
+                        {photo.exif.camera} · {photo.exif.lens}
+                      </p>
+                      <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.12em] leading-relaxed mt-1">
+                        {photo.exif.aperture} · {photo.exif.shutter} · {photo.exif.iso}
+                      </p>
+                    </>
+                  )}
+                  <div className="mt-8 w-8 h-px bg-[#e0e0e0]" />
+                  <p className="font-mono text-[9px] text-[#dddddd] tracking-[0.15em] mt-4 uppercase">
+                    {String(i + 1).padStart(2, '0')} / {String(series.photos.length).padStart(2, '0')}
+                  </p>
                 </div>
               </div>
             </FadeIn>
@@ -187,46 +145,28 @@ export default function SeriesDetail({ series }: Props) {
         </section>
       )}
 
-      {/* Layout: Polaroid */}
-      {series.layout === 'polaroid' && (
-        <motion.section
-          className="grid grid-cols-4 gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-        >
-          {series.photos.map((photo, i) => (
-            <motion.div
-              key={i}
-              variants={itemVariants}
-              className="bg-white p-3 pb-12 shadow-sm hover:shadow-lg transition-shadow duration-500"
-              style={{
-                transform: `rotate(${((i % 3) - 1) * 3}deg)`,
-              }}
-              whileHover={{ scale: 1.03, rotate: 0 }}
-            >
-              <div className="relative bg-gray-100 aspect-square overflow-hidden">
-                <Image
-                  src={photo.thumb}
-                  alt={photo.alt}
-                  fill
-                  className="object-cover"
-                  loading="lazy"
-                  unoptimized
-                />
-              </div>
-              {photo.caption && (
-                <p
-                  className="text-center text-[12px] text-gray-600 mt-3"
-                  style={{ fontFamily: "'Courier New', cursive" }}
-                >
-                  {photo.caption}
-                </p>
-              )}
-            </motion.div>
-          ))}
-        </motion.section>
-      )}
+      <Lightbox
+        photo={lightboxPhoto}
+        seriesTitle={series.title}
+        isOpen={!!lightboxPhoto}
+        onClose={() => setLightboxPhoto(null)}
+        onPrev={() => {
+          const idx = series.photos.findIndex((p) => p.src === lightboxPhoto!.src);
+          if (idx > 0) setLightboxPhoto(series.photos[idx - 1]);
+        }}
+        onNext={() => {
+          const idx = series.photos.findIndex((p) => p.src === lightboxPhoto!.src);
+          if (idx < series.photos.length - 1) setLightboxPhoto(series.photos[idx + 1]);
+        }}
+      />
+
+      <VideoLightbox
+        src={videoOpen?.src || ''}
+        poster={videoOpen?.poster || ''}
+        title={videoOpen?.title || ''}
+        isOpen={!!videoOpen}
+        onClose={() => setVideoOpen(null)}
+      />
     </main>
   );
 }

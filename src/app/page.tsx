@@ -8,7 +8,6 @@ import FadeIn from '@/components/FadeIn';
 import ImageReveal from '@/components/ImageReveal';
 
 export default function Home() {
-  const featured = seriesList[0];
   const selectedPhotos = getSelectedPhotos(15);
 
   const containerVariants = {
@@ -35,9 +34,9 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-full px-8 py-10">
+    <main className="min-h-full px-10 py-14">
       {/* Top section - Featured film strip */}
-      <section className="mb-24">
+      <section className="mb-32">
         <motion.div
           className="flex gap-5 mb-8"
           initial={{ opacity: 0, y: 20 }}
@@ -48,7 +47,7 @@ export default function Home() {
             <div className="bg-[#1a1a1a] p-[10px] pb-[42px] relative group cursor-pointer overflow-hidden">
               <div className="overflow-hidden">
                 <Image
-                  src="/works/thumbs/nature05.jpg"
+                  src="/works/photos/nature05.jpg"
                   alt="Nature & Landscape 5"
                   width={800}
                   height={450}
@@ -57,7 +56,7 @@ export default function Home() {
                   unoptimized
                 />
               </div>
-              <div className="absolute bottom-[12px] left-1/2 -translate-x-1/2 text-[9px] text-[#d4af37] font-mono tracking-[0.2em] opacity-70">
+              <div className="absolute bottom-[12px] left-1/2 -translate-x-1/2 font-mono text-[9px] text-[#c9a96e] tracking-[0.2em] opacity-60">
                 KODAK PORTRA 400
               </div>
               <div className="absolute inset-[10px] bottom-[42px] bg-black/0 group-hover:bg-black/10 transition-all duration-500" />
@@ -76,7 +75,7 @@ export default function Home() {
                   unoptimized
                 />
               </div>
-              <div className="absolute bottom-[12px] left-1/2 -translate-x-1/2 text-[9px] text-[#d4af37] font-mono tracking-[0.2em] opacity-70">
+              <div className="absolute bottom-[12px] left-1/2 -translate-x-1/2 font-mono text-[9px] text-[#c9a96e] tracking-[0.2em] opacity-60">
                 KODAK PORTRA 400
               </div>
               <div className="absolute inset-[10px] bottom-[42px] bg-black/0 group-hover:bg-black/10 transition-all duration-500" />
@@ -86,14 +85,14 @@ export default function Home() {
       </section>
 
       {/* Series Grid */}
-      <section className="mb-24">
+      <section className="mb-32">
         <FadeIn delay={0}>
-          <h2 className="text-[10px] font-medium text-gray-300 uppercase tracking-[0.2em] mb-8">
+          <h2 className="font-mono text-[9px] font-normal text-[#cccccc] uppercase tracking-[0.25em] mb-10">
             All Works
           </h2>
         </FadeIn>
         <motion.div
-          className="grid grid-cols-4 gap-5"
+          className="grid grid-cols-4 gap-6"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
@@ -101,7 +100,7 @@ export default function Home() {
           {seriesList.map((series) => (
             <motion.div key={series.slug} variants={itemVariants}>
               <Link href={`/series/${series.slug}`} className="group block">
-                <div className="relative overflow-hidden bg-gray-100 aspect-[4/3] mb-3">
+                <div className="relative overflow-hidden bg-[#f0f0f0] aspect-[4/3] mb-4">
                   <Image
                     src={series.cover}
                     alt={series.title}
@@ -112,15 +111,15 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <span className="text-white text-[10px] font-medium tracking-widest uppercase bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-full">
+                    <span className="font-mono text-white text-[9px] tracking-[0.2em] uppercase bg-black/20 backdrop-blur-sm px-4 py-2">
                       View
                     </span>
                   </div>
                 </div>
-                <h3 className="text-[12px] font-medium text-black group-hover:text-gray-500 transition-colors duration-300">
+                <h3 className="font-heading text-[13px] font-normal text-[#111111] group-hover:text-[#888888] transition-colors duration-300">
                   {series.title}
                 </h3>
-                <p className="text-[10px] text-gray-300 mt-1 tracking-wide">
+                <p className="font-mono text-[9px] text-[#cccccc] mt-2 tracking-[0.15em]">
                   {series.category} · {series.year}
                 </p>
               </Link>
@@ -130,16 +129,16 @@ export default function Home() {
       </section>
 
       {/* Selected Photos Grid */}
-      <section className="mb-24">
+      <section className="mb-32">
         <FadeIn delay={0}>
-          <h2 className="text-[10px] font-medium text-gray-300 uppercase tracking-[0.2em] mb-8">
+          <h2 className="font-mono text-[9px] font-normal text-[#cccccc] uppercase tracking-[0.25em] mb-10">
             Selected Photos
           </h2>
         </FadeIn>
         <div className="grid grid-cols-5 gap-3">
           {selectedPhotos.map((photo, i) => (
             <ImageReveal key={photo.src} delay={i * 0.08}>
-              <div className="relative aspect-square bg-gray-100 overflow-hidden group cursor-pointer">
+              <div className="relative aspect-square bg-[#f0f0f0] overflow-hidden group cursor-pointer">
                 <Image
                   src={photo.thumb}
                   alt={photo.alt}
@@ -156,8 +155,8 @@ export default function Home() {
 
       {/* Footer */}
       <FadeIn delay={0.2}>
-        <footer className="mt-32 pt-8 border-t border-gray-50">
-          <p className="text-[10px] text-gray-300 tracking-wider">
+        <footer className="mt-40 pt-10 border-t border-[#f0f0f0]">
+          <p className="font-mono text-[9px] text-[#dddddd] tracking-[0.15em]">
             © {new Date().getFullYear()} HUI ZZZI. All rights reserved.
           </p>
         </footer>

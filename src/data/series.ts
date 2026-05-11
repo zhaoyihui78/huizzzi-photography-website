@@ -1,3 +1,11 @@
+export interface Exif {
+  camera?: string;
+  lens?: string;
+  aperture?: string;
+  shutter?: string;
+  iso?: string;
+}
+
 export interface Photo {
   src: string;
   thumb: string;
@@ -5,6 +13,7 @@ export interface Photo {
   caption?: string;
   width?: number;
   height?: number;
+  exif?: Exif;
 }
 
 export interface Series {
@@ -36,6 +45,13 @@ const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
     alt: `Beijing Cityscape ${i + 1}`,
     width,
     height,
+    exif: {
+      camera: 'Sony A7R IV',
+      lens: '24-70mm f/2.8 GM',
+      aperture: 'f/8',
+      shutter: '1/125s',
+      iso: 'ISO 100',
+    },
   };
 });
 
@@ -52,6 +68,13 @@ const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
     alt: `Nature & Landscape ${i + 1}`,
     width,
     height,
+    exif: {
+      camera: i < 3 ? 'Sony A7R IV' : 'Canon EOS R5',
+      lens: i < 3 ? '16-35mm f/2.8 GM' : '70-200mm f/2.8',
+      aperture: i < 3 ? 'f/11' : 'f/2.8',
+      shutter: i < 3 ? '1/60s' : '15s',
+      iso: i < 3 ? 'ISO 100' : 'ISO 3200',
+    },
   };
 });
 
@@ -67,6 +90,13 @@ const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
     alt: `Architecture ${i + 1}`,
     width,
     height,
+    exif: {
+      camera: 'Sony A7R IV',
+      lens: '24-70mm f/2.8 GM',
+      aperture: 'f/5.6',
+      shutter: '1/200s',
+      iso: 'ISO 200',
+    },
   };
 });
 
@@ -79,7 +109,7 @@ export const seriesList: Series[] = [
       '北京是一座古老与现代交织的城市。从CBD的摩天大楼到胡同里的烟火气，从日出时分的金色天际线到夜幕下的万家灯火，我用镜头记录下这座城市最动人的时刻。',
     year: '2023-2025',
     cover: beijingPhotos[0].thumb,
-    layout: 'grid',
+    layout: 'split',
     photos: beijingPhotos,
   },
   {
@@ -90,7 +120,7 @@ export const seriesList: Series[] = [
       '大自然是最伟大的艺术家。从雪山的日照金山到草原的璀璨星河，从古建筑上的星轨到广袤大地的壮丽风光，我追寻着天地间的宁静与壮美。',
     year: '2023-2025',
     cover: naturePhotos[0].thumb,
-    layout: 'masonry',
+    layout: 'split',
     photos: naturePhotos,
   },
   {
@@ -101,7 +131,7 @@ export const seriesList: Series[] = [
       '建筑是凝固的音乐，是时间的容器。每一根线条、每一个角度都承载着设计师的思考与城市的记忆。',
     year: '2024-2025',
     cover: architecturePhotos[0].thumb,
-    layout: 'grid',
+    layout: 'split',
     photos: architecturePhotos,
   },
   {
@@ -113,12 +143,7 @@ export const seriesList: Series[] = [
     year: '2024-2025',
     cover: '/works/videos/gugongchunxue/poster.jpg',
     layout: 'split',
-    photos: [
-      { src: '/works/photos/beijing03.jpg', thumb: '/works/thumbs/beijing03.jpg', alt: '故宫星轨', width: 800, height: 533 },
-      { src: '/works/photos/beijing01.jpg', thumb: '/works/thumbs/beijing01.jpg', alt: '北海公园晚霞', width: 800, height: 533 },
-      { src: '/works/photos/beijing02.jpg', thumb: '/works/thumbs/beijing02.jpg', alt: '北海公园全景', width: 800, height: 269 },
-      { src: '/works/photos/beijing04.jpg', thumb: '/works/thumbs/beijing04.jpg', alt: '蜿蜒的巨龙', width: 537, height: 800 },
-    ],
+    photos: [],
     videos: [
       { src: '/works/videos/gugongchunxue/故宫春雪.mp4', poster: '/works/videos/gugongchunxue/poster.jpg', title: '故宫春雪' },
       { src: '/works/videos/beihaiqiu/北海公园的秋.mp4', poster: '/works/videos/beihaiqiu/poster.jpg', title: '北海的秋' },
