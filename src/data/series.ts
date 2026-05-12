@@ -25,7 +25,7 @@ export interface Series {
   cover: string;
   photos: Photo[];
   layout: 'grid' | 'masonry' | 'split' | 'film' | 'polaroid';
-  videos?: { src: string; poster: string; title: string }[];
+  videos?: { src: string; poster: string; title: string; season?: string; month?: string; subtitle?: string }[];
 }
 
 export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
@@ -100,6 +100,17 @@ export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
   };
 });
 
+export const filmLifePhotos: Photo[] = Array.from({ length: 30 }, (_, i) => {
+  const num = String(i + 1).padStart(2, '0');
+  return {
+    src: `/works/photos/film/film${num}.jpg`,
+    thumb: `/works/photos/film/film${num}.jpg`,
+    alt: `Film Life ${i + 1}`,
+    width: 3578,
+    height: 2397,
+  };
+});
+
 export const seriesList: Series[] = [
   {
     slug: 'beijing-cityscape',
@@ -145,12 +156,23 @@ export const seriesList: Series[] = [
     layout: 'split',
     photos: [],
     videos: [
-      { src: '/works/videos/gugongchunxue/故宫春雪.mp4', poster: '/works/videos/gugongchunxue/poster.jpg', title: '故宫春雪' },
-      { src: '/works/videos/beihaiqiu/北海公园的秋.mp4', poster: '/works/videos/beihaiqiu/poster.jpg', title: '北海的秋' },
-      { src: '/works/videos/yiheyuandexia/颐和园的晚霞.mp4', poster: '/works/videos/yiheyuandexia/poster.jpg', title: '颐和园的晚霞' },
-      { src: '/works/videos/yuanmingyuande/圆明园.mp4', poster: '/works/videos/yuanmingyuande/poster.jpg', title: '圆明园的秋' },
-      { src: '/works/videos/xinniantiantan/祈年纳福.mp4', poster: '/works/videos/xinniantiantan/poster.jpg', title: '新年天坛' },
+      { src: '/works/videos/gugongchunxue/故宫春雪.mp4', poster: '/works/videos/gugongchunxue/poster.jpg', title: '故宫春雪', season: '冬', month: '二月', subtitle: '雪落紫禁城' },
+      { src: '/works/videos/beihaiqiu/北海公园的秋.mp4', poster: '/works/videos/beihaiqiu/poster.jpg', title: '北海的秋', season: '秋', month: '十月', subtitle: '落叶满北海' },
+      { src: '/works/videos/yiheyuandexia/颐和园的晚霞.mp4', poster: '/works/videos/yiheyuandexia/poster.jpg', title: '颐和园的晚霞', season: '夏', month: '七月', subtitle: '晚霞照颐和' },
+      { src: '/works/videos/yuanmingyuande/圆明园.mp4', poster: '/works/videos/yuanmingyuande/poster.jpg', title: '圆明园的秋', season: '秋', month: '十一月', subtitle: '金黄圆明园' },
+      { src: '/works/videos/xinniantiantan/祈年纳福.mp4', poster: '/works/videos/xinniantiantan/poster.jpg', title: '新年天坛', season: '冬', month: '正月', subtitle: '祈年纳福' },
     ],
+  },
+  {
+    slug: 'film-life',
+    title: 'Film Photography',
+    category: 'Life',
+    description:
+      '用胶片记录生活的片段。每一帧都是时间的切片，每一卷都是记忆的容器。这些照片没有宏大的叙事，只有日常里最真实的温度。',
+    year: '2024-2025',
+    cover: filmLifePhotos[0].thumb,
+    layout: 'polaroid',
+    photos: filmLifePhotos,
   },
 ];
 

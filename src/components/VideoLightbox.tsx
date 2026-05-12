@@ -19,6 +19,17 @@ export default function VideoLightbox({ src, poster, title, isOpen, onClose }: V
   const [showControls, setShowControls] = useState(true);
   const controlsTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  const togglePlay = useCallback(() => {
+    if (!videoRef.current) return;
+    if (videoRef.current.paused) {
+      videoRef.current.play().catch(() => {});
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
+    }
+  }, []);
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -27,7 +38,7 @@ export default function VideoLightbox({ src, poster, title, isOpen, onClose }: V
         togglePlay();
       }
     },
-    [onClose]
+    [onClose, togglePlay]
   );
 
   useEffect(() => {
@@ -44,25 +55,6 @@ export default function VideoLightbox({ src, poster, title, isOpen, onClose }: V
     };
   }, [isOpen, handleKeyDown]);
 
-  // Auto-play when opened
-  useEffect(() => {
-    if (isOpen && videoRef.current) {
-      videoRef.current.play().catch(() => {});
-      setIsPlaying(true);
-    }
-  }, [isOpen]);
-
-  const togglePlay = () => {
-    if (!videoRef.current) return;
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  };
-
   const handleTimeUpdate = () => {
     if (!videoRef.current) return;
     const p = (videoRef.current.currentTime / videoRef.current.duration) * 100;
@@ -72,6 +64,14 @@ export default function VideoLightbox({ src, poster, title, isOpen, onClose }: V
   const handleLoadedMetadata = () => {
     if (!videoRef.current) return;
     setDuration(videoRef.current.duration);
+    videoRef.current.play().catch(() => {});
+    setIsPlaying(true);
+  };
+
+  const handleCanPlay = () => {
+    if (!videoRef.current) return;
+    videoRef.current.play().catch(() => {});
+    setIsPlaying(true);
   };
 
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -139,9 +139,11 @@ export default function VideoLightbox({ src, poster, title, isOpen, onClose }: V
               className="w-full h-full object-contain"
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
+              onCanPlay={handleCanPlay}
               onEnded={() => setIsPlaying(false)}
               onClick={togglePlay}
               playsInline
+              autoPlay
             />
 
             {/* Center play / pause button overlay */}

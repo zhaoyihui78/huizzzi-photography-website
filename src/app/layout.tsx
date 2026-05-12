@@ -5,6 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import PageTransition from "@/components/PageTransition";
 import CustomCursor from "@/components/CustomCursor";
 import ScrollProgress from "@/components/ScrollProgress";
+import EntranceOverlay from "@/components/EntranceOverlay";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -46,6 +47,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} h-full antialiased`}
     >
       <body className="min-h-full bg-white text-[#111111] font-body paper-grain">
+        <EntranceOverlay />
         <CustomCursor />
         <ScrollProgress />
         <Sidebar />

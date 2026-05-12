@@ -1,38 +1,142 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { seriesList, beijingPhotos, naturePhotos, architecturePhotos } from '@/data/series';
+import { seriesList, Photo, naturePhotos } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
-import FilmFrame from '@/components/FilmFrame';
-import Lightbox from '@/components/Lightbox';
-import Link from 'next/link';
+import Slideshow from '@/components/Slideshow';
 
-// Bento grid film wall — aligned grid with varied sizes
-const filmWallItems = [
-  { photo: naturePhotos[5],   gridClass: 'col-span-3', rotate: 0, label: 'KODAK PORTRA 400' },
-  { photo: beijingPhotos[3],  gridClass: 'col-span-1', rotate: 0, label: 'KODAK EKTAR 100' },
-  { photo: naturePhotos[0],   gridClass: 'col-span-1', rotate: 0, label: 'KODAK GOLD 200' },
-  { photo: beijingPhotos[19], gridClass: 'col-span-2', rotate: 0, label: 'FUJIFILM PRO 400H' },
-  { photo: beijingPhotos[16], gridClass: 'col-span-1', rotate: 0, label: 'ILFORD HP5 PLUS' },
-  { photo: naturePhotos[4],   gridClass: 'col-span-2', rotate: 0, label: 'KODAK VISION3 500T' },
-  { photo: architecturePhotos[0], gridClass: 'col-span-1', rotate: 0, label: 'CINESTILL 800T' },
-  { photo: beijingPhotos[1],  gridClass: 'col-span-4', rotate: 0, label: 'KODAK VISION3 250D' },
-];
+interface WallItem {
+  photo: Photo;
+  label: string;
+}
+
+const HERO_PHOTO = naturePhotos[5];
+
+function RevealImage({
+  src,
+  alt,
+  highlighted,
+}: {
+  src: string;
+  alt: string;
+  highlighted: boolean;
+}) {
+  const [revealed, setRevealed] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    const img = imgRef.current;
+    if (!img) return;
+    if (img.complete) {
+      setRevealed(true);
+      return;
+    }
+    const onLoad = () => setRevealed(true);
+    img.addEventListener('load', onLoad);
+    return () => img.removeEventListener('load', onLoad);
+  }, [src]);
+
+  return (
+    <img
+      ref={imgRef}
+      src={src}
+      alt={alt}
+      className={`w-full h-auto object-cover transition-all duration-1000 ease-out ${
+        revealed
+          ? 'blur-0 scale-100 grayscale-0'
+          : 'blur-[12px] scale-[1.04] grayscale-[20%]'
+      }`}
+      style={{
+        transform:
+          revealed && highlighted ? 'scale(1.02)' : revealed ? 'scale(1)' : undefined,
+      }}
+      loading="lazy"
+    />
+  );
+}
 
 export default function Home() {
-  const [lightboxPhoto, setLightboxPhoto] = useState<typeof filmWallItems[0]['photo'] | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [slideshowOpen, setSlideshowOpen] = useState(false);
+  const [slideshowIndex, setSlideshowIndex] = useState(0);
+  const [columnCount, setColumnCount] = useState(2);
+
+  useEffect(() => {
+    const compute = () => {
+      const w = window.innerWidth;
+      setColumnCount(w < 768 ? 1 : w < 1440 ? 2 : 3);
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
+
+  const labelByPhotoSrc = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const series of seriesList) {
+      for (const photo of series.photos) {
+        if (!map.has(photo.src)) map.set(photo.src, series.title);
+      }
+    }
+    return map;
+  }, []);
+
+  const { items, heroIndex, columns } = useMemo(() => {
+    // Exclude film-life series from homepage
+    const allPhotos = seriesList
+      .filter((s) => s.slug !== 'film-life')
+      .flatMap((s) => s.photos);
+    const seen = new Set<string>();
+    const uniquePhotos = allPhotos.filter((p) => {
+      if (seen.has(p.src)) return false;
+      seen.add(p.src);
+      return true;
+    });
+
+    const hIdx = uniquePhotos.findIndex((p) => p.src === HERO_PHOTO.src);
+
+    const wallItems: WallItem[] = uniquePhotos.map((photo) => ({
+      photo,
+      label: labelByPhotoSrc.get(photo.src) || photo.alt,
+    }));
+
+    // Remove hero from masonry
+    const masonryItems = wallItems.filter((i) => i.photo.src !== HERO_PHOTO.src);
+
+    const cols: WallItem[][] = Array.from({ length: columnCount }, () => []);
+    const colHeights = Array.from({ length: columnCount }, () => 0);
+
+    for (const item of masonryItems) {
+      const ratio = (item.photo.height || 600) / (item.photo.width || 800);
+      const minCol = colHeights.indexOf(Math.min(...colHeights));
+      cols[minCol].push(item);
+      colHeights[minCol] += ratio;
+    }
+
+    return { items: wallItems, heroIndex: hIdx >= 0 ? hIdx : 0, columns: cols };
+  }, [columnCount, labelByPhotoSrc]);
+
+  const heroLabel = labelByPhotoSrc.get(HERO_PHOTO.src) || 'Featured';
+
+  const openSlideshow = useCallback(
+    (targetIndex: number) => {
+      setSlideshowIndex(targetIndex);
+      setSlideshowOpen(true);
+    },
+    []
+  );
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.12, delayChildren: 0.3 },
+      transition: { staggerChildren: 0.04, delayChildren: 0.2 },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 50, scale: 0.96 },
+    hidden: { opacity: 0, y: 30, scale: 0.98 },
     visible: {
       opacity: 1,
       y: 0,
@@ -41,80 +145,90 @@ export default function Home() {
     },
   };
 
+  let globalIndex = 0;
+
   return (
     <main className="min-h-full px-10 py-14">
-      {/* Hero — bento film frame wall */}
-      <section className="mb-28">
+      {/* Hero — full-bleed feature image */}
+      <motion.section
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+        className="mb-3 cursor-pointer group mx-auto max-w-[1500px]"
+        onClick={() => openSlideshow(heroIndex)}
+      >
+        <div className="relative overflow-hidden">
+          <RevealImage src={HERO_PHOTO.src} alt={HERO_PHOTO.alt} highlighted={false} />
+          {/* Bottom overlay */}
+          <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500">
+            <span className="font-mono text-[8px] text-[#c9a96e] tracking-[0.3em] uppercase">
+              {heroLabel}
+            </span>
+            <h2 className="font-heading text-[15px] text-white/90 tracking-wide mt-2">
+              {HERO_PHOTO.alt}
+            </h2>
+          </div>
+        </div>
+      </motion.section>
+
+      {/* Masonry wall — remaining photos */}
+      <section className="mb-16 mx-auto max-w-[1500px]">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-4 gap-10 items-start"
+          className="flex gap-1"
         >
-          {filmWallItems.map((item) => (
-            <motion.div
-              key={item.photo.src}
-              variants={itemVariants}
-              className={item.gridClass}
-            >
-              <div className="hover:-translate-y-2 transition-transform duration-700">
-                <FilmFrame
-                  src={item.photo.src}
-                  alt={item.photo.alt}
-                  label={item.label}
-                  rotation={item.rotate}
-                  onClick={() => setLightboxPhoto(item.photo)}
-                />
-              </div>
-            </motion.div>
+          {columns.map((col, colIndex) => (
+            <div key={colIndex} className="flex-1 flex flex-col gap-1">
+              {col.map((item) => {
+                const currentGlobal = globalIndex++;
+                const dimmed = hoveredIndex !== null && hoveredIndex !== currentGlobal;
+                const highlighted = hoveredIndex === currentGlobal;
+                return (
+                  <motion.div
+                    key={item.photo.src}
+                    variants={itemVariants}
+                    onMouseEnter={() => setHoveredIndex(currentGlobal)}
+                    onMouseLeave={() => setHoveredIndex(null)}
+                    onClick={() => openSlideshow(items.findIndex((i) => i.photo.src === item.photo.src))}
+                  >
+                    <div
+                      data-cursor="view"
+                      className={`relative overflow-hidden cursor-pointer transition-all duration-700 ${
+                        dimmed
+                          ? 'brightness-[0.4] saturate-[0.6] sepia-[0.12]'
+                          : highlighted
+                          ? 'brightness-105 scale-[1.015] z-10'
+                          : ''
+                      }`}
+                    >
+                      <RevealImage
+                        src={item.photo.src}
+                        alt={item.photo.alt}
+                        highlighted={highlighted}
+                      />
+                      {/* Minimal label — bottom reveal on hover */}
+                      <div
+                        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent transition-opacity duration-500 ${
+                          highlighted ? 'opacity-100' : 'opacity-0'
+                        }`}
+                      >
+                        <div className="px-3 pt-6 pb-2">
+                          <span className="font-mono text-white/90 text-[8px] tracking-[0.25em] uppercase">
+                            {item.label}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           ))}
         </motion.div>
       </section>
 
-      {/* Series Grid */}
-      <section className="mb-32">
-        <FadeIn delay={0}>
-          <h2 className="font-mono text-[9px] font-normal text-[#cccccc] uppercase tracking-[0.25em] mb-10">
-            All Works
-          </h2>
-        </FadeIn>
-        <motion.div
-          className="grid grid-cols-4 gap-6"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-100px' }}
-        >
-          {seriesList.map((series) => (
-            <motion.div key={series.slug} variants={itemVariants}>
-              <Link href={`/series/${series.slug}`} className="group block">
-                <div className="relative overflow-hidden bg-[#f0f0f0] aspect-[4/3] mb-4">
-                  <img
-                    src={series.cover}
-                    alt={series.title}
-                    className="w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-[1.06]"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <span className="font-mono text-white text-[9px] tracking-[0.2em] uppercase bg-black/20 backdrop-blur-sm px-4 py-2">
-                      View
-                    </span>
-                  </div>
-                </div>
-                <h3 className="font-heading text-[13px] font-normal text-[#111111] group-hover:text-[#888888] transition-colors duration-300">
-                  {series.title}
-                </h3>
-                <p className="font-mono text-[9px] text-[#cccccc] mt-2 tracking-[0.15em]">
-                  {series.category} · {series.year}
-                </p>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* Footer */}
       <FadeIn delay={0.2}>
         <footer className="mt-40 pt-10 border-t border-[#f0f0f0]">
           <p className="font-mono text-[9px] text-[#dddddd] tracking-[0.15em]">
@@ -123,10 +237,12 @@ export default function Home() {
         </footer>
       </FadeIn>
 
-      <Lightbox
-        photo={lightboxPhoto}
-        isOpen={!!lightboxPhoto}
-        onClose={() => setLightboxPhoto(null)}
+      <Slideshow
+        photos={items.map((i) => i.photo)}
+        labels={items.map((i) => i.label)}
+        initialIndex={slideshowIndex}
+        isOpen={slideshowOpen}
+        onClose={() => setSlideshowOpen(false)}
       />
     </main>
   );
