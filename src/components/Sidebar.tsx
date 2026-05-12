@@ -8,8 +8,17 @@ import { seriesList } from '@/data/series';
 
 export default function Sidebar() {
   const pathname = usePathname();
-  // Handle both with and without trailing slash
-  const isDarkMode = pathname === '/series/film-life' || pathname === '/series/film-life/';
+  
+  // Theme resolution
+  let theme: 'default' | 'dark' | 'oriental' = 'default';
+  if (pathname === '/series/film-life' || pathname === '/series/film-life/') {
+    theme = 'dark';
+  } else if (pathname === '/series/seasons-of-beijing' || pathname === '/series/seasons-of-beijing/') {
+    theme = 'oriental';
+  }
+
+  const isDarkMode = theme === 'dark';
+  const isOriental = theme === 'oriental';
 
   const categories = seriesList.reduce((acc, series) => {
     if (!acc[series.category]) acc[series.category] = [];
@@ -22,13 +31,15 @@ export default function Sidebar() {
       className={`fixed top-0 left-0 h-screen w-[220px] backdrop-blur-sm z-50 flex flex-col px-8 py-12 overflow-y-auto border-r transition-colors duration-1000 ease-in-out ${
         isDarkMode
           ? 'bg-[#0a0a0a]/95 border-[#1a1a1a] text-white'
+          : isOriental
+          ? 'bg-[#f4f1ea]/95 border-[#e8e4d9] text-[#2c2824]'
           : 'bg-[#ffffff]/95 border-[#f0f0f0] text-[#111111]'
       }`}
     >
       <Link
         href="/"
         className={`font-heading text-[15px] font-medium tracking-[0.08em] mb-14 hover:opacity-50 transition-all duration-1000 ${
-          isDarkMode ? 'text-[#e8d088]' : 'text-[#111111]'
+          isDarkMode ? 'text-[#e8d088]' : isOriental ? 'text-[#8c3b31]' : 'text-[#111111]'
         }`}
       >
         HUI ZZZI
@@ -45,7 +56,7 @@ export default function Sidebar() {
           >
             <span
               className={`font-mono text-[9px] font-normal uppercase tracking-[0.25em] transition-colors duration-1000 ${
-                isDarkMode ? 'text-[#555555]' : 'text-[#cccccc]'
+                isDarkMode ? 'text-[#555555]' : isOriental ? 'text-[#a6a092]' : 'text-[#cccccc]'
               }`}
             >
               {category}
@@ -61,16 +72,20 @@ export default function Sidebar() {
                     isActive
                       ? isDarkMode
                         ? 'text-white font-normal'
+                        : isOriental
+                        ? 'text-[#2c2824] font-medium'
                         : 'text-[#111111] font-normal'
                       : isDarkMode
                       ? 'text-[#666666] hover:text-[#aaaaaa]'
+                      : isOriental
+                      ? 'text-[#8c8577] hover:text-[#2c2824]'
                       : 'text-[#888888] hover:text-[#111111]'
                   }`}
                 >
                   {series.title}
                   <span
                     className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${
-                      isDarkMode ? 'bg-white' : 'bg-[#111111]'
+                      isDarkMode ? 'bg-white' : isOriental ? 'bg-[#8c3b31]' : 'bg-[#111111]'
                     } ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}
                   />
                 </Link>
@@ -86,16 +101,20 @@ export default function Sidebar() {
               pathname === '/about'
                 ? isDarkMode
                   ? 'text-white font-normal'
+                  : isOriental
+                  ? 'text-[#2c2824] font-medium'
                   : 'text-[#111111] font-normal'
                 : isDarkMode
                 ? 'text-[#666666] hover:text-[#aaaaaa]'
+                : isOriental
+                ? 'text-[#8c8577] hover:text-[#2c2824]'
                 : 'text-[#888888] hover:text-[#111111]'
             }`}
           >
             About
             <span
               className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${
-                isDarkMode ? 'bg-white' : 'bg-[#111111]'
+                isDarkMode ? 'bg-white' : isOriental ? 'bg-[#8c3b31]' : 'bg-[#111111]'
               } ${pathname === '/about' ? 'w-full' : 'w-0 group-hover:w-full'}`}
             />
           </Link>
@@ -103,10 +122,10 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-10">
-        <Clock isDarkMode={isDarkMode} />
+        <Clock theme={theme} />
         <p
           className={`font-mono text-[8px] tracking-[0.2em] uppercase mt-2 transition-colors duration-1000 ${
-            isDarkMode ? 'text-[#444444]' : 'text-[#dddddd]'
+            isDarkMode ? 'text-[#444444]' : isOriental ? 'text-[#b8b3a5]' : 'text-[#dddddd]'
           }`}
         >
           &copy; {new Date().getFullYear()}
@@ -116,7 +135,7 @@ export default function Sidebar() {
   );
 }
 
-function Clock({ isDarkMode }: { isDarkMode?: boolean }) {
+function Clock({ theme }: { theme?: 'default' | 'dark' | 'oriental' }) {
   const [time, setTime] = useState('');
 
   useEffect(() => {
@@ -134,7 +153,7 @@ function Clock({ isDarkMode }: { isDarkMode?: boolean }) {
   return (
     <p
       className={`font-mono text-[9px] tracking-[0.15em] transition-colors duration-1000 ${
-        isDarkMode ? 'text-[#666666]' : 'text-[#cccccc]'
+        theme === 'dark' ? 'text-[#666666]' : theme === 'oriental' ? 'text-[#a6a092]' : 'text-[#cccccc]'
       }`}
     >
       {time}

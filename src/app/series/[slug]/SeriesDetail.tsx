@@ -157,7 +157,7 @@ function VideoTimelineItem({
   total: number;
   onClick: () => void;
 }) {
-  const ref = useRef(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   // Asymmetric sizing: first video largest, evens slightly inset
@@ -172,7 +172,7 @@ function VideoTimelineItem({
           initial={{ opacity: 0, x: -10 }}
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="font-mono text-[11px] text-[#b8a060] tracking-[0.15em] font-medium"
+          className="font-mono text-[11px] text-[#8c3b31] tracking-[0.15em] font-medium"
         >
           {video.season}
         </motion.span>
@@ -180,7 +180,7 @@ function VideoTimelineItem({
           initial={{ opacity: 0, x: -10 }}
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-mono text-[8px] text-[#bbb] mt-1 tracking-[0.15em]"
+          className="font-mono text-[8px] text-[#8c8577] mt-1 tracking-[0.15em]"
         >
           {video.month}
         </motion.span>
@@ -191,7 +191,7 @@ function VideoTimelineItem({
         initial={{ scale: 0 }}
         animate={isInView ? { scale: 1 } : {}}
         transition={{ duration: 0.4, delay: 0.15 }}
-        className="absolute left-[72px] top-5 w-[7px] h-[7px] rounded-full bg-[#b8a060] -translate-x-1/2 border-2 border-[#f7f5f0] z-10"
+        className="absolute left-[72px] top-5 w-[7px] h-[7px] rounded-full bg-[#8c3b31] -translate-x-1/2 border-2 border-[#f4f1ea] z-10"
       />
 
       {/* Video card with gallery mat frame */}
@@ -203,14 +203,27 @@ function VideoTimelineItem({
       >
         {/* Mat board frame */}
         <div
-          className={`bg-white border border-[#eae8e3] shadow-sm transition-all duration-700 hover:bg-[#f0ece0] hover:border-[#ddd8cc] hover:shadow-md group ${
+          className={`bg-[#fdfcf9] border border-[#e8e4d9] shadow-sm transition-all duration-700 hover:bg-white hover:border-[#d6ceb8] hover:shadow-xl group ${
             isFirst ? 'p-4' : 'p-3'
           }`}
+          onMouseEnter={() => {
+            const v = ref.current?.querySelector('video');
+            if (v) {
+              v.play().catch(() => {});
+            }
+          }}
+          onMouseLeave={() => {
+            const v = ref.current?.querySelector('video');
+            if (v) {
+              v.pause();
+              v.currentTime = 0;
+            }
+          }}
         >
           {/* Inner fine black line — the "reveal" edge */}
-          <div className="border border-[#1a1a1a] p-[1px]">
+          <div className="border border-[#2c2824] p-[1px]">
             <div
-              className="relative bg-[#0a0a0a] overflow-hidden cursor-pointer"
+              className="relative bg-[#1a1816] overflow-hidden cursor-pointer"
               style={{ aspectRatio: isFirst ? '21/9' : '16/9' }}
               onClick={onClick}
             >
@@ -218,45 +231,37 @@ function VideoTimelineItem({
                 src={video.poster}
                 alt={video.title}
                 fill
-                className="object-cover grayscale-[25%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-[1.03]"
+                className="object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-[1.03]"
                 loading={index < 2 ? 'eager' : 'lazy'}
                 unoptimized
               />
 
-              {/* Vignette overlay */}
-              <div className="absolute inset-0 bg-black/25 group-hover:bg-black/40 transition-all duration-700" />
+              {/* Video B-roll hover preview */}
+              <video
+                src={video.src}
+                className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
+                muted
+                loop
+                playsInline
+              />
 
-              {/* Play button — thin square wireframe */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-14 h-14 border border-white/35 flex items-center justify-center group-hover:scale-110 group-hover:border-white/65 transition-all duration-500 ease-out">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="white"
-                    strokeWidth="1.2"
-                    className="ml-0.5 opacity-80"
-                  >
-                    <path d="M8 5l11 7-11 7z" />
-                  </svg>
-                </div>
-              </div>
+              {/* Vignette overlay */}
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-all duration-700 pointer-events-none" />
 
               {/* Bottom info — film credit style */}
-              <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/60 via-black/20 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
+              <div className="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 via-black/30 to-transparent translate-y-1 group-hover:translate-y-0 transition-transform duration-500">
                 <p className="font-heading text-[13px] text-white/90 tracking-wide mb-1">
                   {video.title}
                 </p>
                 {video.subtitle && (
-                  <p className="font-mono text-[8px] text-white/35 tracking-[0.2em] uppercase">
+                  <p className="font-mono text-[8px] text-[#e8d088]/80 tracking-[0.2em] uppercase">
                     {video.subtitle}
                   </p>
                 )}
               </div>
 
               {/* Film edge number */}
-              <div className="absolute top-4 left-4 font-mono text-[9px] text-white/15 tracking-[0.15em]">
+              <div className="absolute top-4 left-4 font-mono text-[9px] text-white/40 tracking-[0.15em]">
                 {String(index + 1).padStart(2, '0')}
               </div>
             </div>
@@ -264,10 +269,10 @@ function VideoTimelineItem({
 
           {/* Mat caption */}
           <div className="mt-3 px-1 flex justify-between items-baseline">
-            <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-[#999] group-hover:text-[#555] transition-colors duration-500">
+            <span className="font-mono text-[8px] tracking-[0.2em] uppercase text-[#8c8577] group-hover:text-[#5c5549] transition-colors duration-500">
               {video.title}
             </span>
-            <span className="font-mono text-[8px] text-[#ccc] tracking-[0.1em]">
+            <span className="font-mono text-[8px] text-[#a6a092] tracking-[0.1em]">
               {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
             </span>
           </div>
@@ -282,25 +287,39 @@ export default function SeriesDetail({ series }: Props) {
   const [videoOpen, setVideoOpen] = useState<{ src: string; poster: string; title: string } | null>(null);
 
   const isSeasonsFilm = series.slug === 'seasons-of-beijing';
-  const isDarkMode = series.slug === 'film-life';
+  
+  let theme: 'default' | 'dark' | 'oriental' = 'default';
+  if (series.slug === 'film-life') theme = 'dark';
+  if (isSeasonsFilm) theme = 'oriental';
+
+  const isDarkMode = theme === 'dark';
+  const isOriental = theme === 'oriental';
 
   return (
     <main 
-      className={`min-h-full px-10 py-14 transition-colors duration-1000 ${isDarkMode ? 'bg-[#0a0a0a] text-white' : ''}`}
-      data-dark-mode={isDarkMode}
+      className={`min-h-screen px-10 py-14 transition-colors duration-1000 ${
+        isDarkMode ? 'bg-[#0a0a0a] text-white' : isOriental ? 'bg-[#f4f1ea] text-[#2c2824]' : ''
+      }`}
+      data-theme={theme}
     >
       {/* Header */}
       <FadeIn delay={0}>
         <header className="mb-20">
           <div className="flex items-baseline justify-between mb-5">
-            <h1 className={`font-heading text-xl font-normal tracking-tight transition-colors duration-1000 ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>
+            <h1 className={`font-heading text-xl font-normal tracking-tight transition-colors duration-1000 ${
+              isDarkMode ? 'text-white' : isOriental ? 'text-[#2c2824]' : 'text-[#111111]'
+            }`}>
               {series.title}
             </h1>
-            <span className={`font-mono text-[9px] tracking-[0.2em] uppercase transition-colors duration-1000 ${isDarkMode ? 'text-[#666666]' : 'text-[#cccccc]'}`}>
+            <span className={`font-mono text-[9px] tracking-[0.2em] uppercase transition-colors duration-1000 ${
+              isDarkMode ? 'text-[#666666]' : isOriental ? 'text-[#a6a092]' : 'text-[#cccccc]'
+            }`}>
               {series.year}
             </span>
           </div>
-          <p className={`text-[13px] leading-[2] max-w-2xl font-light transition-colors duration-1000 ${isDarkMode ? 'text-[#aaaaaa]' : 'text-[#888888]'}`}>
+          <p className={`text-[13px] leading-[2] max-w-2xl font-light transition-colors duration-1000 ${
+            isDarkMode ? 'text-[#aaaaaa]' : isOriental ? 'text-[#5c5549]' : 'text-[#888888]'
+          }`}>
             <TextReveal delay={0.3}>{series.description}</TextReveal>
           </p>
         </header>
@@ -309,44 +328,50 @@ export default function SeriesDetail({ series }: Props) {
       {/* Videos */}
       {series.videos && series.videos.length > 0 && (
         isSeasonsFilm ? (
-          <section className="relative bg-[#f7f5f0] -mx-10 px-10 py-20 mb-32">
+          <section className="relative -mx-10 px-10 py-20 mb-32 bg-[#ece8df]">
+            {/* Background grain & gradient for Oriental Theme */}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#f4f1ea] via-[#ece8df] to-[#f4f1ea] pointer-events-none" />
+
             {/* Section header */}
-            <div className="mb-16 flex items-end justify-between">
+            <div className="relative mb-24 flex items-end justify-between border-b border-[#d6ceb8] pb-8">
               <div>
                 <motion.p
                   initial={{ opacity: 0, y: 10 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6 }}
-                  className="font-mono text-[9px] text-[#c9a96e] tracking-[0.3em] uppercase mb-3"
+                  className="font-mono text-[9px] text-[#8c3b31] tracking-[0.3em] uppercase mb-4"
                 >
-                  Film Collection
+                  Screening Room
                 </motion.p>
                 <motion.h2
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.7, delay: 0.1 }}
-                  className="font-heading text-[22px] text-[#111] tracking-tight"
+                  className="font-heading text-3xl text-[#2c2824] tracking-tight"
                 >
                   四季巡礼
                 </motion.h2>
               </div>
-              <motion.span
+              <motion.div
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="font-mono text-[9px] text-[#ccc] tracking-[0.2em]"
+                className="text-right"
               >
-                {series.videos.length} Scenes
-              </motion.span>
+                <p className="font-mono text-[10px] text-[#a6a092] tracking-[0.2em]">CINEMATIC LOG</p>
+                <p className="font-mono text-[9px] text-[#5c5549] tracking-[0.15em] mt-2">
+                  {series.videos.length} SCENES
+                </p>
+              </motion.div>
             </div>
 
             {/* Timeline */}
             <div className="relative">
               {/* Vertical line */}
-              <div className="absolute left-[72px] top-2 bottom-2 w-px bg-[#e0ddd5]" />
+              <div className="absolute left-[72px] top-2 bottom-2 w-px bg-[#d6ceb8]" />
 
               {series.videos.map((video, i) => (
                 <VideoTimelineItem
@@ -371,6 +396,17 @@ export default function SeriesDetail({ series }: Props) {
                     <div
                       className="relative bg-[#0a0a0a] aspect-video overflow-hidden group cursor-pointer"
                       onClick={() => setVideoOpen(video)}
+                      onMouseEnter={(e) => {
+                        const v = e.currentTarget.querySelector('video');
+                        if (v) v.play().catch(() => {});
+                      }}
+                      onMouseLeave={(e) => {
+                        const v = e.currentTarget.querySelector('video');
+                        if (v) {
+                          v.pause();
+                          v.currentTime = 0;
+                        }
+                      }}
                     >
                       <Image
                         src={video.poster}
@@ -380,7 +416,16 @@ export default function SeriesDetail({ series }: Props) {
                         loading={i < 2 ? 'eager' : 'lazy'}
                         unoptimized
                       />
-                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/45 transition-all duration-700" />
+                      
+                      <video
+                        src={video.src}
+                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
+                        muted
+                        loop
+                        playsInline
+                      />
+
+                      <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-700 pointer-events-none" />
                       <div className="absolute inset-0 flex items-center justify-center">
                         <div className="w-16 h-16 rounded-full border border-white/40 flex items-center justify-center group-hover:scale-110 group-hover:border-white/70 transition-all duration-500 ease-out">
                           <svg width="18" height="18" viewBox="0 0 24 24" fill="white" className="ml-1 opacity-80">

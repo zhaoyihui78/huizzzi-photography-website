@@ -77,19 +77,19 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
   // Slide variants for image change
   const imageVariants = {
     enter: (dir: number) => ({
-      x: dir > 0 ? 60 : -60,
+      scale: 1.05,
+      filter: 'blur(10px)',
       opacity: 0,
-      scale: 0.96,
     }),
     center: {
-      x: 0,
-      opacity: 1,
       scale: 1,
+      filter: 'blur(0px)',
+      opacity: 1,
     },
     exit: (dir: number) => ({
-      x: dir > 0 ? -60 : 60,
+      scale: 0.95,
+      filter: 'blur(10px)',
       opacity: 0,
-      scale: 0.96,
     }),
   };
 
@@ -142,14 +142,14 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
 
           {/* Image container */}
           <motion.div
-            initial={{ scale: 0.82, opacity: 0, y: 40 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 1.05, opacity: 0 }}
             transition={{
-              duration: 0.65,
+              duration: 0.8,
               ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
             }}
-            className="relative max-w-[82vw] max-h-[75vh] flex items-center justify-center"
+            className="relative w-[90vw] h-[85vh] flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             {!loaded && (
@@ -159,58 +159,49 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
             )}
 
             <AnimatePresence mode="wait" custom={direction}>
-              <motion.img
-                key={p.src}
-                src={p.src}
-                alt={p.alt}
-                custom={direction}
-                variants={imageVariants}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.35, ease: [0.25, 0.1, 0.25, 1] }}
-                className={`
-                  max-w-full max-h-[75vh] w-auto h-auto object-contain
-                  transition-all duration-700 ease-out
-                  ${loaded ? 'opacity-100 blur-0 scale-100' : 'opacity-0 blur-md scale-[1.02]'}
-                `}
-                draggable={false}
-              />
-            </AnimatePresence>
-          </motion.div>
+                <motion.img
+                  key={p.src}
+                  src={p.src}
+                  alt={p.alt}
+                  custom={direction}
+                  variants={imageVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                  className={`
+                    max-w-full max-h-full w-auto h-auto object-contain
+                    ${loaded ? 'opacity-100' : 'opacity-0'}
+                  `}
+                  draggable={false}
+                />
+              </AnimatePresence>
+            </motion.div>
 
-          {/* Info panel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
-            transition={{
-              delay: 0.3,
-              duration: 0.6,
-              ease: [0.16, 1, 0.3, 1] as [number, number, number, number],
-            }}
-            className="mt-10 text-center max-w-xl px-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="font-heading text-[13px] text-white/80 tracking-wide mb-2">
-              {p.alt}
-            </p>
-            {seriesTitle && (
-              <p className="font-mono text-[9px] text-white/25 tracking-[0.2em] uppercase mb-4">
-                {seriesTitle}
-              </p>
-            )}
+            {/* Cinematic EXIF info */}
             {exifText && (
-              <p className="font-mono text-[8px] text-white/20 tracking-[0.15em]">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="absolute bottom-6 left-8 font-mono text-[9px] text-white/30 tracking-[0.2em] pointer-events-none"
+              >
                 {exifText}
-              </p>
+              </motion.div>
             )}
-            <p className="font-mono text-[8px] text-white/10 tracking-[0.12em] mt-6 uppercase">
+            
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="absolute bottom-6 right-8 font-mono text-[9px] text-white/20 tracking-[0.15em] pointer-events-none uppercase"
+            >
               Press ESC to close
-            </p>
+            </motion.div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
+        )}
+      </AnimatePresence>
+    );
+  }

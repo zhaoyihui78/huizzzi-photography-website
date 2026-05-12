@@ -73,17 +73,16 @@ export default function CustomCursor() {
       `}</style>
       <div
         ref={cursorRef}
-        className="custom-cursor fixed top-0 left-0 rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:flex items-center justify-center"
+        className="custom-cursor fixed top-0 left-0 rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:flex items-center justify-center transition-[width,height,border,background,opacity] duration-300 ease-out"
         data-hover="default"
         style={{
-          width: 10,
-          height: 10,
-          border: '1px solid rgba(255,255,255,0.7)',
-          transition: 'width 0.2s ease, height 0.2s ease, border-radius 0.2s ease',
+          width: 14,
+          height: 14,
+          backgroundColor: '#ffffff',
           willChange: 'transform',
         }}
       >
-        <span className="font-mono text-[7px] text-white tracking-[0.15em] uppercase opacity-0 transition-opacity duration-200"
+        <span className="font-mono text-[7px] text-[#0a0a0a] tracking-[0.15em] uppercase opacity-0 transition-opacity duration-300 font-medium scale-90"
           style={{ pointerEvents: 'none' }}
         >
           View
@@ -91,17 +90,22 @@ export default function CustomCursor() {
       </div>
       <style jsx global>{`
         .custom-cursor[data-hover="view"] {
-          width: 48px !important;
-          height: 48px !important;
+          width: 56px !important;
+          height: 56px !important;
+          background-color: #ffffff !important;
+          border: none !important;
+          mix-blend-mode: normal !important;
         }
         .custom-cursor[data-hover="view"] span {
           opacity: 1 !important;
+          transform: scale(1) !important;
         }
         .custom-cursor[data-hover="link"] {
-          width: 6px !important;
-          height: 6px !important;
-          border-width: 0 !important;
-          background: rgba(255,255,255,0.8) !important;
+          width: 48px !important;
+          height: 48px !important;
+          background-color: transparent !important;
+          border: 1px solid rgba(255,255,255,0.4) !important;
+          mix-blend-mode: difference !important;
         }
         .custom-cursor[data-hover="link"] span {
           opacity: 0 !important;

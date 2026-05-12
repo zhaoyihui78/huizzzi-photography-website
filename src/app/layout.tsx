@@ -6,6 +6,7 @@ import PageTransition from "@/components/PageTransition";
 import CustomCursor from "@/components/CustomCursor";
 import ScrollProgress from "@/components/ScrollProgress";
 import EntranceOverlay from "@/components/EntranceOverlay";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -44,18 +45,20 @@ export default function RootLayout({
   return (
     <html
       lang="zh-CN"
-      className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} h-full antialiased`}
+      className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} antialiased`}
     >
-      <body className="min-h-full font-body paper-grain transition-colors duration-1000 bg-white text-[#111111] has-[[data-dark-mode='true']]:bg-[#0a0a0a] has-[[data-dark-mode='true']]:text-white">
-        <EntranceOverlay />
-        <CustomCursor />
-        <ScrollProgress />
-        <Sidebar />
-        <div className="ml-[220px] min-h-full">
-          <PageTransition>
-            {children}
-          </PageTransition>
-        </div>
+      <body className="font-body paper-grain transition-colors duration-1000 bg-white text-[#111111] has-[[data-theme='dark']]:bg-[#0a0a0a] has-[[data-theme='dark']]:text-white has-[[data-theme='oriental']]:bg-[#f4f1ea] has-[[data-theme='oriental']]:text-[#2c2824]">
+        <SmoothScroll>
+          <EntranceOverlay />
+          <CustomCursor />
+          <ScrollProgress />
+          <Sidebar />
+          <div className="ml-[220px] min-h-screen">
+            <PageTransition>
+              {children}
+            </PageTransition>
+          </div>
+        </SmoothScroll>
       </body>
     </html>
   );

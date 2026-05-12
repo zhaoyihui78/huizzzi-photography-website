@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function EntranceOverlay() {
-  const [phase, setPhase] = useState(0); // 0: black, 1: ring, 2: dot, 3: logo, 4: exit
+  const [phase, setPhase] = useState(0); 
   const [done, setDone] = useState(false);
 
   useEffect(() => {
@@ -14,14 +14,19 @@ export default function EntranceOverlay() {
       return;
     }
 
+    // Phase 1: Small intro text
     const t1 = setTimeout(() => setPhase(1), 300);
-    const t2 = setTimeout(() => setPhase(2), 1200);
-    const t3 = setTimeout(() => setPhase(3), 1800);
-    const t4 = setTimeout(() => setPhase(4), 2800);
+    // Phase 2: Main Logo with focus/blur effect
+    const t2 = setTimeout(() => setPhase(2), 1600);
+    // Phase 3: Fade out logo
+    const t3 = setTimeout(() => setPhase(3), 3600);
+    // Phase 4: Slide up the curtain
+    const t4 = setTimeout(() => setPhase(4), 4400);
+    // Done: Unmount
     const t5 = setTimeout(() => {
       setDone(true);
       sessionStorage.setItem('entrance-seen', '1');
-    }, 3600);
+    }, 5600);
 
     return () => {
       clearTimeout(t1);
@@ -38,42 +43,48 @@ export default function EntranceOverlay() {
     <AnimatePresence>
       {phase < 4 && (
         <motion.div
-          className="fixed inset-0 z-[300] bg-[#050505] flex items-center justify-center"
+          className="fixed inset-0 z-[300] bg-[#050505] flex items-center justify-center overflow-hidden"
           initial={{ opacity: 1 }}
-          exit={{ y: '-100%', transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }}
+          exit={{ y: '-100%', transition: { duration: 1.2, ease: [0.76, 0, 0.24, 1] } }}
         >
-          {/* Spinning ring */}
+          {/* Phase 1: Minimalist Intro */}
           <AnimatePresence>
-            {phase >= 1 && phase < 3 && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.5, rotate: -90 }}
-                animate={{
-                  opacity: 1,
-                  scale: phase === 2 ? 0.15 : 1,
-                  rotate: phase === 1 ? 360 : 0,
-                }}
-                exit={{ opacity: 0, scale: 0 }}
-                transition={{
-                  duration: phase === 1 ? 0.9 : 0.5,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-                className="w-16 h-16 rounded-full border border-white/30"
-              />
+            {phase === 1 && (
+              <motion.p
+                className="absolute font-mono text-[9px] text-[#666] tracking-[0.4em] uppercase"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              >
+                Photography Portfolio
+              </motion.p>
             )}
           </AnimatePresence>
 
-          {/* Logo text */}
+          {/* Phase 2: Cinematic Focus Reveal */}
           <AnimatePresence>
-            {phase >= 3 && (
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="font-heading text-[18px] text-white/90 tracking-[0.12em]"
-              >
-                HUI ZZZI
-              </motion.p>
+            {phase === 2 && (
+              <motion.div className="absolute flex flex-col items-center">
+                <motion.h1
+                  className="font-heading text-white/90 text-[22px] tracking-tight whitespace-nowrap"
+                  initial={{ opacity: 0, filter: 'blur(12px)', letterSpacing: '0em', scale: 0.95 }}
+                  animate={{ opacity: 1, filter: 'blur(0px)', letterSpacing: '0.25em', scale: 1 }}
+                  exit={{ opacity: 0, filter: 'blur(12px)', scale: 1.05 }}
+                  transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  HUI ZZZI
+                </motion.h1>
+                
+                {/* Elegant subtle line */}
+                <motion.div 
+                  className="h-px bg-white/20 mt-6"
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: '40px', opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                />
+              </motion.div>
             )}
           </AnimatePresence>
         </motion.div>

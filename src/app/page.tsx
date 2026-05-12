@@ -154,10 +154,10 @@ export default function Home() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className="mb-3 cursor-pointer group mx-auto max-w-[1500px]"
+        className="mb-1 cursor-pointer group -mx-10 overflow-hidden"
         onClick={() => openSlideshow(heroIndex)}
       >
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden w-full">
           <RevealImage src={HERO_PHOTO.src} alt={HERO_PHOTO.alt} highlighted={false} />
           {/* Bottom overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500">
