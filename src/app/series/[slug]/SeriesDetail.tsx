@@ -282,21 +282,25 @@ export default function SeriesDetail({ series }: Props) {
   const [videoOpen, setVideoOpen] = useState<{ src: string; poster: string; title: string } | null>(null);
 
   const isSeasonsFilm = series.slug === 'seasons-of-beijing';
+  const isDarkMode = series.slug === 'film-life';
 
   return (
-    <main className="min-h-full px-10 py-14">
+    <main 
+      className={`min-h-full px-10 py-14 transition-colors duration-1000 ${isDarkMode ? 'bg-[#0a0a0a] text-white' : ''}`}
+      data-dark-mode={isDarkMode}
+    >
       {/* Header */}
       <FadeIn delay={0}>
         <header className="mb-20">
           <div className="flex items-baseline justify-between mb-5">
-            <h1 className="font-heading text-xl font-normal tracking-tight text-[#111111]">
+            <h1 className={`font-heading text-xl font-normal tracking-tight transition-colors duration-1000 ${isDarkMode ? 'text-white' : 'text-[#111111]'}`}>
               {series.title}
             </h1>
-            <span className="font-mono text-[9px] text-[#cccccc] tracking-[0.2em] uppercase">
+            <span className={`font-mono text-[9px] tracking-[0.2em] uppercase transition-colors duration-1000 ${isDarkMode ? 'text-[#666666]' : 'text-[#cccccc]'}`}>
               {series.year}
             </span>
           </div>
-          <p className="text-[13px] text-[#888888] leading-[2] max-w-2xl font-light">
+          <p className={`text-[13px] leading-[2] max-w-2xl font-light transition-colors duration-1000 ${isDarkMode ? 'text-[#aaaaaa]' : 'text-[#888888]'}`}>
             <TextReveal delay={0.3}>{series.description}</TextReveal>
           </p>
         </header>

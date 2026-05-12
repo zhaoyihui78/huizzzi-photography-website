@@ -46,7 +46,7 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full bg-white text-[#111111] font-body paper-grain">
+      <body className="min-h-full font-body paper-grain transition-colors duration-1000 bg-white text-[#111111] has-[[data-dark-mode='true']]:bg-[#0a0a0a] has-[[data-dark-mode='true']]:text-white">
         <EntranceOverlay />
         <CustomCursor />
         <ScrollProgress />

@@ -8,6 +8,8 @@ import { seriesList } from '@/data/series';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  // Handle both with and without trailing slash
+  const isDarkMode = pathname === '/series/film-life' || pathname === '/series/film-life/';
 
   const categories = seriesList.reduce((acc, series) => {
     if (!acc[series.category]) acc[series.category] = [];
@@ -16,10 +18,18 @@ export default function Sidebar() {
   }, {} as Record<string, typeof seriesList>);
 
   return (
-    <aside className="fixed top-0 left-0 h-screen w-[220px] bg-[#ffffff]/95 backdrop-blur-sm z-50 flex flex-col px-8 py-12 overflow-y-auto border-r border-[#f0f0f0]">
+    <aside
+      className={`fixed top-0 left-0 h-screen w-[220px] backdrop-blur-sm z-50 flex flex-col px-8 py-12 overflow-y-auto border-r transition-colors duration-1000 ease-in-out ${
+        isDarkMode
+          ? 'bg-[#0a0a0a]/95 border-[#1a1a1a] text-white'
+          : 'bg-[#ffffff]/95 border-[#f0f0f0] text-[#111111]'
+      }`}
+    >
       <Link
         href="/"
-        className="font-heading text-[15px] font-medium tracking-[0.08em] text-[#111111] mb-14 hover:opacity-50 transition-opacity duration-500"
+        className={`font-heading text-[15px] font-medium tracking-[0.08em] mb-14 hover:opacity-50 transition-all duration-1000 ${
+          isDarkMode ? 'text-[#e8d088]' : 'text-[#111111]'
+        }`}
       >
         HUI ZZZI
       </Link>
@@ -33,7 +43,11 @@ export default function Sidebar() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number] }}
           >
-            <span className="font-mono text-[9px] font-normal text-[#cccccc] uppercase tracking-[0.25em]">
+            <span
+              className={`font-mono text-[9px] font-normal uppercase tracking-[0.25em] transition-colors duration-1000 ${
+                isDarkMode ? 'text-[#555555]' : 'text-[#cccccc]'
+              }`}
+            >
               {category}
             </span>
             {items.map((series) => {
@@ -43,17 +57,21 @@ export default function Sidebar() {
                 <Link
                   key={series.slug}
                   href={href}
-                  className={`group relative text-[11px] leading-relaxed transition-colors duration-300 w-fit tracking-wide ${
+                  className={`group relative text-[11px] leading-relaxed transition-colors duration-1000 w-fit tracking-wide ${
                     isActive
-                      ? 'text-[#111111] font-normal'
+                      ? isDarkMode
+                        ? 'text-white font-normal'
+                        : 'text-[#111111] font-normal'
+                      : isDarkMode
+                      ? 'text-[#666666] hover:text-[#aaaaaa]'
                       : 'text-[#888888] hover:text-[#111111]'
                   }`}
                 >
                   {series.title}
                   <span
-                    className={`absolute -bottom-[3px] left-0 h-[1px] bg-[#111111] transition-all duration-500 ease-out ${
-                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
-                    }`}
+                    className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${
+                      isDarkMode ? 'bg-white' : 'bg-[#111111]'
+                    } ${isActive ? 'w-full' : 'w-0 group-hover:w-full'}`}
                   />
                 </Link>
               );
@@ -64,25 +82,33 @@ export default function Sidebar() {
         <div className="mt-6">
           <Link
             href="/about"
-            className={`group relative text-[11px] tracking-wide transition-colors duration-300 w-fit ${
+            className={`group relative text-[11px] tracking-wide transition-colors duration-1000 w-fit ${
               pathname === '/about'
-                ? 'text-[#111111] font-normal'
+                ? isDarkMode
+                  ? 'text-white font-normal'
+                  : 'text-[#111111] font-normal'
+                : isDarkMode
+                ? 'text-[#666666] hover:text-[#aaaaaa]'
                 : 'text-[#888888] hover:text-[#111111]'
             }`}
           >
             About
             <span
-              className={`absolute -bottom-[3px] left-0 h-[1px] bg-[#111111] transition-all duration-500 ease-out ${
-                pathname === '/about' ? 'w-full' : 'w-0 group-hover:w-full'
-              }`}
+              className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${
+                isDarkMode ? 'bg-white' : 'bg-[#111111]'
+              } ${pathname === '/about' ? 'w-full' : 'w-0 group-hover:w-full'}`}
             />
           </Link>
         </div>
       </nav>
 
       <div className="mt-auto pt-10">
-        <Clock />
-        <p className="font-mono text-[8px] text-[#dddddd] tracking-[0.2em] uppercase mt-2">
+        <Clock isDarkMode={isDarkMode} />
+        <p
+          className={`font-mono text-[8px] tracking-[0.2em] uppercase mt-2 transition-colors duration-1000 ${
+            isDarkMode ? 'text-[#444444]' : 'text-[#dddddd]'
+          }`}
+        >
           &copy; {new Date().getFullYear()}
         </p>
       </div>
@@ -90,7 +116,7 @@ export default function Sidebar() {
   );
 }
 
-function Clock() {
+function Clock({ isDarkMode }: { isDarkMode?: boolean }) {
   const [time, setTime] = useState('');
 
   useEffect(() => {
@@ -106,7 +132,11 @@ function Clock() {
   }, []);
 
   return (
-    <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.15em]">
+    <p
+      className={`font-mono text-[9px] tracking-[0.15em] transition-colors duration-1000 ${
+        isDarkMode ? 'text-[#666666]' : 'text-[#cccccc]'
+      }`}
+    >
       {time}
     </p>
   );
