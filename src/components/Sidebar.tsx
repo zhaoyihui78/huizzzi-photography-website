@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { seriesList } from '@/data/series';
+import { playPaperRustle } from '@/utils/audio';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -19,6 +20,13 @@ export default function Sidebar() {
 
   const isDarkMode = theme === 'dark';
   const isOriental = theme === 'oriental';
+
+  // Play subtle paper sound when navigating to an Oriental theme
+  useEffect(() => {
+    if (isOriental) {
+      playPaperRustle();
+    }
+  }, [isOriental, pathname]);
 
   const categories = seriesList.reduce((acc, series) => {
     if (!acc[series.category]) acc[series.category] = [];

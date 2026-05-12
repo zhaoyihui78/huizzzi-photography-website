@@ -2,7 +2,7 @@
 
 import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import { Series, Photo } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
 import Lightbox from '@/components/Lightbox';
@@ -295,13 +295,34 @@ export default function SeriesDetail({ series }: Props) {
   const isDarkMode = theme === 'dark';
   const isOriental = theme === 'oriental';
 
+  const { scrollYProgress } = useScroll();
+  const bgTextY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+
   return (
     <main 
-      className={`min-h-screen px-10 py-14 transition-colors duration-1000 ${
+      className={`min-h-screen px-10 py-14 transition-colors duration-1000 relative overflow-hidden ${
         isDarkMode ? 'bg-[#0a0a0a] text-white' : isOriental ? 'bg-[#f4f1ea] text-[#2c2824]' : ''
       }`}
       data-theme={theme}
     >
+      {/* Background Floating Massive Typography */}
+      <motion.div 
+        className="fixed top-[20%] left-[-10%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.02]"
+        style={{ y: bgTextY }}
+      >
+        <h1 className={`font-heading text-[25vw] leading-none ${isDarkMode ? 'text-white' : 'text-black'}`}>
+          {series.title.toUpperCase()}
+        </h1>
+      </motion.div>
+      <motion.div 
+        className="fixed bottom-[10%] right-[-5%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.02]"
+        style={{ y: useTransform(scrollYProgress, [0, 1], ['20%', '-20%']) }}
+      >
+        <h1 className={`font-heading text-[15vw] leading-none ${isDarkMode ? 'text-white' : 'text-black'}`}>
+          {series.year}
+        </h1>
+      </motion.div>
+
       {/* Header */}
       <FadeIn delay={0}>
         <header className="mb-20">
@@ -459,16 +480,16 @@ export default function SeriesDetail({ series }: Props) {
       )}
 
       {series.photos.length > 0 && series.layout !== 'polaroid' && (
-        <section className="flex flex-col gap-32">
+        <section className="flex flex-col gap-32 relative z-10">
           {series.photos.map((photo, i) => (
             <FadeIn key={i} delay={0} direction={i % 2 === 0 ? 'left' : 'right'}>
               <div
-                className={`flex gap-16 items-center ${
-                  i % 2 === 1 ? 'flex-row-reverse' : ''
+                className={`flex flex-col md:flex-row items-center relative ${
+                  i % 2 === 1 ? 'md:flex-row-reverse' : ''
                 }`}
               >
                 {/* Photo */}
-                <div className="flex-1">
+                <div className="w-full md:w-[65%] z-0">
                   <div
                     className={`relative overflow-hidden cursor-pointer group flex items-center justify-center ${
                       (photo.height || 800) > (photo.width || 1200)
@@ -493,23 +514,33 @@ export default function SeriesDetail({ series }: Props) {
                   </div>
                 </div>
 
-                {/* Text side */}
-                <div className="w-[260px] shrink-0">
-                  <p className="font-heading text-[15px] text-[#111111] tracking-wide mb-3">
+                {/* Text side - Broken Grid Overlap */}
+                <div 
+                  className={`w-full md:w-[45%] z-10 mt-8 md:mt-0 p-8 md:p-12 transition-colors duration-1000 ${
+                    isDarkMode 
+                      ? 'bg-[#111111]/80 border border-white/5' 
+                      : isOriental 
+                      ? 'bg-[#ece8df]/90 border border-[#d6ceb8]/50' 
+                      : 'bg-[#fcfcfc]/90 border border-[#f0f0f0]'
+                  } backdrop-blur-md shadow-2xl ${
+                    i % 2 === 1 ? 'md:-mr-16 lg:-mr-24' : 'md:-ml-16 lg:-ml-24'
+                  } md:translate-y-12`}
+                >
+                  <p className={`font-heading text-[15px] tracking-wide mb-3 ${isDarkMode ? 'text-white' : isOriental ? 'text-[#2c2824]' : 'text-[#111111]'}`}>
                     {photo.alt}
                   </p>
                   {photo.exif && (
                     <>
-                      <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.12em] leading-relaxed">
+                      <p className={`font-mono text-[9px] tracking-[0.12em] leading-relaxed ${isDarkMode ? 'text-[#888]' : isOriental ? 'text-[#8c8577]' : 'text-[#888888]'}`}>
                         {photo.exif.camera} · {photo.exif.lens}
                       </p>
-                      <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.12em] leading-relaxed mt-1">
+                      <p className={`font-mono text-[9px] tracking-[0.12em] leading-relaxed mt-1 ${isDarkMode ? 'text-[#888]' : isOriental ? 'text-[#8c8577]' : 'text-[#888888]'}`}>
                         {photo.exif.aperture} · {photo.exif.shutter} · {photo.exif.iso}
                       </p>
                     </>
                   )}
-                  <div className="mt-8 w-8 h-px bg-[#e0e0e0]" />
-                  <p className="font-mono text-[9px] text-[#dddddd] tracking-[0.15em] mt-4 uppercase">
+                  <div className={`mt-8 w-8 h-px ${isDarkMode ? 'bg-[#333]' : isOriental ? 'bg-[#d6ceb8]' : 'bg-[#e0e0e0]'}`} />
+                  <p className={`font-mono text-[9px] tracking-[0.15em] mt-4 uppercase ${isDarkMode ? 'text-[#555]' : isOriental ? 'text-[#a6a092]' : 'text-[#cccccc]'}`}>
                     {String(i + 1).padStart(2, '0')} / {String(series.photos.length).padStart(2, '0')}
                   </p>
                 </div>

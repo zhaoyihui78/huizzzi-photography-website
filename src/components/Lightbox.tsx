@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Photo } from '@/data/series';
+import { playShutter } from '@/utils/audio';
 
 interface LightboxProps {
   photo: Photo | null;
@@ -16,24 +17,54 @@ interface LightboxProps {
 export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, onNext }: LightboxProps) {
   const [loaded, setLoaded] = useState(false);
   const [direction, setDirection] = useState(0); // -1 prev, 1 next, 0 initial
+  const [isStoryMode, setIsStoryMode] = useState(false);
 
   // Keep last photo for exit animation when photo becomes null
   const lastPhotoRef = useRef<Photo | null>(photo);
   if (photo) lastPhotoRef.current = photo;
   const displayPhoto = photo || lastPhotoRef.current;
 
+  // Auto Play / Story Mode
+  useEffect(() => {
+    if (isStoryMode && isOpen) {
+      const timer = setInterval(() => {
+        if (onNext) {
+          setDirection(1);
+          playShutter();
+          onNext();
+        } else {
+          setIsStoryMode(false);
+        }
+      }, 5000); // 5 seconds per slide
+      return () => clearInterval(timer);
+    }
+  }, [isStoryMode, isOpen, onNext]);
+
   // Preload current + adjacent images
   useEffect(() => {
     if (!displayPhoto) return;
     setLoaded(false);
+    
+    // Play shutter sound when a new photo is opened/navigated to (if not first render and not closing)
+    if (isOpen && direction !== 0) {
+      playShutter();
+    } else if (isOpen && direction === 0 && !isStoryMode) {
+      // First open
+      playShutter();
+    }
+
     const img = new window.Image();
     img.src = displayPhoto.src;
     img.onload = () => setLoaded(true);
     if (img.complete) setLoaded(true);
-  }, [displayPhoto?.src]);
+  }, [displayPhoto?.src, isOpen]);
 
   useEffect(() => {
-    if (!isOpen) setLoaded(false);
+    if (!isOpen) {
+      setLoaded(false);
+      setIsStoryMode(false);
+      setDirection(0);
+    }
   }, [isOpen]);
 
   const handleKeyDown = useCallback(
@@ -41,10 +72,12 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft' && onPrev) {
         setDirection(-1);
+        setIsStoryMode(false);
         onPrev();
       }
       if (e.key === 'ArrowRight' && onNext) {
         setDirection(1);
+        setIsStoryMode(false);
         onNext();
       }
     },
@@ -75,21 +108,26 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
   const hasNext = !!onNext;
 
   // Slide variants for image change
-  const imageVariants = {
+  const imageVariants: any = {
     enter: (dir: number) => ({
       scale: 1.05,
       filter: 'blur(10px)',
       opacity: 0,
     }),
     center: {
-      scale: 1,
+      scale: isStoryMode ? 1.08 : 1,
       filter: 'blur(0px)',
       opacity: 1,
+      transition: {
+        duration: isStoryMode ? 5 : 0.8,
+        ease: isStoryMode ? 'linear' : [0.25, 0.1, 0.25, 1],
+      }
     },
     exit: (dir: number) => ({
       scale: 0.95,
       filter: 'blur(10px)',
       opacity: 0,
+      transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
     }),
   };
 
@@ -101,20 +139,47 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.45, ease: [0.25, 0.1, 0.25, 1] }}
-          className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505]/96 backdrop-blur-xl"
+          className={`fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#050505]/96 backdrop-blur-xl ${
+            isStoryMode ? 'cursor-none' : ''
+          }`}
           onClick={onClose}
         >
-          {/* Close button – highest z-index */}
-          <motion.button
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -4 }}
-            transition={{ delay: 0.35, duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-            className="absolute top-8 right-8 font-mono text-[10px] text-white/20 tracking-[0.2em] uppercase hover:text-white/60 transition-colors duration-500 z-30 cursor-pointer"
-            onClick={(e) => { e.stopPropagation(); onClose(); }}
+          {/* Top UI Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: isStoryMode ? 0 : 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className="absolute top-0 left-0 right-0 p-8 flex justify-between items-center z-30 pointer-events-none"
           >
-            Close
-          </motion.button>
+            {/* Story Mode Toggle */}
+            <button
+              className="pointer-events-auto flex items-center gap-3 group cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsStoryMode(!isStoryMode);
+              }}
+            >
+              <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-white/50 transition-colors duration-300">
+                {isStoryMode ? (
+                  <div className="w-2.5 h-2.5 bg-white/70" />
+                ) : (
+                  <div className="w-0 h-0 border-t-[5px] border-t-transparent border-l-[8px] border-l-white/70 border-b-[5px] border-b-transparent ml-1" />
+                )}
+              </div>
+              <span className="font-mono text-[9px] text-white/40 tracking-[0.2em] uppercase group-hover:text-white/80 transition-colors duration-300">
+                {isStoryMode ? 'Stop Story' : 'Play Story'}
+              </span>
+            </button>
+
+            {/* Close button */}
+            <button
+              className="pointer-events-auto font-mono text-[10px] text-white/20 tracking-[0.2em] uppercase hover:text-white/60 transition-colors duration-500 cursor-pointer"
+              onClick={(e) => { e.stopPropagation(); onClose(); }}
+            >
+              Close
+            </button>
+          </motion.div>
 
           {/* Left navigation arrow */}
           {hasPrev && (
