@@ -307,7 +307,7 @@ export default function SeriesDetail({ series }: Props) {
     >
       {/* Background Floating Massive Typography */}
       <motion.div 
-        className="fixed top-[20%] left-[-10%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.02]"
+        className="fixed top-[20%] left-[-10%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.013]"
         style={{ y: bgTextY }}
       >
         <h1 className={`font-heading text-[25vw] leading-none ${isDarkMode ? 'text-white' : 'text-black'}`}>
@@ -315,7 +315,7 @@ export default function SeriesDetail({ series }: Props) {
         </h1>
       </motion.div>
       <motion.div 
-        className="fixed bottom-[10%] right-[-5%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.02]"
+        className="fixed bottom-[10%] right-[-5%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.013]"
         style={{ y: useTransform(scrollYProgress, [0, 1], ['20%', '-20%']) }}
       >
         <h1 className={`font-heading text-[15vw] leading-none ${isDarkMode ? 'text-white' : 'text-black'}`}>
