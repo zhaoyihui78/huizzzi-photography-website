@@ -7,6 +7,7 @@ import CustomCursor from "@/components/CustomCursor";
 import ScrollProgress from "@/components/ScrollProgress";
 import EntranceOverlay from "@/components/EntranceOverlay";
 import SmoothScroll from "@/components/SmoothScroll";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -35,6 +36,7 @@ const spaceMono = Space_Mono({
 export const metadata: Metadata = {
   title: "HUI ZZZI | Photography Portfolio",
   description: "Personal photography portfolio of HUI ZZZI",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -48,6 +50,7 @@ export default function RootLayout({
       className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} antialiased`}
     >
       <body className="font-body paper-grain transition-colors duration-1000 bg-white text-[#111111] has-[[data-theme='dark']]:bg-[#0a0a0a] has-[[data-theme='dark']]:text-white has-[[data-theme='oriental']]:bg-[#f4f1ea] has-[[data-theme='oriental']]:text-[#2c2824]">
+        <ServiceWorkerRegister />
         <SmoothScroll>
           <EntranceOverlay />
           <CustomCursor />
