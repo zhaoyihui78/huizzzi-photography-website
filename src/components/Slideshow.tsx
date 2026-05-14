@@ -242,7 +242,7 @@ export default function Slideshow({ photos, labels, initialIndex, isOpen, onClos
               <motion.img
                 key={current.src}
                 src={current.src}
-                alt={current.alt}
+                alt={current.caption || current.alt}
                 custom={direction}
                 variants={imageVariants}
                 initial="enter"
@@ -271,7 +271,7 @@ export default function Slideshow({ photos, labels, initialIndex, isOpen, onClos
                   {currentLabel}
                 </span>
                 <p className="font-heading text-[14px] text-white/80 tracking-wide">
-                  {current.alt}
+                  {current.caption || current.alt}
                 </p>
                 {exifText && (
                   <p className="font-mono text-[8px] text-white/25 tracking-[0.15em] mt-2">

@@ -563,7 +563,7 @@ export default function SeriesDetail({ series }: Props) {
                   } md:translate-y-12`}
                 >
                   <p className={`font-heading text-[15px] tracking-wide mb-3 ${isDarkMode ? 'text-white' : isOriental ? 'text-[#2c2824]' : 'text-[#111111]'}`}>
-                    {photo.alt}
+                    {photo.caption || photo.alt}
                   </p>
                   {photo.exif && (
                     <>

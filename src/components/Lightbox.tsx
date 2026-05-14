@@ -229,12 +229,12 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
                   <motion.img
                     key={p.src}
                     src={p.src}
-                    alt={p.alt}
+                    alt={p.caption || p.alt}
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1.05 }}
-                    exit={{ opacity: 0, scale: 1.02 }}
+                    exit={{ opacity: 0, scale: 1.02, transition: { opacity: { duration: 0.25 }, scale: { duration: 0.25 } } }}
                     transition={{
-                      opacity: { duration: 0.9, ease: [0.4, 0, 0.2, 1] },
+                      opacity: { duration: 0.35, ease: [0.4, 0, 0.2, 1] },
                       scale: { duration: 5.5, ease: 'linear' },
                     }}
                     className="max-w-full max-h-full w-auto h-auto object-contain"

@@ -22,7 +22,7 @@ function RevealImage({
   alt: string;
   highlighted: boolean;
 }) {
-  const [revealed, setRevealed] = useState(false);
+  const [revealed, setRevealed] = useState(true);
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export default function Home() {
 
     const wallItems: WallItem[] = uniquePhotos.map((photo) => ({
       photo,
-      label: labelByPhotoSrc.get(photo.src) || photo.alt,
+      label: labelByPhotoSrc.get(photo.src) || photo.caption || photo.alt,
     }));
 
     // Remove hero from masonry
@@ -158,14 +158,14 @@ export default function Home() {
         onClick={() => openSlideshow(heroIndex)}
       >
         <div className="relative overflow-hidden w-full max-h-[65vh] flex items-center justify-center bg-[#050505]">
-          <RevealImage src={HERO_PHOTO.src} alt={HERO_PHOTO.alt} highlighted={false} />
+          <RevealImage src={HERO_PHOTO.src} alt={HERO_PHOTO.caption || HERO_PHOTO.alt} highlighted={false} />
           {/* Bottom overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500">
             <span className="font-mono text-[8px] text-[#c9a96e] tracking-[0.3em] uppercase">
               {heroLabel}
             </span>
             <h2 className="font-heading text-[15px] text-white/90 tracking-wide mt-2">
-              {HERO_PHOTO.alt}
+              {HERO_PHOTO.caption || HERO_PHOTO.alt}
             </h2>
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function Home() {
                     >
                       <RevealImage
                         src={item.photo.src}
-                        alt={item.photo.alt}
+                        alt={item.photo.caption || item.photo.alt}
                         highlighted={highlighted}
                       />
                       {/* Minimal label — bottom reveal on hover */}
