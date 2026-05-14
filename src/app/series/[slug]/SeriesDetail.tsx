@@ -22,6 +22,7 @@ function ContactSheetGallery({
   onPhotoClick: (photo: Photo) => void;
 }) {
   const [columnCount, setColumnCount] = useState(3);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const compute = () => setColumnCount(window.innerWidth < 768 ? 1 : 3);
@@ -72,7 +73,7 @@ function ContactSheetGallery({
     >
       {/* Background grain & gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#111111] to-[#0a0a0a] pointer-events-none" />
-      
+
       {/* Editorial Header for the Gallery */}
       <div className="relative mb-24 flex items-end justify-between border-b border-white/10 pb-8">
         <div>
@@ -103,27 +104,25 @@ function ContactSheetGallery({
             {col.map((photo) => {
               const idx = globalIndex++;
               const brand = FILM_BRANDS[idx % FILM_BRANDS.length];
+              const dimmed = hoveredIndex !== null && hoveredIndex !== idx;
+              const highlighted = hoveredIndex === idx;
               return (
                 <motion.div
                   key={photo.src}
                   variants={itemVariants}
                   className="group flex flex-col relative"
+                  onMouseEnter={() => setHoveredIndex(idx)}
+                  onMouseLeave={() => setHoveredIndex(null)}
                 >
-                  {/* Red marker — photographer's selection mark */}
-                  {photo.marked && (
-                    <div className="absolute -top-2 -right-2 z-20 w-4 h-4 rounded-full bg-[#c0392b] border border-[#1a1a1a] flex items-center justify-center shadow-lg">
-                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                    </div>
-                  )}
                   <FilmFrame
                     src={photo.src}
                     alt={photo.alt}
                     label={brand}
                     frameStyle="thick"
                     onClick={() => onPhotoClick(photo)}
-                    className="w-full hover:scale-[1.02] transition-transform duration-700 ease-out"
+                    className="w-full transition-transform duration-700 ease-out"
+                    dimmed={dimmed}
+                    highlighted={highlighted}
                     lightLeak={idx % 5 === 1 ? 'top' : idx % 5 === 3 ? 'right' : 'none'}
                     dateStamp={photo.filmInfo?.date}
                   />
