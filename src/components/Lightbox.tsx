@@ -234,7 +234,7 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
                     animate={{ opacity: 1, scale: 1.05 }}
                     exit={{ opacity: 0, scale: 1.02 }}
                     transition={{
-                      opacity: { duration: 1.6, ease: [0.4, 0, 0.2, 1] },
+                      opacity: { duration: 0.9, ease: [0.4, 0, 0.2, 1] },
                       scale: { duration: 5.5, ease: 'linear' },
                     }}
                     className="max-w-full max-h-full w-auto h-auto object-contain"
