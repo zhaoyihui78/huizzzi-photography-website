@@ -99,14 +99,10 @@
 
 > **备注**: 2026-05-14 视频资产丢失问题已完全解决，6 部核心视频已恢复并迁移至 COS。
 
-### 问题 1: About 页面个人照片无法加载
-- **状态**: 待排查
-- **文件位置**: `public/huizzzi.png`（本地存在，2.7MB）
-- **代码引用**: `src/app/about/page.tsx` 第 121 行，通过 `getImageUrl('/huizzzi.png')` 引用
-- **可能原因**:
-  1. COS 存储桶中缺少 `/huizzzi.png` 文件（图片上传时只上传了 `works/` 文件夹）
-  2. 文件体积过大（2.7MB），加载超时
-- **建议**: 将 `huizzzi.png` 上传到 COS 根目录，或压缩后重新上传
+### 问题 1: About 页面个人照片无法加载 ✅ 已修复
+- **状态**: 已修复（2026-05-14）
+- **根因**: Vercel 环境变量 `NEXT_PUBLIC_IMAGE_BASE` 指向 COS，导致 `getImageUrl('/huizzzi.png')` 请求了 COS 上并不存在的文件。
+- **修复**: `src/app/about/page.tsx` 改为直接使用本地路径 `src='/huizzzi.png'`，从 Vercel 自身加载。单张 2.6MB 的肖像图无需走 COS。
 
 ### 问题 2: 图片加载速度仍不理想
 - **状态**: 待优化
