@@ -224,15 +224,21 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
             )}
 
             {isStoryMode ? (
-              loaded && (
-                <img
-                  key={p.src}
-                  src={p.src}
-                  alt={p.alt}
-                  className="max-w-full max-h-full w-auto h-auto object-contain opacity-100 transition-opacity duration-300"
-                  draggable={false}
-                />
-              )
+              <AnimatePresence mode="sync">
+                {loaded && (
+                  <motion.img
+                    key={p.src}
+                    src={p.src}
+                    alt={p.alt}
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.04 }}
+                    transition={{ duration: 1.4, ease: [0.25, 0.1, 0.25, 1] }}
+                    className="max-w-full max-h-full w-auto h-auto object-contain"
+                    draggable={false}
+                  />
+                )}
+              </AnimatePresence>
             ) : (
               <AnimatePresence mode="wait" custom={direction}>
                 {loaded && (
