@@ -160,9 +160,8 @@ function VideoTimelineItem({
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
 
-  // Asymmetric sizing: first video largest, evens slightly inset
+  // First video uses a wider cinematic aspect ratio
   const isFirst = index === 0;
-  const isEven = index % 2 === 0;
 
   return (
     <div ref={ref} className="flex gap-4 md:gap-10 mb-16 md:mb-28 last:mb-0 relative">
@@ -199,7 +198,7 @@ function VideoTimelineItem({
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : {}}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-        className={`flex-1 ${isEven && !isFirst ? 'ml-2 md:ml-8' : ''}`}
+        className="flex-1"
       >
         {/* Mat board frame */}
         <div
