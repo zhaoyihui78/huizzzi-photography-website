@@ -18,6 +18,7 @@
 - **部署**: Vercel
 - **图片存储**: 腾讯云 COS (北京节点)
 - **域名**: huizzzi.art (腾讯云)
+- **PWA**: Service Worker 离线缓存 + 可安装到主屏幕
 
 ---
 
@@ -42,10 +43,13 @@ npm run build
 
 ```
 ├── public/                  # 静态资源
-│   ├── works/
-│   │   ├── photos/          # 摄影作品（已迁移至 COS）
-│   │   ├── thumbs/          # 缩略图（已迁移至 COS）
-│   │   └── videos/          # 视频封面（已迁移至 COS）
+│   ├── works/               # 摄影作品与视频（main 分支已迁移至 COS，local-dev 分支保留本地副本）
+│   │   ├── photos/
+│   │   ├── thumbs/
+│   │   └── videos/
+│   ├── sw.js                # Service Worker 离线缓存脚本
+│   ├── manifest.json        # PWA 配置
+│   ├── logo.svg             # HZ 品牌 SVG 图标
 │   └── huizzzi.png          # 个人肖像
 ├── src/
 │   ├── app/                 # Next.js App Router 页面
@@ -76,6 +80,28 @@ npm run build
 - `src/config/images.ts` — 图片 URL 解析器，根据环境变量自动拼接完整路径
 - `src/config/media.ts` — 视频 URL 解析器，支持本地/GitHub Release/CDN 三种模式
 - 本地开发时若不设置 `NEXT_PUBLIC_IMAGE_BASE`，图片会回退到本地 `public/` 目录
+
+### PWA 与离线缓存
+
+网站已配置 Service Worker，实现图片和视频的离线缓存：
+- **首次访问**：从 COS 加载资源并缓存到浏览器
+- **后续访问**：直接从本地缓存读取，**不消耗 COS 流量**
+- **缓存策略**：静态资源 Stale While Revalidate，媒体资源 Cache First
+- **更新缓存**：修改 `public/sw.js` 中的版本号（如 `huizzzi-cache-v1` → `v2`）即可触发客户端清理旧缓存
+
+### 本地开发分支 local-dev
+
+为避免开发测试时消耗 COS 流量，创建了 `local-dev` 分支：
+
+```bash
+# 切换到本地开发分支（所有资源走本地，不走 COS）
+git checkout local-dev
+npm run dev
+```
+
+- `local-dev` 分支包含完整的 `public/works/` 资源（照片 + 视频，约 248MB）
+- `main` 分支的 `public/works/` 仅保留少量备用文件，生产环境从 COS 加载
+- **注意**：`local-dev` 的大文件不要合并回 `main`
 
 ---
 

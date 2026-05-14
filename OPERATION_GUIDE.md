@@ -16,6 +16,9 @@
 8. [视频压缩优化](#八视频压缩优化)
 9. [COS 费用与免费额度](#九cos-费用与免费额度)
 10. [常见问题排查](#十常见问题排查)
+11. [PWA 与 Service Worker 配置](#十一pwa-与-service-worker-配置)
+12. [本地开发分支 local-dev](#十二本地开发分支-local-dev)
+13. [COS Cache-Control 配置](#十三cos-cache-control-配置)
 
 ---
 
@@ -669,4 +672,177 @@ git push --force-with-lease
 
 ---
 
-*最后更新: 2026-05-13*
+## 十一、PWA 与 Service Worker 配置
+
+### 11.1 功能说明
+
+网站已配置 PWA（渐进式 Web 应用）和 Service Worker，实现以下功能：
+- **离线缓存图片**：访客首次访问后，COS 图片和视频会被缓存到浏览器，后续访问不再消耗 COS 流量
+- **加速重复访问**：缓存优先策略让二次加载几乎 instantaneous
+- **可安装到桌面**：支持"添加到主屏幕"，像原生 App 一样使用
+
+### 11.2 相关文件
+
+| 文件 | 说明 |
+|------|------|
+| `public/manifest.json` | PWA 配置文件，定义应用名称、图标、主题色 |
+| `public/sw.js` | Service Worker 脚本，处理缓存逻辑 |
+| `src/components/ServiceWorkerRegister.tsx` | React 组件，在客户端注册 Service Worker |
+| `src/app/layout.tsx` | 引入 `ServiceWorkerRegister` 和 `manifest` |
+
+### 11.3 缓存策略
+
+Service Worker 使用两套缓存：
+
+1. **`huizzzi-cache-v1`**（静态资源）
+   - 缓存：`/logo.svg`、`/manifest.json` 等静态文件
+   - 策略：**Stale While Revalidate**（先读缓存，同时后台更新）
+
+2. **`huizzzi-images-v1`**（媒体资源）
+   - 缓存：COS 图片（`myqcloud.com` 域名）和视频
+   - 策略：**Cache First**（先读缓存，没有才请求网络并写入缓存）
+   - 缓存上限：200 个文件
+
+### 11.4 更新缓存
+
+如果上传了新图片到 COS，需要让用户浏览器更新缓存：
+
+**方法 1：修改 Service Worker 文件（推荐）**
+1. 打开 `public/sw.js`
+2. 修改版本号，例如 `huizzzi-cache-v1` → `huizzzi-cache-v2`
+3. 提交并推送，用户下次访问会自动清理旧缓存
+
+**方法 2：用户手动清除**
+- Chrome: F12 → Application → Storage → Clear site data
+
+### 11.5 本地开发注意事项
+
+- `npm run dev`（开发模式）**不会注册 Service Worker**，这是正常的
+- `npm run build` + `npx serve@latest out`（生产预览）会正常工作
+- 本地测试 SW 时必须用 `localhost` 或 `https`，不支持 `file://`
+
+---
+
+## 十二、本地开发分支 local-dev
+
+### 12.1 分支目的
+
+`local-dev` 分支用于**零 COS 流量消耗**的本地开发测试。所有图片和视频都走本地 `public/works/` 目录，不请求腾讯云 COS。
+
+### 12.2 分支差异
+
+| 项目 | `main` 分支 | `local-dev` 分支 |
+|------|------------|-----------------|
+| 图片加载 | 走 COS (`myqcloud.com`) | 走本地 `public/works/photos/` |
+| 视频加载 | 走 COS (`myqcloud.com`) | 走本地 `public/works/videos/` |
+| `src/config/media.ts` | 使用 `COS_BASE` | 直接返回 `localPath` |
+| `public/works/` 目录 | 只有少量本地备用图 | 包含全部照片、缩略图、视频（~248MB）|
+| 适合场景 | 生产部署、预览效果 | 本地开发、调试代码 |
+
+### 12.3 切换到 local-dev 分支
+
+```bash
+# 1. 创建并切换到 local-dev 分支（基于当前 main）
+git checkout -b local-dev
+
+# 2. 确保本地资源已下载
+# public/works/photos/    <- 全部照片
+# public/works/thumbs/    <- 全部缩略图
+# public/works/videos/    <- 全部视频 + poster.jpg
+
+# 3. 修改 src/config/media.ts（local-dev 版本已修改）
+# 确保 getVideoUrl() 直接返回 localPath
+
+# 4. 启动本地开发服务器
+npm run dev
+```
+
+### 12.4 从 COS 下载全部资源到本地
+
+如果需要在另一台机器上准备 local-dev 环境，使用以下脚本：
+
+```bash
+#!/bin/bash
+# download-assets.sh - 从 COS 下载所有资源到本地
+
+BASE="https://photo-1392627581.cos.ap-beijing.myqcloud.com"
+OUT="public/works"
+
+# 照片列表（根据 series.ts 中的定义补充）
+photos=(
+  "beijing01.jpg" "beijing02.jpg" ...
+)
+
+# 缩略图列表
+thumbs=(
+  "beijing01.jpg" "beijing02.jpg" ...
+)
+
+# 下载照片
+for f in "${photos[@]}"; do
+  curl -L -o "$OUT/photos/$f" "$BASE/works/photos/$f"
+done
+
+# 下载缩略图
+for f in "${thumbs[@]}"; do
+  curl -L -o "$OUT/thumbs/$f" "$BASE/works/thumbs/$f"
+done
+
+# 下载视频（以 gugongchunxue 为例）
+curl -L -o "$OUT/videos/gugongchunxue/gugongchunxue.mp4" "$BASE/works/videos/gugongchunxue/gugongchunxue.mp4"
+curl -L -o "$OUT/videos/gugongchunxue/poster.jpg" "$BASE/works/videos/gugongchunxue/poster.jpg"
+# ... 其他视频同理
+```
+
+> **注意**：视频和缩略图完整列表请参考 `src/data/series.ts` 中的定义。
+
+### 12.5 分支管理规范
+
+1. **功能开发**：在 `local-dev` 分支上写代码、调试，不消耗 COS 流量
+2. **代码同步**：开发完成后，将代码改动（不含 `public/works` 大文件）合并到 `main`
+3. **不要合并媒体文件**：`local-dev` 分支的 `public/works/` 大文件**不要**通过 PR 合并到 `main`
+4. **`.gitignore`**：确保 `main` 和 `local-dev` 都排除 `*.mp4`，但 `local-dev` 可以通过 `--force` 强制追踪（如果需要在分支间共享本地视频）
+
+---
+
+## 十三、COS Cache-Control 配置
+
+### 13.1 为什么需要配置
+
+COS 默认返回的 HTTP 头中没有 `Cache-Control`，导致浏览器**每次访问都重新下载**图片，既浪费流量又降低体验。
+
+### 13.2 配置方法
+
+1. 打开 [腾讯云 COS 控制台](https://console.cloud.tencent.com/cos)
+2. 进入存储桶 → **文件列表**
+3. 选择需要配置的文件/文件夹
+4. 点击 **更多操作** → **修改元数据**
+5. 添加：**`Cache-Control: public, max-age=31536000, immutable`**
+   - `public`：允许 CDN/浏览器缓存
+   - `max-age=31536000`：缓存 1 年（秒）
+   - `immutable`：文件内容不会改变（适合哈希命名的文件）
+
+### 13.3 批量配置
+
+对于整个 `works/` 目录，建议使用腾讯云 CLI 或 API 批量设置：
+
+```bash
+# 使用 coscli 工具（需先安装配置）
+coscli config init
+
+# 批量设置 Cache-Control
+coscli hash -r cos://photo-1392627581/works/ --headers "Cache-Control: public, max-age=31536000, immutable"
+```
+
+### 13.4 验证配置
+
+在浏览器 F12 → Network → 点击图片请求，查看 Response Headers：
+```
+cache-control: public, max-age=31536000, immutable
+```
+
+如果有这个头，说明配置成功。
+
+---
+
+*最后更新: 2026-05-14*

@@ -73,6 +73,44 @@
   - `clean-build.sh` 改为保留视频文件，配合静态导出直接部署。
 - **文档更新**：完善 `OPERATION_GUIDE.md`，新增视频上传 COS、视频压缩优化、费用分析等章节。
 
+### Phase 8: 艺术体验升级与流量优化 (2026-05-14)
+- **Film Photography 页面艺术化重构**：
+  - 显影动画（Development Reveal）：图片加载时模拟胶片从黑色药液中逐渐显影的 4s 动画，含黑色遮罩层和对比度渐变。
+  - 显影液波纹背景（Liquid Ripple）：琥珀色调缓慢流动的液体波纹，24s 循环，低透明度不干扰主体。
+  - 漏光效果（Light Leak）：每张胶片四角叠加暖色调渐变漏光（`mix-blend-screen`），模拟真实胶片漏光。
+  - 日期戳（Date Stamp）：胶片右下角模拟冲印日期的红色等宽字体数字。
+  - 胶片信息悬浮卡：鼠标悬停时从底部滑出，显示相机型号、胶片品牌、ISO、冲印工艺等元数据。
+  - 接触印相 Hover 暗化：模仿首页 Masonry 效果，悬浮在某张照片上时其他照片透明度降至 50%。
+  - 巨型胶片条背景装饰：绝对定位的低透明度（4%-6%）胶片条在背景缓慢漂移，含齿孔和画幅分割线。
+  - 移除干扰功能：按用户要求删除红标标记、放大镜（Loupe）、信封展开动画。
+- **Seasons of Beijing 页面优化**：
+  - 统一视频卡片宽度，移除左右不对称 inset 内边距。
+  - 6 部视频按月份重新排序（正月→二月→六月→七月→十月→十一月）。
+  - 为每部视频添加文人金句引用（如汪曾祺、史铁生、老舍等）。
+  - 收紧页面间距：header mb-6、section py-10 md:py-16、gallery header mb-12。
+- **Lightbox Story Mode 修复**：
+  - 修复播放过程中照片持续模糊的问题。
+  - 采用 `AnimatePresence mode="wait"` + 独立 `motion.img` 实现 Ken Burns 效果。
+  - 转场参数：0.9s ease-in-out 缓入缓出，无重叠；5.5s linear 缓慢放大（scale 1.05）。
+  - 保留手动导航时的原始模糊过渡。
+- **品牌视觉统一**：
+  - 网站 Logo 和 Favicon 替换为 HZ 衬线体花押字（Monogram）SVG。
+  - `public/logo.svg` 静态文件 + `src/components/icons/Logo.tsx` React 组件双份提供。
+  - 生成多尺寸 ICO（16/32/64/128/256px）作为 `src/app/favicon.ico`。
+  - 入场动画 Phase 2 使用 HZ SVG 替代纯文字，配合 blur-to-focus 效果。
+  - 侧边栏保持 "HUI ZZZI" 文字显示（用户明确要求不改图标）。
+- **带宽与性能优化**：
+  - PWA Service Worker 实现离线缓存：`public/sw.js` 使用 Cache First 策略缓存 COS 图片和视频，`huizzzi-images-v1` 缓存上限 200 个文件。
+  - `public/manifest.json` 配置 PWA，支持添加到主屏幕。
+  - `src/components/ServiceWorkerRegister.tsx` 在客户端自动注册 SW。
+  - 视频悬浮自动播放移除：视频卡片不再在 hover 时自动播放，改为点击播放，显著降低带宽消耗。
+  - COS Cache-Control 配置：为存储桶对象添加 `public, max-age=31536000, immutable` 缓存头，减少重复下载。
+- **本地开发分支 local-dev**：
+  - 从 COS 下载全部照片、缩略图、视频到 `public/works/`（总计约 248MB）。
+  - `src/config/media.ts` 在 local-dev 分支始终返回 `localPath`，零 COS 流量消耗。
+  - 开发完成后，仅将代码改动合并回 `main`，大文件保留在 local-dev 分支不合并。
+- **文档同步**：更新 `OPERATION_GUIDE.md`、`DEVELOPMENT_LOG.md`、`README.md`、`CHANGELOG.md`，记录所有新操作流程。
+
 ---
 
 ## 事故记录 (Incident Log)

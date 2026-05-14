@@ -53,6 +53,46 @@
   - `OPERATION_GUIDE.md` — 新增视频上传 COS 的完整操作指南
 - **流量评估**: 6 部压缩视频总计 133MB，加上图片 90MB，完整访客约消耗 223MB。COS 每月 10GB 免费流量额度内约可容纳 45 个完整访客（实际因并非人人看完所有视频，估计 80-150 人）。
 
+### 5. 页面视觉与交互优化（2026-05-14）
+- **状态**: 已完成
+- **Film Photography 页面艺术升级**:
+  - 新增显影动画（`animate-develop`）：图片加载时模拟胶片从黑色逐渐显影的效果
+  - 新增显影液波纹背景（`animate-liquid-drift`）：琥珀色调缓慢流动的液体波纹
+  - 新增漏光效果（Light Leak）：每张胶片四角叠加暖色调渐变漏光
+  - 新增日期戳（Date Stamp）：胶片右下角模拟冲印日期的红色数字
+  - 新增胶片信息悬浮卡：鼠标悬停显示相机型号、胶片品牌、ISO 等元数据
+  - 新增接触印相hover暗化：悬浮在某张照片上时其他照片变暗，模仿首页效果
+  - 新增巨型胶片条背景装饰：低透明度（4%-6%）的巨大胶片条在背景缓慢漂移
+  - 移除红标标记、放大镜功能、信封动画（用户反馈干扰主体）
+- **Seasons of Beijing 页面优化**:
+  - 统一视频卡片宽度，移除左右不对称内边距
+  - 视频按月份重新排序并添加文人金句引用
+  -  tightened 页面间距（header mb-6，section py-10 md:py-16）
+- **Lightbox Story Mode 修复**:
+  - 修复播放时照片模糊问题
+  - 实现优雅的 Ken Burns 效果：渐隐渐显 + 缓慢放大（0.9s 缓入缓出，5.5s 线性缩放）
+  - 使用 `AnimatePresence mode="wait"` 避免两张图片重叠
+
+### 6. PWA Service Worker 与带宽优化（2026-05-14）
+- **状态**: 已完成
+- **Service Worker 实现**:
+  - `public/sw.js`：Cache First 策略缓存 COS 图片和视频，Stale While Revalidate 缓存静态资源
+  - `src/components/ServiceWorkerRegister.tsx`：客户端自动注册 SW
+  - `public/manifest.json`：PWA 配置，支持添加到主屏幕
+  - `src/app/layout.tsx`：引入 manifest 和 ServiceWorkerRegister
+- **视频悬浮自动播放移除**：为节省带宽，视频卡片不再在鼠标悬浮时自动播放，改为点击播放
+- **COS Cache-Control 配置**：为 COS 对象添加 `public, max-age=31536000, immutable` 缓存头
+
+### 7. local-dev 本地开发分支（2026-05-14）
+- **状态**: 已完成
+- **目的**：创建零 COS 流量消耗的本地开发环境
+- **操作**：
+  - 从 COS 下载全部照片、缩略图、视频到 `public/works/`（总计约 248MB）
+  - `src/config/media.ts` 改为始终返回 `localPath`（不走 COS）
+  - 创建 `local-dev` 分支保存本地开发配置
+- **使用方式**：`git checkout local-dev && npm run dev`，所有资源走本地，不消耗 COS 流量
+- **注意事项**：`local-dev` 分支的大文件不合并回 `main`，`main` 分支仍走 COS 加载
+
 ---
 
 ## 已知问题
