@@ -64,23 +64,23 @@ export default function AboutPage() {
               </h2>
               <div className="flex flex-col gap-3 text-[13px] text-[#888888]">
                 <a
-                  href="mailto:hello@huizzzi.com"
+                  href="mailto:zhaoyihui78@gmail.com"
                   className="group w-fit hover:text-[#111111] transition-colors duration-300 flex items-center gap-2"
                 >
                   <span className="w-0 group-hover:w-3 h-px bg-[#111111] transition-all duration-300" />
-                  hello@huizzzi.com
+                  zhaoyihui78@gmail.com
                 </a>
                 <a
-                  href="https://instagram.com"
+                  href="https://500px.com.cn/community/user-details/4ba8f920f44efb90bab7d559ddb581311"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group w-fit hover:text-[#111111] transition-colors duration-300 flex items-center gap-2"
                 >
                   <span className="w-0 group-hover:w-3 h-px bg-[#111111] transition-all duration-300" />
-                  Instagram
+                  视觉中国500px
                 </a>
                 <a
-                  href="https://xiaohongshu.com"
+                  href="https://www.xiaohongshu.com/user/profile/5e30428500000000010048c1"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group w-fit hover:text-[#111111] transition-colors duration-300 flex items-center gap-2"
@@ -98,15 +98,27 @@ export default function AboutPage() {
               <ul className="flex flex-col gap-2.5 text-[13px] text-[#888888] font-light">
                 <li className="flex items-center gap-3">
                   <span className="w-[3px] h-[3px] rounded-full bg-[#cccccc]" />
-                  Sony / Canon 相机系统
+                  Nikon Z5 & Nikon Zf
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-[3px] h-[3px] rounded-full bg-[#cccccc]" />
-                  多款定焦与变焦镜头
+                  Dji Pocket 2 & Dji Action 4
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="w-[3px] h-[3px] rounded-full bg-[#cccccc]" />
-                  三脚架、滤镜等配件
+                  NIKKOR Z 24-200MM F/4-6.3 VR
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-[3px] h-[3px] rounded-full bg-[#cccccc]" />
+                  NIKKOR Z 24-50mm f/4-6.3
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-[3px] h-[3px] rounded-full bg-[#cccccc]" />
+                  Viltrox 50mm F1.8 Z-mount
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-[3px] h-[3px] rounded-full bg-[#cccccc]" />
+                  TTArtisan 11mm f2.8 Full Frame
                 </li>
               </ul>
             </motion.div>

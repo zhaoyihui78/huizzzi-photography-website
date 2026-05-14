@@ -40,6 +40,31 @@ export interface Series {
   videos?: { src: string; poster: string; title: string; season?: string; month?: string; subtitle?: string; quote?: string }[];
 }
 
+const beijingData = [
+  { caption: '北海公园晚霞', exif: { camera: 'Nikon Zf', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '0.2s', iso: '100' } },
+  { caption: '鎏霞映白塔', exif: { camera: 'Nikon Zf', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '0.2s', iso: '100' } },
+  { caption: '星璇紫禁城', exif: { camera: 'Nikon Zf', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '30s', iso: '100' } },
+  { caption: '蜿蜒的巨龙', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/2000s', iso: '100' } },
+  { caption: '遥望古今', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1s', iso: '200' } },
+  { caption: '明城墙日出', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '1/200s', iso: '100' } },
+  { caption: '雁栖湖夜景', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '0.5s', iso: '100' } },
+  { caption: '佛香阁悬月（时间合成）', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '0.2s', iso: '100' } },
+  { caption: '首钢园星轨', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '30s', iso: '100' } },
+  { caption: '中央电视塔悬日', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/1000s', iso: '100' } },
+  { caption: '蛾眉月与京城三件套', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F6.3', shutter: '0.5s', iso: '400' } },
+  { caption: '苏醒-万春亭悬日', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F29', shutter: '1/2000s', iso: '100' } },
+  { caption: '清晨CBD', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F6.3', shutter: '1/200s', iso: '400' } },
+  { caption: '通往金话筒之路', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F29', shutter: '1/2000s', iso: '100' } },
+  { caption: '遥望宇宙的眼睛', exif: { camera: 'Nikon Z5', lens: 'Viltrox 50mm F1.8', aperture: 'F1.8', shutter: '8s', iso: '1600' } },
+  { caption: '半阙残阳 紫禁皇城', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F13', shutter: '1/160s', iso: '100' } },
+  { caption: '永远热爱宇宙的浪漫', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '2s', iso: '100' } },
+  { caption: '历史的一页', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F5.6', shutter: '1/80s', iso: '100' } },
+  { caption: '5.21浪漫晚霞现京城', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F6.3', shutter: '1/100s', iso: '100' } },
+  { caption: '中国红-天安门晚霞', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '1/80s', iso: '100' } },
+  { caption: '新工体的首场大胜', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '1/50s', iso: '100' } },
+  { caption: '央视总部大楼悬日', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/8000s', iso: '100' } },
+];
+
 export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const sizes: Record<string, [number, number]> = {
@@ -51,21 +76,27 @@ export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
     '21': [800, 534], '22': [571, 800],
   };
   const [width, height] = sizes[num] || [800, 600];
+  const data = beijingData[i];
   return {
     src: getImageUrl(`/works/photos/beijing${num}.jpg`),
     thumb: getImageUrl(`/works/thumbs/beijing${num}.jpg`),
     alt: `Beijing Cityscape ${i + 1}`,
+    caption: data.caption,
     width,
     height,
-    exif: {
-      camera: 'Sony A7R IV',
-      lens: '24-70mm f/2.8 GM',
-      aperture: 'f/8',
-      shutter: '1/125s',
-      iso: 'ISO 100',
-    },
+    exif: data.exif,
   };
 });
+
+const natureData = [
+  { caption: '星空下的守望者', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '20s', iso: '1000' } },
+  { caption: '雅拉雪山日照金山', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F4', shutter: '1/1250s', iso: '100' } },
+  { caption: '希望！', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F6.3', shutter: '1/1250s', iso: '100' } },
+  { caption: '冰川遗迹下的守望者', exif: { camera: 'Sony A7M3', lens: '16-35mm f/2.8 GM', aperture: 'F2.8', shutter: '15s', iso: '1600' } },
+  { caption: '南迦巴瓦日照金山', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/50s', iso: '100' } },
+  { caption: '梅里日照金山', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/50s', iso: '100' } },
+  { caption: '格聂神山日照金山', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/50s', iso: '100' } },
+];
 
 export const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
@@ -74,21 +105,22 @@ export const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
     '05': [800, 450], '06': [800, 342], '07': [800, 342],
   };
   const [width, height] = sizes[num] || [800, 600];
+  const data = natureData[i];
   return {
     src: getImageUrl(`/works/photos/nature${num}.jpg`),
     thumb: getImageUrl(`/works/thumbs/nature${num}.jpg`),
     alt: `Nature & Landscape ${i + 1}`,
+    caption: data.caption,
     width,
     height,
-    exif: {
-      camera: i < 3 ? 'Sony A7R IV' : 'Canon EOS R5',
-      lens: i < 3 ? '16-35mm f/2.8 GM' : '70-200mm f/2.8',
-      aperture: i < 3 ? 'f/11' : 'f/2.8',
-      shutter: i < 3 ? '1/60s' : '15s',
-      iso: i < 3 ? 'ISO 100' : 'ISO 3200',
-    },
+    exif: data.exif,
   };
 });
+
+const architectureData = [
+  { caption: '未知', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '1/800s', iso: '100' } },
+  { caption: '锋', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '1/80s', iso: '100' } },
+];
 
 export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
@@ -96,19 +128,15 @@ export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
     '01': [600, 800], '02': [800, 450],
   };
   const [width, height] = sizes[num] || [800, 600];
+  const data = architectureData[i];
   return {
     src: getImageUrl(`/works/photos/architecture${num}.jpg`),
     thumb: getImageUrl(`/works/thumbs/architecture${num}.jpg`),
     alt: `Architecture ${i + 1}`,
+    caption: data.caption,
     width,
     height,
-    exif: {
-      camera: 'Sony A7R IV',
-      lens: '24-70mm f/2.8 GM',
-      aperture: 'f/5.6',
-      shutter: '1/200s',
-      iso: 'ISO 200',
-    },
+    exif: data.exif,
   };
 });
 
@@ -141,9 +169,6 @@ const FILM_DATES = [
 
 export const filmLifePhotos: Photo[] = Array.from({ length: 30 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
-  const brand = FILM_BRANDS[i % FILM_BRANDS.length];
-  const camera = FILM_CAMERAS[i % FILM_CAMERAS.length];
-  const date = FILM_DATES[i % FILM_DATES.length];
   return {
     src: getImageUrl(`/works/photos/film/film${num}.jpg`),
     thumb: getImageUrl(`/works/photos/film/film${num}.jpg`),
@@ -151,10 +176,10 @@ export const filmLifePhotos: Photo[] = Array.from({ length: 30 }, (_, i) => {
     width: 3578,
     height: 2397,
     filmInfo: {
-      camera,
-      film: brand,
-      developed: date,
-      date,
+      camera: '一次性胶片相机',
+      film: '135柯达金富士c200',
+      developed: '2025.05.15',
+      date: '2025.05.15',
     },
     marked: i % 3 === 0 || i % 7 === 2,
   };
