@@ -274,19 +274,6 @@ function VideoTimelineItem({
           className={`bg-[#fdfcf9] border border-[#e8e4d9] shadow-sm transition-all duration-700 hover:bg-white hover:border-[#d6ceb8] hover:shadow-xl group ${
             isFirst ? 'p-4' : 'p-3'
           }`}
-          onMouseEnter={() => {
-            const v = ref.current?.querySelector('video');
-            if (v) {
-              v.play().catch(() => {});
-            }
-          }}
-          onMouseLeave={() => {
-            const v = ref.current?.querySelector('video');
-            if (v) {
-              v.pause();
-              v.currentTime = 0;
-            }
-          }}
         >
           {/* Inner fine black line — the "reveal" edge */}
           <div className="border border-[#2c2824] p-[1px]">
@@ -302,15 +289,6 @@ function VideoTimelineItem({
                 className="object-cover grayscale-[40%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-[1.03]"
                 loading={index < 2 ? 'eager' : 'lazy'}
                 unoptimized
-              />
-
-              {/* Video B-roll hover preview */}
-              <video
-                src={video.src}
-                className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
-                muted
-                loop
-                playsInline
               />
 
               {/* Vignette overlay */}
@@ -494,17 +472,6 @@ export default function SeriesDetail({ series }: Props) {
                     <div
                       className="relative bg-[#0a0a0a] aspect-video overflow-hidden group cursor-pointer"
                       onClick={() => setVideoOpen(video)}
-                      onMouseEnter={(e) => {
-                        const v = e.currentTarget.querySelector('video');
-                        if (v) v.play().catch(() => {});
-                      }}
-                      onMouseLeave={(e) => {
-                        const v = e.currentTarget.querySelector('video');
-                        if (v) {
-                          v.pause();
-                          v.currentTime = 0;
-                        }
-                      }}
                     >
                       <Image
                         src={video.poster}
@@ -513,14 +480,6 @@ export default function SeriesDetail({ series }: Props) {
                         className="object-cover grayscale-[30%] group-hover:grayscale-0 transition-all duration-1000 ease-out group-hover:scale-[1.02]"
                         loading={i < 2 ? 'eager' : 'lazy'}
                         unoptimized
-                      />
-                      
-                      <video
-                        src={video.src}
-                        className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"
-                        muted
-                        loop
-                        playsInline
                       />
 
                       <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-all duration-700 pointer-events-none" />
