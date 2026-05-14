@@ -349,7 +349,7 @@ export default function SeriesDetail({ series }: Props) {
           {series.title.toUpperCase()}
         </h1>
       </motion.div>
-      <motion.div 
+      <motion.div
         className="fixed bottom-[10%] right-[-5%] pointer-events-none select-none whitespace-nowrap z-0 opacity-[0.013]"
         style={{ y: useTransform(scrollYProgress, [0, 1], ['20%', '-20%']) }}
       >
@@ -357,6 +357,60 @@ export default function SeriesDetail({ series }: Props) {
           {series.year}
         </h1>
       </motion.div>
+
+      {/* Film page: giant drifting film strips — darkroom atmosphere */}
+      {isDarkMode && (
+        <>
+          <motion.div
+            className="fixed top-[22%] left-[-8%] w-[116%] pointer-events-none select-none z-0 opacity-[0.008]"
+            style={{ y: useTransform(scrollYProgress, [0, 1], ['-25%', '25%']) }}
+          >
+            <div className="relative h-[120px] md:h-[160px]">
+              {/* Top sprockets */}
+              <div className="absolute top-2 md:top-3 left-0 right-0 flex justify-between px-4 md:px-8">
+                {Array.from({ length: 24 }).map((_, i) => (
+                  <div key={`t1-${i}`} className="w-[10px] md:w-[14px] h-[7px] md:h-[10px] bg-white/[0.06] rounded-[1px]" />
+                ))}
+              </div>
+              {/* Bottom sprockets */}
+              <div className="absolute bottom-2 md:bottom-3 left-0 right-0 flex justify-between px-4 md:px-8">
+                {Array.from({ length: 24 }).map((_, i) => (
+                  <div key={`b1-${i}`} className="w-[10px] md:w-[14px] h-[7px] md:h-[10px] bg-white/[0.06] rounded-[1px]" />
+                ))}
+              </div>
+              {/* Frame dividers */}
+              <div className="absolute inset-y-5 md:inset-y-6 left-0 right-0 flex">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={`d1-${i}`} className="flex-1 mx-2 md:mx-4 border-x border-dashed border-white/[0.025]" />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="fixed top-[62%] left-[-12%] w-[124%] pointer-events-none select-none z-0 opacity-[0.005]"
+            style={{ y: useTransform(scrollYProgress, [0, 1], ['15%', '-35%']) }}
+          >
+            <div className="relative h-[100px] md:h-[140px]">
+              <div className="absolute top-2 md:top-3 left-0 right-0 flex justify-between px-6 md:px-10">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <div key={`t2-${i}`} className="w-[10px] md:w-[14px] h-[7px] md:h-[10px] bg-white/[0.04] rounded-[1px]" />
+                ))}
+              </div>
+              <div className="absolute bottom-2 md:bottom-3 left-0 right-0 flex justify-between px-6 md:px-10">
+                {Array.from({ length: 20 }).map((_, i) => (
+                  <div key={`b2-${i}`} className="w-[10px] md:w-[14px] h-[7px] md:h-[10px] bg-white/[0.04] rounded-[1px]" />
+                ))}
+              </div>
+              <div className="absolute inset-y-5 md:inset-y-6 left-0 right-0 flex">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={`d2-${i}`} className="flex-1 mx-3 md:mx-5 border-x border-dashed border-white/[0.02]" />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </>
+      )}
 
       {/* Header */}
       <FadeIn delay={0}>
