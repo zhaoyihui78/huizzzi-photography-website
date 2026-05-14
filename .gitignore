@@ -37,7 +37,7 @@ yarn-error.log*
 .vercel
 
 # large media files
-# *.mp4  (compressed videos are now committed for Vercel static deployment)
+*.mp4
 public/**/photos-original/
 
 # typescript
