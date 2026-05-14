@@ -7,13 +7,15 @@
 ## 目录
 
 1. [图片上传到腾讯云 COS](#一图片上传到腾讯云-cos)
-2. [开启 CDN 加速](#二开启-cdn-加速)
-3. [修改 Vercel 环境变量](#三修改-vercel-环境变量)
-4. [本地开发到部署的完整流程](#四本地开发到部署的完整流程)
-5. [Git 配置与代码推送](#五git-配置与代码推送)
-6. [图片压缩优化](#六图片压缩优化)
-7. [COS 费用与免费额度](#七cos-费用与免费额度)
-8. [常见问题排查](#八常见问题排查)
+2. [视频上传到腾讯云 COS](#二视频上传到腾讯云-cos)
+3. [开启 CDN 加速](#三开启-cdn-加速)
+4. [修改 Vercel 环境变量](#四修改-vercel-环境变量)
+5. [本地开发到部署的完整流程](#五本地开发到部署的完整流程)
+6. [Git 配置与代码推送](#六git-配置与代码推送)
+7. [图片压缩优化](#七图片压缩优化)
+8. [视频压缩优化](#八视频压缩优化)
+9. [COS 费用与免费额度](#九cos-费用与免费额度)
+10. [常见问题排查](#十常见问题排查)
 
 ---
 
@@ -66,13 +68,137 @@ https://photo-1392627581.cos.ap-beijing.myqcloud.com/works/photos/beijing01.jpg
 
 ---
 
-## 二、开启 CDN 加速
+## 二、视频上传到腾讯云 COS
+
+### 2.1 视频与图片的区别
+
+| 对比项 | 图片 | 视频 |
+|--------|------|------|
+| 单文件大小 | 几十 KB ~ 几 MB | 几十 MB ~ 几百 MB |
+| 能否放入 Git | ✅ 可以 | ❌ 太大，会拖慢 Vercel 构建 |
+| 存储位置 | `public/works/photos/` | **必须放在 COS** |
+| 加载方式 | 页面加载时同时请求 | 点击/悬浮时才播放 |
+
+**结论**：视频绝对不能提交到 Git 仓库，必须单独上传到 COS。
+
+### 2.2 压缩视频（上传前必须做）
+
+原始视频通常几百 MB，直接上传会消耗大量流量费。需要先压缩到适合网页播放的大小。
+
+**压缩标准**：
+
+| 参数 | 建议值 | 说明 |
+|------|--------|------|
+| 分辨率 | 1920x1080 (1080p) | 足够清晰，兼容性最好 |
+| 视频编码 | H.264 (libx264) | 所有浏览器都支持 |
+| 视频码率 | 3-5 Mbps | 平衡画质和体积 |
+| 音频码率 | 128 kbps | 足够 |
+| 目标大小 | < 50MB/个 | Vercel 单文件上限 |
+
+**使用 ffmpeg 压缩**（如果已安装）：
+
+```bash
+ffmpeg -i "原始视频.mp4" -vf scale=1920:-2 -c:v libx264 -preset medium -crf 28 -c:a aac -b:a 128k -movflags +faststart "压缩后.mp4"
+```
+
+**压缩效果参考**：
+- 故宫春雪：160MB → 11MB
+- 北海公园的秋：315MB → 37MB
+- 颐和园的晚霞：256MB → 13MB
+- 圆明园的秋：217MB → 46MB
+- 祈年纳福：207MB → 10MB
+- 地坛的夏：94MB → 16MB
+
+### 2.3 上传视频到 COS
+
+1. 打开 [腾讯云 COS 控制台](https://console.cloud.tencent.com/cos)
+2. 进入存储桶 `photo-1392627581` → **文件列表**
+3. 进入 `works/videos/` 目录（没有就新建文件夹）
+4. 在里面创建与视频同名的子文件夹：
+   ```
+   works/videos/
+     beihaiqiu/
+     ditandexia/
+     gugongchunxue/
+     xinniantiantan/
+     yiheyuandexia/
+     yuanmingyuande/
+   ```
+5. 将压缩后的 `.mp4` 文件分别拖入对应文件夹
+6. 确认上传后文件路径为：
+   ```
+   works/videos/gugongchunxue/故宫春雪.mp4
+   works/videos/beihaiqiu/北海公园的秋.mp4
+   ...
+   ```
+
+### 2.4 生成视频封面（poster）
+
+每个视频需要一个封面图，用于页面未播放时展示。
+
+**用 ffmpeg 截取封面**：
+
+```bash
+ffmpeg -i "视频.mp4" -ss 00:00:01 -vframes 1 -q:v 2 "poster.jpg"
+```
+
+将生成的 `poster.jpg` 与 `.mp4` 放在同一目录下，一起上传到 COS。
+
+### 2.5 修改代码引用 COS 视频
+
+视频上传到 COS 后，需要修改代码让网站从 COS 加载视频。
+
+**文件**：`src/config/media.ts`
+
+```typescript
+const COS_BASE = 'https://photo-1392627581.cos.ap-beijing.myqcloud.com';
+
+export function getVideoUrl(_title: string, localPath: string): string {
+  const base = process.env.NEXT_PUBLIC_VIDEO_BASE ?? COS_BASE;
+  if (base) {
+    return `${base}${localPath}`;
+  }
+  return localPath; // 本地开发备用
+}
+```
+
+**本地开发时的特殊处理**：
+
+如果想在本地开发时不用 COS（避免消耗流量），可以临时设置环境变量：
+
+```bash
+NEXT_PUBLIC_VIDEO_BASE='' npm run dev
+```
+
+这样本地会读取 `public/works/videos/` 下的本地视频。
+
+### 2.6 排除视频文件提交到 Git
+
+**文件**：`.gitignore`
+
+确保包含以下规则：
+
+```gitignore
+# 视频文件不上传 Git（通过 COS 加载）
+*.mp4
+```
+
+如果之前误把视频提交到了 Git，用以下命令移除（保留本地文件）：
+
+```bash
+git rm --cached -r public/works/videos/
+git commit -m "移除视频文件，改为 COS 加载"
+```
+
+---
+
+## 三、开启 CDN 加速
 
 > ⚠️ **重要前提**：使用腾讯云**国内 CDN** 需要域名 ICP 备案。如果你的域名没有备案，无法开启国内 CDN 加速。
 >
 > 未备案的情况下，图片仍然可以通过 COS 默认域名访问（服务器在国内），速度已经比 Vercel 海外节点快很多。
 
-### 2.1 备案后开启 CDN（有备案）
+### 3.1 备案后开启 CDN（有备案）
 
 如果你已完成备案：
 
@@ -93,28 +219,28 @@ photo-1392627581.cos.ap-beijing.myqcloud.com.cdn.dnsv1.com
 
 然后将 Vercel 环境变量 `NEXT_PUBLIC_IMAGE_BASE` 改为 CDN 加速域名。
 
-### 2.2 未备案的替代方案
+### 3.2 未备案的替代方案
 
 如果你没有备案：
 
 - **先用 COS 默认域名**（已在使用，速度可以接受）
-- **压缩图片**（见第六节）来进一步提升加载速度
+- **压缩图片**（见第七节）来进一步提升加载速度
 - 未来备案后再开启 CDN
 
 > **注意**：COS 控制台里的"自定义 CDN 加速域名"也要求你有一个已备案的自定义域名（如 `img.huizzzi.art`），否则无法使用。
 
 ---
 
-## 三、修改 Vercel 环境变量
+## 四、修改 Vercel 环境变量
 
-### 3.1 进入 Vercel 环境变量设置
+### 4.1 进入 Vercel 环境变量设置
 
 1. 打开 [Vercel Dashboard](https://vercel.com/dashboard)
 2. 进入你的项目 `huizzzi-photography-website`
 3. 点击顶部 **Settings**
 4. 左侧菜单点击 **Environment Variables**
 
-### 3.2 添加/修改环境变量
+### 4.2 添加/修改环境变量
 
 点击 **Add Environment Variable**，填写：
 
@@ -125,7 +251,7 @@ photo-1392627581.cos.ap-beijing.myqcloud.com.cdn.dnsv1.com
 
 - 如果使用 CDN，Value 改为 CDN 加速域名
 
-### 3.3 重新部署
+### 4.3 重新部署
 
 修改环境变量后，Vercel 不会自动重新部署，需要手动触发：
 
@@ -136,9 +262,9 @@ photo-1392627581.cos.ap-beijing.myqcloud.com.cdn.dnsv1.com
 
 ---
 
-## 四、本地开发到部署的完整流程
+## 五、本地开发到部署的完整流程
 
-### 4.1 本地修改代码
+### 5.1 本地修改代码
 
 ```bash
 cd ~/Downloads/huizzzi-photography-website-main
@@ -146,7 +272,7 @@ cd ~/Downloads/huizzzi-photography-website-main
 # 修改代码...
 ```
 
-### 4.2 本地预览（可选）
+### 5.2 本地预览（可选）
 
 ```bash
 npm run dev
@@ -154,7 +280,7 @@ npm run dev
 
 访问 http://localhost:3000 预览效果。
 
-### 4.3 提交代码
+### 5.3 提交代码
 
 ```bash
 # 查看修改了哪些文件
@@ -170,7 +296,7 @@ git commit -m "描述本次修改，如：优化图片加载速度"
 git push
 ```
 
-### 4.4 Vercel 自动部署
+### 5.4 Vercel 自动部署
 
 推送后 Vercel 会自动：
 1. 拉取最新代码
@@ -180,7 +306,7 @@ git push
 
 整个过程约 1-3 分钟。
 
-### 4.5 验证部署
+### 5.5 验证部署
 
 1. 访问 `https://www.huizzzi.art`
 2. 按 **F12** → **Network** → **Img**
@@ -188,9 +314,9 @@ git push
 
 ---
 
-## 五、Git 配置与代码推送
+## 六、Git 配置与代码推送
 
-### 5.1 首次配置 Git
+### 6.1 首次配置 Git
 
 如果你换了电脑或重装系统，需要重新配置：
 
@@ -200,7 +326,7 @@ git config --global user.name "zhaoyihui78"
 git config --global user.email "zhaoyihui78@gmail.com"
 ```
 
-### 5.2 使用 Token 推送（无 gh CLI 时）
+### 6.2 使用 Token 推送（无 gh CLI 时）
 
 如果没有安装 GitHub CLI，推送时会提示输入密码，此时需要 Personal Access Token：
 
@@ -215,7 +341,7 @@ git config --global user.email "zhaoyihui78@gmail.com"
 - **Username**：`zhaoyihui78`
 - **Password**：粘贴刚才复制的 token
 
-### 5.3 检查远程仓库地址
+### 6.3 检查远程仓库地址
 
 ```bash
 git remote -v
@@ -229,13 +355,13 @@ origin  https://github.com/zhaoyihui78/huizzzi-photography-website.git (push)
 
 ---
 
-## 六、图片压缩优化
+## 七、图片压缩优化
 
-### 6.1 为什么需要压缩
+### 7.1 为什么需要压缩
 
 当前 `public/works` 文件夹约 **91MB**，单张图片可能 2-5MB，网页加载会非常慢。
 
-### 6.2 压缩标准
+### 7.2 压缩标准
 
 | 用途 | 建议宽度 | 建议格式 | 建议大小 |
 |------|---------|---------|---------|
@@ -243,7 +369,7 @@ origin  https://github.com/zhaoyihui78/huizzzi-photography-website.git (push)
 | 详情大图（photos） | 1920px | WebP 或 JPEG | 200-500KB |
 | 海报/封面 | 1920px | WebP 或 JPEG | < 500KB |
 
-### 6.3 压缩工具
+### 7.3 压缩工具
 
 #### 在线工具（少量图片）
 
@@ -289,15 +415,60 @@ fs.readdirSync(inputDir).forEach(file => {
 node compress.js
 ```
 
-### 6.4 上传压缩后的图片
+### 7.4 上传压缩后的图片
 
 压缩完成后，将压缩后的图片上传到 COS 覆盖原有文件。
 
 ---
 
-## 七、COS 费用与免费额度
+## 八、视频压缩优化
 
-### 7.1 新用户免费额度
+### 8.1 为什么需要压缩
+
+原始视频通常几百 MB，直接上传会消耗大量流量费，也会拖慢访客加载速度。压缩后可以在保证画质的前提下大幅减少体积。
+
+### 8.2 压缩标准
+
+| 参数 | 建议值 | 说明 |
+|------|--------|------|
+| 分辨率 | 1920x1080 (1080p) | 足够清晰，兼容性最好 |
+| 视频编码 | H.264 (libx264) | 所有浏览器都支持 |
+| 视频码率 | 3-5 Mbps | 平衡画质和体积 |
+| 音频码率 | 128 kbps | 足够 |
+| 目标大小 | < 50MB/个 | 控制单文件体积 |
+
+### 8.3 使用 ffmpeg 压缩
+
+```bash
+ffmpeg -i "原始视频.mp4" -vf scale=1920:-2 -c:v libx264 -preset medium -crf 28 -c:a aac -b:a 128k -movflags +faststart "压缩后.mp4"
+```
+
+### 8.4 生成视频封面
+
+每个视频需要一个封面图（poster），用于页面未播放时展示：
+
+```bash
+ffmpeg -i "视频.mp4" -ss 00:00:01 -vframes 1 -q:v 2 "poster.jpg"
+```
+
+### 8.5 压缩效果参考
+
+| 视频 | 原始大小 | 压缩后 |
+|------|---------|--------|
+| 祈年纳福 | 207MB | ~10MB |
+| 故宫春雪 | 160MB | ~11MB |
+| 地坛的夏 | 94MB | ~16MB |
+| 颐和园的晚霞 | 256MB | ~13MB |
+| 北海公园的秋 | 315MB | ~37MB |
+| 圆明园的秋 | 217MB | ~46MB |
+
+6 部视频从约 1.25GB 压缩到约 133MB，压缩率近 **90%**。
+
+---
+
+## 九、COS 费用与免费额度
+
+### 9.1 新用户免费额度
 
 腾讯云 COS 对新用户有**每月免费额度**：
 
@@ -314,7 +485,28 @@ node compress.js
 - 10GB ÷ 90MB ≈ **111 个完整访客**
 - 即每月有 100 多人完整浏览你的网站，**不花钱**
 
-### 7.2 超出免费额度后怎么计费
+**视频对流量的影响**：
+
+当前 6 部压缩后的视频总计约 **133MB**，单个大小如下：
+
+| 视频 | 大小 | 访客消耗（完整观看）|
+|------|------|-------------------|
+| 祈年纳福 | ~10MB | 1 次播放 ≈ 10MB |
+| 故宫春雪 | ~11MB | 1 次播放 ≈ 11MB |
+| 地坛的夏 | ~16MB | 1 次播放 ≈ 16MB |
+| 颐和园的晚霞 | ~13MB | 1 次播放 ≈ 13MB |
+| 北海公园的秋 | ~37MB | 1 次播放 ≈ 37MB |
+| 圆明园的秋 | ~46MB | 1 次播放 ≈ 46MB |
+
+**合计**：图片 90MB + 视频 133MB = **223MB/完整访客**
+
+- 10GB ÷ 223MB ≈ **45 个完整访客**
+- 也就是说，如果每位访客都完整看完所有视频，每月约 45 人就会用完免费流量
+- **实际场景中**：大部分访客只看部分视频，因此真实可承受的访客数会更高（估计 80-150 人）
+
+> **建议**：视频确实会显著增加流量消耗，但目前仍在免费额度内。如果未来流量超出，优先购买 COS 流量包或开启 CDN（需备案）。
+
+### 9.2 超出免费额度后怎么计费
 
 超出后会**自动按量计费**，从腾讯云账户余额扣款：
 
@@ -327,7 +519,7 @@ node compress.js
 - 某个月用了 20GB 流量（超出 10GB）
 - 多出的 10GB 约扣 **5-8 元**
 
-### 7.3 如何避免意外扣费
+### 9.3 如何避免意外扣费
 
 #### 方法 1：设置额度告警（推荐）
 
@@ -346,7 +538,7 @@ node compress.js
 
 > **注意**：COS 流量包 和 CDN 流量包 是两种东西，**不能互相抵扣**。
 
-### 7.4 已买 CDN 流量包但无法使用？
+### 9.4 已买 CDN 流量包但无法使用？
 
 如果你之前买了 CDN 流量包（如 17 元 100GB），但因为没有备案无法开启 CDN：
 
@@ -357,7 +549,7 @@ node compress.js
 4. 点击 **自助退订**（需满足"未使用且未过期"）
 5. 钱会原路退回
 
-### 7.5 费用优化建议
+### 9.5 费用优化建议
 
 | 阶段 | 建议 |
 |------|------|
@@ -366,7 +558,7 @@ node compress.js
 | **流量超 10GB/月** | 考虑买 COS 流量包，比按量便宜 30-50% |
 | **备案完成后** | 开启 CDN，此时 CDN 流量包就能用了 |
 
-### 7.6 当前费用汇总
+### 9.6 当前费用汇总
 
 | 项目 | 费用 |
 |------|------|
@@ -377,7 +569,7 @@ node compress.js
 
 ---
 
-## 八、常见问题排查
+## 十、常见问题排查
 
 ### Q1: 部署被 Vercel 阻止，提示"提交作者的电子邮件地址无效"
 
@@ -429,7 +621,7 @@ git push --force-with-lease
    - 参考第二节开启腾讯云 CDN
 
 3. **压缩图片**
-   - 参考第六节压缩图片体积
+   - 参考第七节压缩图片体积
 
 ---
 
