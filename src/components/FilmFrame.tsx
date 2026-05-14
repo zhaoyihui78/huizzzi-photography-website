@@ -9,6 +9,8 @@ interface FilmFrameProps {
   highlighted?: boolean;
   frameStyle?: 'thick' | 'thin' | 'standard';
   onClick?: () => void;
+  lightLeak?: 'top' | 'bottom' | 'left' | 'right' | 'none';
+  dateStamp?: string;
 }
 
 export default function FilmFrame({
@@ -20,6 +22,8 @@ export default function FilmFrame({
   highlighted = false,
   frameStyle = 'standard',
   onClick,
+  lightLeak = 'none',
+  dateStamp,
 }: FilmFrameProps) {
   const framePadding = {
     thick: 'p-[6px] pb-[24px]',
@@ -82,6 +86,22 @@ export default function FilmFrame({
         </div>
 
         <div className="relative overflow-hidden bg-black">
+          {/* Light leak overlay */}
+          {lightLeak !== 'none' && (
+            <div
+              className="absolute inset-0 z-10 pointer-events-none mix-blend-screen opacity-30"
+              style={{
+                background:
+                  lightLeak === 'top'
+                    ? 'linear-gradient(180deg, rgba(255,120,60,0.35) 0%, transparent 60%)'
+                    : lightLeak === 'bottom'
+                    ? 'linear-gradient(0deg, rgba(255,100,40,0.3) 0%, transparent 60%)'
+                    : lightLeak === 'left'
+                    ? 'linear-gradient(90deg, rgba(255,140,80,0.25) 0%, transparent 60%)'
+                    : 'linear-gradient(270deg, rgba(255,120,50,0.25) 0%, transparent 60%)',
+              }}
+            />
+          )}
           <Image
             src={src}
             alt={alt}
@@ -90,6 +110,12 @@ export default function FilmFrame({
             className="w-full h-auto object-cover"
             unoptimized
           />
+          {/* Date stamp */}
+          {dateStamp && (
+            <div className="absolute bottom-2 right-2 z-20 font-mono text-[7px] text-white/20 tracking-[0.1em] pointer-events-none">
+              {dateStamp}
+            </div>
+          )}
         </div>
 
         {/* Frame number */}

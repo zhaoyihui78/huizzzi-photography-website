@@ -9,6 +9,13 @@ export interface Exif {
   iso?: string;
 }
 
+export interface FilmInfo {
+  camera: string;
+  film: string;
+  developed?: string;
+  date?: string;
+}
+
 export interface Photo {
   src: string;
   thumb: string;
@@ -17,6 +24,8 @@ export interface Photo {
   width?: number;
   height?: number;
   exif?: Exif;
+  filmInfo?: FilmInfo;
+  marked?: boolean;
 }
 
 export interface Series {
@@ -103,14 +112,51 @@ export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
   };
 });
 
+export const FILM_BRANDS = [
+  'KODAK PORTRA 400',
+  'KODAK VISION3 250D',
+  'FUJIFILM PRO 400H',
+  'ILFORD HP5 PLUS',
+  'CINESTILL 800T',
+  'KODAK GOLD 200',
+  'KODAK EKTAR 100',
+];
+
+const FILM_CAMERAS = [
+  'Leica M6',
+  'Leica M3',
+  'Hasselblad 500CM',
+  'Contax T2',
+  'Nikon FM2',
+  'Canon AE-1',
+];
+
+const FILM_DATES = [
+  '2024.03.12', '2024.03.28', '2024.04.15', '2024.04.22',
+  '2024.05.08', '2024.05.19', '2024.06.03', '2024.06.17',
+  '2024.07.01', '2024.07.14', '2024.08.06', '2024.08.21',
+  '2024.09.09', '2024.09.25', '2024.10.02', '2024.10.18',
+  '2024.11.05', '2024.11.20', '2024.12.01', '2024.12.15',
+];
+
 export const filmLifePhotos: Photo[] = Array.from({ length: 30 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
+  const brand = FILM_BRANDS[i % FILM_BRANDS.length];
+  const camera = FILM_CAMERAS[i % FILM_CAMERAS.length];
+  const date = FILM_DATES[i % FILM_DATES.length];
   return {
     src: getImageUrl(`/works/photos/film/film${num}.jpg`),
     thumb: getImageUrl(`/works/photos/film/film${num}.jpg`),
     alt: `Film Life ${i + 1}`,
     width: 3578,
     height: 2397,
+    filmInfo: {
+      camera,
+      film: brand,
+      developed: date,
+      date,
+    },
+    marked: i % 3 === 0 || i % 7 === 2,
   };
 });
 

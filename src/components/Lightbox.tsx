@@ -223,6 +223,45 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
               </div>
             )}
 
+            {/* Envelope reveal — film negative bag animation */}
+            {seriesTitle?.toLowerCase().includes('film') && (
+              <motion.div
+                initial={{ opacity: 1, y: 0 }}
+                animate={{ opacity: 0, y: -40 }}
+                transition={{ delay: 0.7, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className="absolute z-20 pointer-events-none"
+              >
+                <div className="relative w-[280px] h-[180px] md:w-[360px] md:h-[240px]">
+                  {/* Envelope body */}
+                  <div className="absolute inset-0 bg-[#2a1f17] rounded-sm shadow-2xl">
+                    {/* Paper texture lines */}
+                    <div className="absolute inset-0 opacity-20">
+                      {Array.from({ length: 12 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute left-0 right-0 h-px bg-[#1a120d]"
+                          style={{ top: `${(i + 1) * 8}%` }}
+                        />
+                      ))}
+                    </div>
+                    {/* Flap */}
+                    <div className="absolute top-0 left-0 right-0 h-[40%] bg-[#3d2b1f]"
+                      style={{ clipPath: 'polygon(0 0, 50% 100%, 100% 0)' }}
+                    />
+                    {/* Label */}
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+                      <p className="font-mono text-[8px] text-[#8c6b4a] tracking-[0.3em] uppercase">
+                        {p.filmInfo?.film || 'KODAK PORTRA 400'}
+                      </p>
+                      <p className="font-mono text-[7px] text-[#5c4030] tracking-[0.15em] text-center mt-1">
+                        {p.filmInfo?.developed || '2024'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             <AnimatePresence mode="wait" custom={direction}>
                 <motion.img
                   key={p.src}

@@ -3,7 +3,7 @@
 import { useState, useRef, useMemo, useEffect } from 'react';
 import Image from 'next/image';
 import { motion, useInView, useScroll, useTransform } from 'framer-motion';
-import { Series, Photo } from '@/data/series';
+import { Series, Photo, FILM_BRANDS } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
 import Lightbox from '@/components/Lightbox';
 import VideoLightbox from '@/components/VideoLightbox';
@@ -13,16 +13,6 @@ import FilmFrame from '@/components/FilmFrame';
 interface Props {
   series: Series;
 }
-
-const FILM_BRANDS = [
-  'KODAK PORTRA 400',
-  'KODAK VISION3 250D',
-  'FUJIFILM PRO 400H',
-  'ILFORD HP5 PLUS',
-  'CINESTILL 800T',
-  'KODAK GOLD 200',
-  'KODAK EKTAR 100',
-];
 
 function ContactSheetGallery({
   photos,
@@ -117,8 +107,16 @@ function ContactSheetGallery({
                 <motion.div
                   key={photo.src}
                   variants={itemVariants}
-                  className="group flex flex-col"
+                  className="group flex flex-col relative"
                 >
+                  {/* Red marker — photographer's selection mark */}
+                  {photo.marked && (
+                    <div className="absolute -top-2 -right-2 z-20 w-4 h-4 rounded-full bg-[#c0392b] border border-[#1a1a1a] flex items-center justify-center shadow-lg">
+                      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    </div>
+                  )}
                   <FilmFrame
                     src={photo.src}
                     alt={photo.alt}
@@ -126,9 +124,29 @@ function ContactSheetGallery({
                     frameStyle="thick"
                     onClick={() => onPhotoClick(photo)}
                     className="w-full hover:scale-[1.02] transition-transform duration-700 ease-out"
+                    lightLeak={idx % 5 === 1 ? 'top' : idx % 5 === 3 ? 'right' : 'none'}
+                    dateStamp={photo.filmInfo?.date}
                   />
+                  {/* Film info card — slides up on hover */}
+                  {photo.filmInfo && (
+                    <div className="mt-0 overflow-hidden">
+                      <div className="transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out pt-4 pb-2 px-3">
+                        <div className="border-t border-white/10 pt-3">
+                          <p className="font-mono text-[8px] text-[#888] tracking-[0.15em] uppercase mb-1">
+                            {photo.filmInfo.camera}
+                          </p>
+                          <p className="font-mono text-[7px] text-[#666] tracking-[0.12em] uppercase">
+                            {photo.filmInfo.film}
+                          </p>
+                          <p className="font-mono text-[7px] text-[#444] tracking-[0.1em] mt-1">
+                            Developed {photo.filmInfo.developed}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   {/* Subtle caption below frame */}
-                  <div className="mt-6 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-2">
+                  <div className="mt-2 flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 px-2">
                     <span className="font-mono text-[8px] text-[#666] tracking-[0.2em] uppercase">
                       Exp. {String(idx + 1).padStart(2, '0')}
                     </span>
