@@ -223,22 +223,34 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
               </div>
             )}
 
-            <AnimatePresence mode="wait" custom={direction}>
-              {loaded && (
-                <motion.img
+            {isStoryMode ? (
+              loaded && (
+                <img
                   key={p.src}
                   src={p.src}
                   alt={p.alt}
-                  custom={direction}
-                  variants={imageVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  className="max-w-full max-h-full w-auto h-auto object-contain"
+                  className="max-w-full max-h-full w-auto h-auto object-contain opacity-100 transition-opacity duration-300"
                   draggable={false}
                 />
-              )}
-            </AnimatePresence>
+              )
+            ) : (
+              <AnimatePresence mode="wait" custom={direction}>
+                {loaded && (
+                  <motion.img
+                    key={p.src}
+                    src={p.src}
+                    alt={p.alt}
+                    custom={direction}
+                    variants={imageVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    className="max-w-full max-h-full w-auto h-auto object-contain"
+                    draggable={false}
+                  />
+                )}
+              </AnimatePresence>
+            )}
             </motion.div>
 
             {/* Cinematic EXIF info */}
