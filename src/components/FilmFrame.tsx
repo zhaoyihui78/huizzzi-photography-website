@@ -1,4 +1,7 @@
+'use client';
+
 import Image from 'next/image';
+import { useState, useCallback } from 'react';
 
 interface FilmFrameProps {
   src: string;
@@ -11,6 +14,8 @@ interface FilmFrameProps {
   onClick?: () => void;
   lightLeak?: 'top' | 'bottom' | 'left' | 'right' | 'none';
   dateStamp?: string;
+  developing?: boolean;
+  frameNumber?: number;
 }
 
 export default function FilmFrame({
@@ -24,7 +29,18 @@ export default function FilmFrame({
   onClick,
   lightLeak = 'none',
   dateStamp,
+  developing = false,
+  frameNumber = 1,
 }: FilmFrameProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0.5, y: 0.5 });
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+    setMousePos({ x, y });
+  }, []);
   const framePadding = {
     thick: 'p-[6px] pb-[24px]',
     thin: 'p-[2px] pb-[14px]',
@@ -51,6 +67,10 @@ export default function FilmFrame({
   const numberRight = frameStyle === 'thin' ? '6px' : '10px';
   const edgeBottom = frameStyle === 'thin' ? '12px' : '16px';
 
+  const nextNum = frameNumber + 1;
+  const numStr = String(frameNumber).padStart(2, '0');
+  const nextStr = String(nextNum).padStart(2, '0');
+
   return (
     <div
       className={`relative cursor-pointer group transition-all duration-700 ease-out ${
@@ -61,6 +81,9 @@ export default function FilmFrame({
           : 'brightness-[0.88] saturate-[0.92]'
       } ${className}`}
       onClick={onClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseMove={handleMouseMove}
     >
       <div
         className={`relative bg-[#1a1a1a] ${framePadding[frameStyle]} ${frameShadow[frameStyle]} transition-all duration-700`}
@@ -107,9 +130,23 @@ export default function FilmFrame({
             alt={alt}
             width={1200}
             height={800}
-            className="w-full h-auto object-cover"
+            className={`w-full h-auto object-cover ${developing ? 'animate-develop' : ''}`}
             unoptimized
           />
+          {/* Loupe magnifier */}
+          {isHovered && (
+            <div
+              className="absolute w-28 h-28 rounded-full border border-white/20 overflow-hidden pointer-events-none z-30 shadow-2xl"
+              style={{
+                left: `calc(${mousePos.x * 100}% - 56px)`,
+                top: `calc(${mousePos.y * 100}% - 56px)`,
+                backgroundImage: `url(${src})`,
+                backgroundSize: '250%',
+                backgroundPosition: `${mousePos.x * 100}% ${mousePos.y * 100}%`,
+                backgroundRepeat: 'no-repeat',
+              }}
+            />
+          )}
           {/* Date stamp */}
           {dateStamp && (
             <div className="absolute bottom-2 right-2 z-20 font-mono text-[7px] text-white/20 tracking-[0.1em] pointer-events-none">
@@ -123,13 +160,13 @@ export default function FilmFrame({
           className={`absolute font-mono ${numberTextSize} text-[#b8a060] tracking-[0.15em] ${numberOpacity}`}
           style={{ bottom: numberBottom, left: numberLeft }}
         >
-          47
+          {numStr}
         </div>
         <div
           className={`absolute font-mono ${numberTextSize} text-[#b8a060] tracking-[0.15em] ${numberOpacity}`}
           style={{ bottom: numberBottom, right: numberRight }}
         >
-          48
+          {nextStr}
         </div>
 
         {/* Edge line simulation */}

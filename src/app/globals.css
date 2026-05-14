@@ -116,3 +116,44 @@ html {
   80% { transform: translate(1%, 1%); }
   90% { transform: translate(-2%, -1%); }
 }
+
+/* Film development reveal — photo emerging from black like paper in developer */
+@keyframes develop {
+  0% {
+    filter: brightness(0) contrast(200%) saturate(0%);
+    opacity: 0.3;
+  }
+  25% {
+    filter: brightness(0.15) contrast(180%) saturate(20%);
+    opacity: 0.6;
+  }
+  50% {
+    filter: brightness(0.4) contrast(140%) saturate(60%);
+    opacity: 0.85;
+  }
+  75% {
+    filter: brightness(0.75) contrast(110%) saturate(85%);
+    opacity: 0.95;
+  }
+  100% {
+    filter: brightness(1) contrast(1) saturate(1);
+    opacity: 1;
+  }
+}
+
+.animate-develop {
+  animation: develop 3.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Developer liquid ripple — subtle fluid drift in darkroom tray */
+@keyframes liquid-drift {
+  0% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  25% { transform: translate(1%, -1%) scale(1.03) rotate(0.5deg); }
+  50% { transform: translate(-1%, 1%) scale(0.97) rotate(-0.3deg); }
+  75% { transform: translate(1%, 1%) scale(1.02) rotate(0.2deg); }
+  100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+}
+
+.animate-liquid-drift {
+  animation: liquid-drift 24s ease-in-out infinite;
+}

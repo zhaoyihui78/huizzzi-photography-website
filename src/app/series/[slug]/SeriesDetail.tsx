@@ -74,6 +74,14 @@ function ContactSheetGallery({
       {/* Background grain & gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#111111] to-[#0a0a0a] pointer-events-none" />
 
+      {/* Developer liquid ripple — subtle fluid drift in darkroom tray */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute -inset-[50%] animate-liquid-drift opacity-40">
+          <div className="absolute top-1/4 left-1/4 w-[60%] h-[40%] rounded-full bg-[radial-gradient(ellipse,rgba(255,255,255,0.02)_0%,transparent_70%)] blur-3xl" />
+          <div className="absolute bottom-1/3 right-1/4 w-[50%] h-[50%] rounded-full bg-[radial-gradient(ellipse,rgba(255,255,255,0.015)_0%,transparent_70%)] blur-3xl" />
+        </div>
+      </div>
+
       {/* Editorial Header for the Gallery */}
       <div className="relative mb-12 flex items-end justify-between border-b border-white/10 pb-8">
         <div>
@@ -125,6 +133,8 @@ function ContactSheetGallery({
                     highlighted={highlighted}
                     lightLeak={idx % 5 === 1 ? 'top' : idx % 5 === 3 ? 'right' : 'none'}
                     dateStamp={photo.filmInfo?.date}
+                    developing={true}
+                    frameNumber={idx + 1}
                   />
                   {/* Film info card — slides up on hover */}
                   {photo.filmInfo && (
