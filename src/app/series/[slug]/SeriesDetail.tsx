@@ -333,7 +333,7 @@ export default function SeriesDetail({ series }: Props) {
 
       {/* Header */}
       <FadeIn delay={0}>
-        <header className="mb-20">
+        <header className="mb-10">
           <div className="flex items-baseline justify-between mb-5">
             <h1 className={`font-heading text-xl font-normal tracking-tight transition-colors duration-1000 ${
               isDarkMode ? 'text-white' : isOriental ? 'text-[#2c2824]' : 'text-[#111111]'
@@ -357,7 +357,7 @@ export default function SeriesDetail({ series }: Props) {
       {/* Videos */}
       {series.videos && series.videos.length > 0 && (
         isSeasonsFilm ? (
-          <section className="relative -mx-4 md:-mx-10 px-4 md:px-10 py-12 md:py-20 mb-32 bg-[#ece8df]">
+          <section className="relative -mx-4 md:-mx-10 px-4 md:px-10 py-8 md:py-12 mb-20 bg-[#ece8df]">
             {/* Background grain & gradient for Oriental Theme */}
             <div className="absolute inset-0 bg-gradient-to-b from-[#f4f1ea] via-[#ece8df] to-[#f4f1ea] pointer-events-none" />
 
