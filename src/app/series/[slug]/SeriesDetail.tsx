@@ -69,13 +69,13 @@ function ContactSheetGallery({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, margin: '-50px' }}
-      className="relative -mx-4 md:-mx-10 px-4 md:px-10 py-16 md:py-32 bg-[#0a0a0a] text-white"
+      className="relative -mx-4 md:-mx-10 px-4 md:px-10 py-10 md:py-16 bg-[#0a0a0a] text-white"
     >
       {/* Background grain & gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#111111] to-[#0a0a0a] pointer-events-none" />
 
       {/* Editorial Header for the Gallery */}
-      <div className="relative mb-24 flex items-end justify-between border-b border-white/10 pb-8">
+      <div className="relative mb-12 flex items-end justify-between border-b border-white/10 pb-8">
         <div>
           <motion.p
             variants={itemVariants}
@@ -350,7 +350,7 @@ export default function SeriesDetail({ series }: Props) {
 
       {/* Header */}
       <FadeIn delay={0}>
-        <header className="mb-10">
+        <header className="mb-6">
           <div className="flex items-baseline justify-between mb-5">
             <h1 className={`font-heading text-xl font-normal tracking-tight transition-colors duration-1000 ${
               isDarkMode ? 'text-white' : isOriental ? 'text-[#2c2824]' : 'text-[#111111]'
