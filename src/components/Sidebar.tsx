@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { seriesList } from '@/data/series';
 import { playPaperRustle } from '@/utils/audio';
+import Logo from '@/components/icons/Logo';
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -46,8 +47,8 @@ export default function Sidebar() {
       <header className={`md:hidden fixed top-0 left-0 w-full h-16 z-50 flex items-center justify-between px-6 border-b transition-colors duration-1000 ${
         isDarkMode ? 'bg-[#0a0a0a]/95 border-[#1a1a1a] text-white' : isOriental ? 'bg-[#f4f1ea]/95 border-[#e8e4d9] text-[#2c2824]' : 'bg-[#ffffff]/95 border-[#f0f0f0] text-[#111111]'
       } backdrop-blur-md`}>
-        <Link href="/" className={`font-heading text-[15px] font-medium tracking-[0.08em] ${isDarkMode ? 'text-[#e8d088]' : isOriental ? 'text-[#8c3b31]' : 'text-[#111111]'}`}>
-          HUI ZZZI
+        <Link href="/" className={`block ${isDarkMode ? 'text-[#e8d088]' : isOriental ? 'text-[#8c3b31]' : 'text-[#111111]'}`}>
+          <Logo className="h-[18px] w-auto" />
         </Link>
         <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 -mr-2 outline-none">
           <div className="w-5 flex flex-col gap-[5px]">
@@ -72,11 +73,11 @@ export default function Sidebar() {
       >
         <Link
           href="/"
-          className={`hidden md:block font-heading text-[15px] font-medium tracking-[0.08em] mb-14 hover:opacity-50 transition-all duration-1000 ${
+          className={`hidden md:block mb-14 hover:opacity-50 transition-all duration-1000 ${
             isDarkMode ? 'text-[#e8d088]' : isOriental ? 'text-[#8c3b31]' : 'text-[#111111]'
           }`}
         >
-          HUI ZZZI
+          <Logo className="h-[18px] w-auto" />
         </Link>
 
         <nav className="flex flex-col gap-8">

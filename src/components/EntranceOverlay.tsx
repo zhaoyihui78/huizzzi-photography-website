@@ -66,15 +66,25 @@ export default function EntranceOverlay() {
           <AnimatePresence>
             {phase === 2 && (
               <motion.div className="absolute flex flex-col items-center">
-                <motion.h1
-                  className="font-heading text-white/90 text-[22px] tracking-tight whitespace-nowrap"
-                  initial={{ opacity: 0, filter: 'blur(12px)', letterSpacing: '0em', scale: 0.95 }}
-                  animate={{ opacity: 1, filter: 'blur(0px)', letterSpacing: '0.25em', scale: 1 }}
+                <motion.div
+                  initial={{ opacity: 0, filter: 'blur(12px)', scale: 0.95 }}
+                  animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
                   exit={{ opacity: 0, filter: 'blur(12px)', scale: 1.05 }}
                   transition={{ duration: 1.6, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  HUI ZZZI
-                </motion.h1>
+                  <svg viewBox="0 0 200 140" fill="none" className="w-[120px] h-auto text-white/90" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="currentColor">
+                      <path d="M28 18 L28 122 L38 122 L38 74 L82 74 L82 122 L92 122 L92 18 L82 18 L82 66 L38 66 L38 18 Z" />
+                      <path d="M18 18 L42 18 L40 22 L20 22 Z" />
+                      <path d="M78 18 L102 18 L100 22 L80 22 Z" />
+                      <path d="M18 118 L42 118 L40 122 L20 122 Z" />
+                      <path d="M78 118 L102 118 L100 122 L80 122 Z" />
+                      <path d="M82 66 L82 74 L158 74 L108 122 L162 122 L162 114 L124 114 L174 66 L174 58 L92 58 L92 66 Z" />
+                      <path d="M80 58 L104 58 L102 62 L82 62 Z" />
+                      <path d="M160 118 L184 118 L182 122 L162 122 Z" />
+                    </g>
+                  </svg>
+                </motion.div>
                 
                 {/* Elegant subtle line */}
                 <motion.div 
