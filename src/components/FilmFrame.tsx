@@ -120,6 +120,10 @@ export default function FilmFrame({
             className={`w-full h-auto object-cover ${developing ? 'animate-develop' : ''}`}
             unoptimized
           />
+          {/* Development mask — black overlay fading away */}
+          {developing && (
+            <div className="absolute inset-0 z-20 bg-black animate-develop-mask pointer-events-none" />
+          )}
           {/* Date stamp */}
           {dateStamp && (
             <div className="absolute bottom-2 right-2 z-20 font-mono text-[7px] text-white/20 tracking-[0.1em] pointer-events-none">

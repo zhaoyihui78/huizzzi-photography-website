@@ -120,19 +120,19 @@ html {
 /* Film development reveal — photo emerging from black like paper in developer */
 @keyframes develop {
   0% {
-    filter: brightness(0) contrast(200%) saturate(0%);
-    opacity: 0.3;
+    filter: brightness(0) contrast(500%) saturate(0%);
+    opacity: 0.2;
   }
-  25% {
-    filter: brightness(0.15) contrast(180%) saturate(20%);
-    opacity: 0.6;
+  35% {
+    filter: brightness(0) contrast(500%) saturate(0%);
+    opacity: 0.4;
   }
-  50% {
-    filter: brightness(0.4) contrast(140%) saturate(60%);
-    opacity: 0.85;
+  55% {
+    filter: brightness(0.2) contrast(280%) saturate(50%);
+    opacity: 0.75;
   }
-  75% {
-    filter: brightness(0.75) contrast(110%) saturate(85%);
+  80% {
+    filter: brightness(0.65) contrast(120%) saturate(90%);
     opacity: 0.95;
   }
   100% {
@@ -142,7 +142,18 @@ html {
 }
 
 .animate-develop {
-  animation: develop 3.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: develop 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Development mask — black overlay fading away */
+@keyframes develop-mask {
+  0% { opacity: 1; }
+  40% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.animate-develop-mask {
+  animation: develop-mask 4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Developer liquid ripple — subtle fluid drift in darkroom tray */
