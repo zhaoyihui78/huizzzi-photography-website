@@ -28,7 +28,7 @@ export interface Series {
   cover: string;
   photos: Photo[];
   layout: 'grid' | 'masonry' | 'split' | 'film' | 'polaroid';
-  videos?: { src: string; poster: string; title: string; season?: string; month?: string; subtitle?: string }[];
+  videos?: { src: string; poster: string; title: string; season?: string; month?: string; subtitle?: string; quote?: string }[];
 }
 
 export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
@@ -160,12 +160,12 @@ export const seriesList: Series[] = [
     photos: [],
     videos: [
       // 按月份排序：正月 → 二月 → 六月 → 七月 → 十月 → 十一月
-      { src: getVideoUrl('新年天坛', '/works/videos/xinniantiantan/祈年纳福.mp4'), poster: getImageUrl('/works/videos/xinniantiantan/poster.jpg'), title: '新年天坛', season: '冬', month: '正月', subtitle: '祈年纳福' },
-      { src: getVideoUrl('故宫春雪', '/works/videos/gugongchunxue/故宫春雪.mp4'), poster: getImageUrl('/works/videos/gugongchunxue/poster.jpg'), title: '故宫春雪', season: '冬', month: '二月', subtitle: '雪落紫禁城' },
-      { src: getVideoUrl('地坛的夏', '/works/videos/ditandexia/地坛的夏.mp4'), poster: getImageUrl('/works/videos/ditandexia/poster.jpg'), title: '地坛的夏', season: '夏', month: '六月', subtitle: '绿荫覆地坛' },
-      { src: getVideoUrl('颐和园的晚霞', '/works/videos/yiheyuandexia/颐和园的晚霞.mp4'), poster: getImageUrl('/works/videos/yiheyuandexia/poster.jpg'), title: '颐和园的晚霞', season: '夏', month: '七月', subtitle: '晚霞照颐和' },
-      { src: getVideoUrl('北海的秋', '/works/videos/beihaiqiu/北海公园的秋.mp4'), poster: getImageUrl('/works/videos/beihaiqiu/poster.jpg'), title: '北海的秋', season: '秋', month: '十月', subtitle: '落叶满北海' },
-      { src: getVideoUrl('圆明园的秋', '/works/videos/yuanmingyuande/圆明园的秋.mp4'), poster: getImageUrl('/works/videos/yuanmingyuande/poster.jpg'), title: '圆明园的秋', season: '秋', month: '十一月', subtitle: '金黄圆明园' },
+      { src: getVideoUrl('新年天坛', '/works/videos/xinniantiantan/祈年纳福.mp4'), poster: getImageUrl('/works/videos/xinniantiantan/poster.jpg'), title: '新年天坛', season: '冬', month: '正月', subtitle: '祈年纳福', quote: '愿得长如此，年年物候新。——卢照邻《元日述怀》' },
+      { src: getVideoUrl('故宫春雪', '/works/videos/gugongchunxue/故宫春雪.mp4'), poster: getImageUrl('/works/videos/gugongchunxue/poster.jpg'), title: '故宫春雪', season: '冬', month: '二月', subtitle: '雪落紫禁城', quote: '春雪满空来，触处似花开。' },
+      { src: getVideoUrl('地坛的夏', '/works/videos/ditandexia/地坛的夏.mp4'), poster: getImageUrl('/works/videos/ditandexia/poster.jpg'), title: '地坛的夏', season: '夏', month: '六月', subtitle: '绿荫覆地坛', quote: '但是太阳，它每时每刻都是夕阳也都是旭日。当它熄灭着走下山去收尽苍凉残照之际，正是它在另一面燃烧着爬上山巅布散烈烈朝辉之时。有一天，我也将沉静着走下山去，扶着我的拐杖。那一天，在某一处山洼里，势必会跑上来一个欢蹦的孩子，抱着他的玩具。当然，那不是我。但是，那不是我吗？宇宙以其不息的欲望将一个歌舞炼为永恒。这欲望有怎样一个人间的姓名，大可忽略不计。——史铁生《我与地坛》' },
+      { src: getVideoUrl('颐和园的晚霞', '/works/videos/yiheyuandexia/颐和园的晚霞.mp4'), poster: getImageUrl('/works/videos/yiheyuandexia/poster.jpg'), title: '颐和园的晚霞', season: '夏', month: '七月', subtitle: '晚霞照颐和', quote: '天空被夕阳染成了赭红色，桃红色的云彩倒映在流水上，整个江面变成了紫色，天边仿佛燃起大火。' },
+      { src: getVideoUrl('北海的秋', '/works/videos/beihaiqiu/北海公园的秋.mp4'), poster: getImageUrl('/works/videos/beihaiqiu/poster.jpg'), title: '北海的秋', season: '秋', month: '十月', subtitle: '落叶满北海', quote: '我有时看山不是山，看太阳不是太阳。我看天空是大海，我看大海是宇宙。我的脑中可以飞出蝴蝶，再开出繁花。我掌管自己的草木枯荣，我包容万物的悲欢离合。——汪曾祺《人间草木》' },
+      { src: getVideoUrl('圆明园的秋', '/works/videos/yuanmingyuande/圆明园的秋.mp4'), poster: getImageUrl('/works/videos/yuanmingyuande/poster.jpg'), title: '圆明园的秋', season: '秋', month: '十一月', subtitle: '金黄圆明园', quote: '圆明园的秋，像莫奈的画布藏在了苹香榭的秋波中，静谧而荡漾。' },
     ],
   },
   {

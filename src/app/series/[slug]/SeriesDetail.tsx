@@ -275,6 +275,15 @@ function VideoTimelineItem({
               {String(index + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
             </span>
           </div>
+
+          {/* Quote */}
+          {video.quote && (
+            <div className="mt-4 px-1">
+              <p className="text-[11px] leading-[1.8] text-[#5c5549] font-serif italic opacity-70 group-hover:opacity-100 transition-opacity duration-500">
+                “{video.quote}”
+              </p>
+            </div>
+          )}
         </div>
       </motion.div>
     </div>
