@@ -110,24 +110,24 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
   // Slide variants for image change
   const imageVariants: any = {
     enter: (dir: number) => ({
-      scale: 1.05,
-      filter: 'blur(10px)',
+      scale: isStoryMode ? 1 : 1.05,
+      filter: isStoryMode ? 'blur(0px)' : 'blur(10px)',
       opacity: 0,
     }),
     center: {
-      scale: isStoryMode ? 1.08 : 1,
+      scale: 1,
       filter: 'blur(0px)',
       opacity: 1,
       transition: {
-        duration: isStoryMode ? 5 : 0.8,
-        ease: isStoryMode ? 'linear' : [0.25, 0.1, 0.25, 1],
+        duration: isStoryMode ? 0.4 : 0.8,
+        ease: isStoryMode ? [0.25, 0.1, 0.25, 1] : [0.25, 0.1, 0.25, 1],
       }
     },
     exit: (dir: number) => ({
-      scale: 0.95,
-      filter: 'blur(10px)',
+      scale: isStoryMode ? 1 : 0.95,
+      filter: isStoryMode ? 'blur(0px)' : 'blur(10px)',
       opacity: 0,
-      transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
+      transition: { duration: isStoryMode ? 0.3 : 0.8, ease: [0.25, 0.1, 0.25, 1] }
     }),
   };
 
@@ -224,6 +224,7 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
             )}
 
             <AnimatePresence mode="wait" custom={direction}>
+              {loaded && (
                 <motion.img
                   key={p.src}
                   src={p.src}
@@ -233,14 +234,11 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
                   initial="enter"
                   animate="center"
                   exit="exit"
-                  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
-                  className={`
-                    max-w-full max-h-full w-auto h-auto object-contain
-                    ${loaded ? 'opacity-100' : 'opacity-0'}
-                  `}
+                  className="max-w-full max-h-full w-auto h-auto object-contain"
                   draggable={false}
                 />
-              </AnimatePresence>
+              )}
+            </AnimatePresence>
             </motion.div>
 
             {/* Cinematic EXIF info */}
