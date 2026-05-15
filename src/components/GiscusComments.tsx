@@ -17,10 +17,11 @@ export default function GiscusComments() {
   }, []);
 
   const origin = typeof window !== 'undefined' ? window.location.href : '';
+  const themeOrigin = typeof window !== 'undefined' ? window.location.origin : 'https://www.huizzzi.art';
   const params = new URLSearchParams({
     origin,
     session: '',
-    theme: 'https://cdn.jsdelivr.net/gh/zhaoyihui78/huizzzi-photography-website@main/public/giscus-theme.css?v=2',
+    theme: `${themeOrigin}/giscus-theme.css`,
     reactionsEnabled: '1',
     emitMetadata: '0',
     inputPosition: 'bottom',
