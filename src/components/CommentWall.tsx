@@ -99,8 +99,10 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
   const [selected, setSelected] = useState<GiscusComment | null>(null);
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
   const [newIds, setNewIds] = useState<Set<string>>(new Set());
+  const [dropInIds, setDropInIds] = useState<Set<string>>(new Set());
   const lastFetchRef = useRef<number>(0);
   const clearNewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const commentsRef = useRef<GiscusComment[]>([]);
 
   const loadComments = useCallback(() => {
     const now = Date.now();
@@ -142,6 +144,15 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
             replyCount: c.child_comment_count || 0,
           };
         }).reverse();
+
+        const prevIds = new Set(commentsRef.current.map((c) => c.id));
+        const isFirstLoad = commentsRef.current.length === 0;
+        const added = isFirstLoad ? [] : fresh.filter((c) => !prevIds.has(c.id));
+        if (added.length > 0) {
+          setDropInIds(new Set(added.map((c) => c.id)));
+          setTimeout(() => setDropInIds(new Set()), 2000);
+        }
+
         setComments(fresh);
       })
       .catch((err) => {
@@ -151,6 +162,10 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
       })
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    commentsRef.current = comments;
+  }, [comments]);
 
   useEffect(() => {
     loadComments();
@@ -277,6 +292,7 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
               offsetY={offsetY}
               index={index}
               isNew={newIds.has(comment.id)}
+              isDropIn={dropInIds.has(comment.id)}
               onClick={() => {
                 window.dispatchEvent(new CustomEvent('guestbook:close-form'));
                 setSelected(comment);

@@ -9,12 +9,25 @@ import GuestbookForm from '@/components/GuestbookForm';
 export default function GuestbookPage() {
   const [writeOpen, setWriteOpen] = useState(false);
   const [commentCount, setCommentCount] = useState(0);
+  const [letterFlying, setLetterFlying] = useState(false);
 
   useEffect(() => {
     const onCloseForm = () => setWriteOpen(false);
     window.addEventListener('guestbook:close-form', onCloseForm);
     return () => window.removeEventListener('guestbook:close-form', onCloseForm);
   }, []);
+
+  useEffect(() => {
+    const onLetterSent = () => setLetterFlying(true);
+    window.addEventListener('guestbook:letter-sent', onLetterSent);
+    return () => window.removeEventListener('guestbook:letter-sent', onLetterSent);
+  }, []);
+
+  useEffect(() => {
+    if (!letterFlying) return;
+    const timer = setTimeout(() => setLetterFlying(false), 1200);
+    return () => clearTimeout(timer);
+  }, [letterFlying]);
 
   const handlePosted = () => {
     window.dispatchEvent(new CustomEvent('guestbook:refresh'));
@@ -119,6 +132,24 @@ export default function GuestbookPage() {
                   </button>
 
                   <GuestbookForm onPosted={handlePosted} />
+
+                  {/* Flying envelope animation */}
+                  <AnimatePresence>
+                    {letterFlying && (
+                      <motion.div
+                        initial={{ opacity: 1, scale: 1, y: 0, x: 0, rotate: 0 }}
+                        animate={{ opacity: 0, scale: 0.2, y: -400, x: 80, rotate: -15 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
+                        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-50"
+                      >
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#c9a96e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                          <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               )}
             </AnimatePresence>

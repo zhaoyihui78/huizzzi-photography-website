@@ -10,6 +10,7 @@ interface LetterCardProps {
   offsetY: number;
   index: number;
   isNew?: boolean;
+  isDropIn?: boolean;
   onClick: () => void;
 }
 
@@ -21,6 +22,7 @@ export default function LetterCard({
   offsetY,
   index,
   isNew,
+  isDropIn,
   onClick,
 }: LetterCardProps) {
   const itemVariants = {
@@ -64,11 +66,42 @@ export default function LetterCard({
     },
   };
 
+  const dropInInitial = {
+    opacity: 0,
+    y: -200,
+    rotate: rotate - 18,
+    scale: 0.82,
+  };
+
+  const dropInAnimate = {
+    opacity: 1,
+    y: 0,
+    rotate,
+    scale: 1,
+    transition: {
+      type: 'spring' as const,
+      stiffness: 100,
+      damping: 12,
+    },
+  };
+
+  const getInitial = () => {
+    if (isDropIn) return dropInInitial;
+    if (isNew) return newItemInitial;
+    return 'hidden';
+  };
+
+  const getAnimate = () => {
+    if (isDropIn) return dropInAnimate;
+    if (isNew) return newItemAnimate;
+    return 'visible';
+  };
+
   return (
     <motion.div
-      variants={isNew ? undefined : itemVariants}
-      initial={isNew ? newItemInitial : 'hidden'}
-      animate={isNew ? newItemAnimate : 'visible'}
+      variants={isNew || isDropIn ? undefined : itemVariants}
+      initial={getInitial()}
+      animate={getAnimate()}
       whileHover={{
         y: -6,
         rotate: 0,

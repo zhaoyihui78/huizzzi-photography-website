@@ -72,6 +72,7 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
       }
       setSuccess(true);
       setTimeout(() => setSuccess(false), 2500);
+      window.dispatchEvent(new CustomEvent('guestbook:letter-sent'));
       onPosted?.();
     } catch (err: any) {
       setError(err.message);
