@@ -98,18 +98,14 @@ export default function GuestbookPage() {
                   exit={{ opacity: 0, y: 20 }}
                   transition={{ duration: 0.4 }}
                 >
-                  <div className="relative bg-[#fdfcf9] border border-[#e8e4d9] p-6 md:p-10 shadow-lg">
+                  <div className="relative bg-[#fdfcf9] border border-[#e8e4d9] p-6 md:p-8 shadow-lg">
                     {/* Close button */}
                     <button
                       onClick={() => setWriteOpen(false)}
-                      className="absolute top-4 right-4 font-mono text-[9px] text-[#ccc] tracking-[0.15em] uppercase hover:text-[#888] transition-colors cursor-pointer z-10"
+                      className="absolute top-3 right-4 font-mono text-[9px] text-[#ccc] tracking-[0.15em] uppercase hover:text-[#888] transition-colors cursor-pointer z-10"
                     >
                       Close
                     </button>
-
-                    <p className="text-[13px] text-[#888888] leading-[2] font-light mb-8 text-center">
-                      如果你从这里路过，欢迎留下一句话。可以是对某张照片的感受，也可以只是打个招呼。
-                    </p>
 
                     <GuestbookForm onPosted={handlePosted} />
                   </div>
