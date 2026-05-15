@@ -104,9 +104,10 @@ export default function CommentWall() {
           return hasNew ? fresh : prev;
         });
       })
-      .catch(() => {
-        setError(true);
-        setComments([]);
+      .catch((err) => {
+        console.error('CommentWall fetch failed:', err);
+        // 首次加载失败时降级为空状态，不显示错误提示
+        setComments((prev) => (prev.length === 0 ? [] : prev));
       })
       .finally(() => setLoading(false));
   }, []);

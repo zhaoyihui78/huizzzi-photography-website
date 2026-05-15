@@ -22,11 +22,8 @@ export default function GiscusComments() {
     script.setAttribute('data-reactions-enabled', '1');
     script.setAttribute('data-emit-metadata', '0');
     script.setAttribute('data-input-position', 'bottom');
-    // Giscus 服务器需要能抓取到的绝对 URL，data URI 无法被服务端抓取
-    const themeUrl = typeof window !== 'undefined'
-      ? `${window.location.origin}/giscus-theme.css`
-      : 'https://huizzzi.com/giscus-theme.css';
-    script.setAttribute('data-theme', themeUrl);
+    // 使用 jsDelivr 托管 CSS，Giscus 服务器和 iframe 都能稳定加载
+    script.setAttribute('data-theme', 'https://cdn.jsdelivr.net/gh/zhaoyihui78/huizzzi-photography-website@main/public/giscus-theme.css');
     script.setAttribute('data-lang', 'zh-CN');
     script.setAttribute('crossorigin', 'anonymous');
     script.async = true;
