@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { seriesList, Photo, naturePhotos } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
 import Slideshow from '@/components/Slideshow';
+import { getSrcSet, SIZES } from '@/utils/images';
 
 interface WallItem {
   photo: Photo;
@@ -17,10 +18,14 @@ function RevealImage({
   src,
   alt,
   highlighted,
+  srcSet,
+  sizes,
 }: {
   src: string;
   alt: string;
   highlighted: boolean;
+  srcSet?: string;
+  sizes?: string;
 }) {
   const [revealed, setRevealed] = useState(true);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -42,6 +47,8 @@ function RevealImage({
       ref={imgRef}
       src={src}
       alt={alt}
+      srcSet={srcSet}
+      sizes={sizes}
       className={`w-full h-auto object-cover transition-all duration-1000 ease-out ${
         revealed
           ? 'blur-0 scale-100 grayscale-0'
@@ -158,7 +165,13 @@ export default function Home() {
         onClick={() => openSlideshow(heroIndex)}
       >
         <div className="relative overflow-hidden w-full max-h-[65vh] flex items-center justify-center bg-[#050505]">
-          <RevealImage src={HERO_PHOTO.src} alt={HERO_PHOTO.caption || HERO_PHOTO.alt} highlighted={false} />
+          <RevealImage
+            src={HERO_PHOTO.thumb || HERO_PHOTO.src}
+            alt={HERO_PHOTO.caption || HERO_PHOTO.alt}
+            highlighted={false}
+            srcSet={getSrcSet(HERO_PHOTO)}
+            sizes={SIZES.fullWidth}
+          />
           {/* Bottom overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black/60 via-black/20 to-transparent transition-opacity duration-500">
             <span className="font-mono text-[8px] text-[#c9a96e] tracking-[0.3em] uppercase">
@@ -222,9 +235,11 @@ export default function Home() {
                       }`}
                     >
                       <RevealImage
-                        src={item.photo.src}
+                        src={item.photo.thumb || item.photo.src}
                         alt={item.photo.caption || item.photo.alt}
                         highlighted={highlighted}
+                        srcSet={getSrcSet(item.photo)}
+                        sizes={SIZES.masonry}
                       />
                       {/* Minimal label — bottom reveal on hover */}
                       <div

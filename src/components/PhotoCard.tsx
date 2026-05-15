@@ -1,7 +1,7 @@
 'use client';
 
-import Image from 'next/image';
 import { Photo } from '@/data/series';
+import { getSrcSet, SIZES } from '@/utils/images';
 
 interface PhotoCardProps {
   photo: Photo;
@@ -9,7 +9,7 @@ interface PhotoCardProps {
   className?: string;
   imgClassName?: string;
   loading?: 'eager' | 'lazy';
-  useOriginal?: boolean;
+  sizes?: string;
   onClick?: () => void;
 }
 
@@ -19,10 +19,10 @@ export default function PhotoCard({
   className = '',
   imgClassName = '',
   loading = 'lazy',
-  useOriginal = false,
+  sizes = SIZES.card,
   onClick,
 }: PhotoCardProps) {
-  const imageSrc = useOriginal ? photo.src : photo.thumb;
+  const srcSet = getSrcSet(photo);
   const exifText = photo.exif
     ? `${photo.exif.camera}  ·  ${photo.exif.lens}  ·  ${photo.exif.aperture}  ·  ${photo.exif.shutter}  ·  ${photo.exif.iso}`
     : '';
@@ -34,23 +34,24 @@ export default function PhotoCard({
     >
       {/* Image with grayscale → color transition */}
       {fill ? (
-        <Image
-          src={imageSrc}
+        <img
+          src={photo.thumb || photo.src}
           alt={photo.alt}
-          fill
-          className={`object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-[1.03] ${imgClassName}`}
+          className={`absolute inset-0 w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-[1.03] ${imgClassName}`}
           loading={loading}
-          unoptimized
+          srcSet={srcSet}
+          sizes={sizes}
         />
       ) : (
-        <Image
-          src={imageSrc}
+        <img
+          src={photo.thumb || photo.src}
           alt={photo.alt}
           width={photo.width || 800}
           height={photo.height || 600}
           className={`w-full h-auto object-cover grayscale-[20%] group-hover:grayscale-0 transition-all duration-700 ease-out group-hover:scale-[1.03] ${imgClassName}`}
           loading={loading}
-          unoptimized
+          srcSet={srcSet}
+          sizes={sizes}
         />
       )}
 

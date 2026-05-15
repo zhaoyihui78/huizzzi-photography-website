@@ -9,6 +9,7 @@ import Lightbox from '@/components/Lightbox';
 import VideoLightbox from '@/components/VideoLightbox';
 import TextReveal from '@/components/TextReveal';
 import FilmFrame from '@/components/FilmFrame';
+import { getSrcSet, SIZES } from '@/utils/images';
 
 interface Props {
   series: Series;
@@ -165,7 +166,7 @@ function ContactSheetGallery({
                   onMouseLeave={() => setHoveredIndex(null)}
                 >
                   <FilmFrame
-                    src={photo.src}
+                    src={photo.thumb || photo.src}
                     alt={photo.alt}
                     label={brand}
                     frameStyle="thick"
@@ -177,6 +178,8 @@ function ContactSheetGallery({
                     dateStamp={photo.filmInfo?.date}
                     developing={true}
                     frameNumber={idx + 1}
+                    srcSet={getSrcSet(photo)}
+                    sizes={SIZES.polaroid}
                   />
                   {/* Film info card — slides up on hover */}
                   {photo.filmInfo && (
@@ -546,8 +549,8 @@ export default function SeriesDetail({ series }: Props) {
                     }`}
                     onClick={() => setLightboxPhoto(photo)}
                   >
-                    <Image
-                      src={photo.src}
+                    <img
+                      src={photo.thumb || photo.src}
                       alt={photo.alt}
                       width={photo.width || 1200}
                       height={photo.height || 800}
@@ -557,7 +560,8 @@ export default function SeriesDetail({ series }: Props) {
                           : 'max-h-[60vh]'
                       }`}
                       loading={i < 2 ? 'eager' : 'lazy'}
-                      unoptimized
+                      srcSet={getSrcSet(photo)}
+                      sizes={SIZES.split}
                     />
                   </div>
                 </div>

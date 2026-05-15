@@ -1,7 +1,5 @@
 'use client';
 
-import Image from 'next/image';
-
 interface FilmFrameProps {
   src: string;
   alt: string;
@@ -15,6 +13,8 @@ interface FilmFrameProps {
   dateStamp?: string;
   developing?: boolean;
   frameNumber?: number;
+  srcSet?: string;
+  sizes?: string;
 }
 
 export default function FilmFrame({
@@ -30,6 +30,8 @@ export default function FilmFrame({
   dateStamp,
   developing = false,
   frameNumber = 1,
+  srcSet,
+  sizes,
 }: FilmFrameProps) {
   const framePadding = {
     thick: 'p-[6px] pb-[24px]',
@@ -112,13 +114,14 @@ export default function FilmFrame({
               }}
             />
           )}
-          <Image
+          <img
             src={src}
             alt={alt}
             width={1200}
             height={800}
             className={`w-full h-auto object-cover ${developing ? 'animate-develop' : ''}`}
-            unoptimized
+            srcSet={srcSet}
+            sizes={sizes}
           />
           {/* Development mask — black overlay fading away */}
           {developing && (
