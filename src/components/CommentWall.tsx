@@ -87,7 +87,7 @@ export default function CommentWall() {
 
     const repo = 'zhaoyihui78/huizzzi-photography-website';
     const category = 'General';
-    const term = '/guestbook/';
+    const term = 'guestbook/';
     const url = `https://giscus.app/api/discussions?repo=${encodeURIComponent(repo)}&category=${encodeURIComponent(category)}&term=${encodeURIComponent(term)}&_=${Date.now()}`;
 
     fetch(url)
