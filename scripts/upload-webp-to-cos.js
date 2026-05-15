@@ -4,6 +4,8 @@
  * Usage:
  *   export COS_SECRET_ID=xxx
  *   export COS_SECRET_KEY=xxx
+ *   export COS_BUCKET=photo-1392627581
+ *   export COS_REGION=ap-beijing
  *   node scripts/upload-webp-to-cos.js
  */
 
@@ -16,8 +18,8 @@ const WEBP_DIR = path.join(ROOT, 'public', 'works', 'webp');
 
 const SECRET_ID = process.env.COS_SECRET_ID || '';
 const SECRET_KEY = process.env.COS_SECRET_KEY || '';
-const BUCKET = 'photo-1392627581';
-const REGION = 'ap-beijing';
+const BUCKET = process.env.COS_BUCKET || 'photo-1392627581';
+const REGION = process.env.COS_REGION || 'ap-beijing';
 
 if (!SECRET_ID || !SECRET_KEY) {
   console.error('Error: Please set COS_SECRET_ID and COS_SECRET_KEY environment variables.');
