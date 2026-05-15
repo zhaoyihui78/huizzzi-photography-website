@@ -85,19 +85,28 @@ export default function CommentWall() {
     if (now - lastFetchRef.current < 3000) return;
     lastFetchRef.current = now;
 
-    const repo = 'zhaoyihui78/huizzzi-photography-website';
-    const category = 'General';
-    const term = 'guestbook/';
-    const url = `https://giscus.app/api/discussions?repo=${encodeURIComponent(repo)}&category=${encodeURIComponent(category)}&term=${encodeURIComponent(term)}&_=${Date.now()}`;
+    // Use GitHub Discussions API directly — proper CORS (access-control-allow-origin: *)
+    const url = `https://api.github.com/repos/zhaoyihui78/huizzzi-photography-website/discussions/1/comments?per_page=100&_=${Date.now()}`;
 
     fetch(url)
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch');
         return res.json();
       })
-      .then((data: GiscusResponse) => {
-        // 反转数组：最新评论排在最前面，新提交的一定可见
-        const fresh = [...(data.discussion?.comments || [])].reverse();
+      .then((data: unknown) => {
+        const items = Array.isArray(data) ? data : [];
+        // Map GitHub API shape to our internal GiscusComment shape
+        const fresh = items.map((c: any) => ({
+          id: String(c.id),
+          bodyHTML: c.body || '',
+          createdAt: c.created_at,
+          author: {
+            login: c.user?.login || 'unknown',
+            avatarUrl: c.user?.avatar_url || '',
+            url: c.user?.html_url || '',
+          },
+          replyCount: c.child_comment_count || 0,
+        })).reverse();
         setComments((prev) => {
           const prevIds = new Set(prev.map((c) => c.id));
           const hasNew = fresh.some((c) => !prevIds.has(c.id));

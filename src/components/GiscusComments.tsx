@@ -20,7 +20,7 @@ export default function GiscusComments() {
   const params = new URLSearchParams({
     origin,
     session: '',
-    theme: 'https://cdn.jsdelivr.net/gh/zhaoyihui78/huizzzi-photography-website@main/public/giscus-theme.css',
+    theme: 'https://cdn.jsdelivr.net/gh/zhaoyihui78/huizzzi-photography-website@main/public/giscus-theme.css?v=2',
     reactionsEnabled: '1',
     emitMetadata: '0',
     inputPosition: 'bottom',

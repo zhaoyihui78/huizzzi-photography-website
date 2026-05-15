@@ -223,8 +223,8 @@
 }
 
 /* Hide comment history - only show input box */
+/* NOTE: do NOT hide .gsc-comments because .gsc-comment-box lives inside it */
 
-.gsc-comments,
 .gsc-header,
 .gsc-timeline,
 .gsc-pagination {
