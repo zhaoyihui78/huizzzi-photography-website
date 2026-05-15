@@ -16,15 +16,73 @@ interface GiscusComment {
 
 interface LetterModalProps {
   comment: GiscusComment;
-  stripHtml: (html: string) => string;
-  formatDate: (iso: string) => string;
   onClose: () => void;
+}
+
+function linkify(text: string): React.ReactNode[] {
+  const result: React.ReactNode[] = [];
+  const lines = text.split('\n');
+
+  lines.forEach((line, lineIndex) => {
+    const urlRegex = /(https?:\/\/[^\s<]+)/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = urlRegex.exec(line)) !== null) {
+      if (match.index > lastIndex) {
+        result.push(line.slice(lastIndex, match.index));
+      }
+      result.push(
+        <a
+          key={`${lineIndex}-${match.index}`}
+          href={match[0]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#c9a96e] hover:underline break-all"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {match[0]}
+        </a>
+      );
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < line.length) {
+      result.push(line.slice(lastIndex));
+    }
+
+    if (lineIndex < lines.length - 1) {
+      result.push(<br key={`br-${lineIndex}`} />);
+    }
+  });
+
+  return result;
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  return `${date} ${time}`;
+}
+
+function formatRelativeTime(iso: string): string {
+  const now = Date.now();
+  const then = new Date(iso).getTime();
+  const diff = now - then;
+
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  if (diff < minute) return '刚刚';
+  if (diff < hour) return `${Math.floor(diff / minute)} 分钟前`;
+  if (diff < day) return `${Math.floor(diff / hour)} 小时前`;
+  return `${Math.floor(diff / day)} 天前`;
 }
 
 export default function LetterModal({
   comment,
-  stripHtml,
-  formatDate,
   onClose,
 }: LetterModalProps) {
   useEffect(() => {
@@ -75,7 +133,7 @@ export default function LetterModal({
         <div className="relative z-10">
           {/* Content */}
           <p className="font-mono text-[13px] leading-[2] text-[#444] whitespace-pre-wrap break-words">
-            {stripHtml(comment.bodyHTML)}
+            {linkify(comment.bodyHTML)}
           </p>
 
           {/* Divider */}
@@ -88,13 +146,17 @@ export default function LetterModal({
                 src={comment.author.avatarUrl}
                 alt={comment.author.login}
                 className="w-7 h-7 rounded-full grayscale"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    'https://avatars.githubusercontent.com/u/0?v=4';
+                }}
               />
               <span className="font-mono text-[11px] text-[#c9a96e] tracking-[0.1em]">
                 {comment.author.login}
               </span>
             </div>
             <span className="font-mono text-[9px] text-[#ccc] tracking-[0.08em]">
-              {formatDate(comment.createdAt)}
+              {formatDate(comment.createdAt)} · {formatRelativeTime(comment.createdAt)}
             </span>
           </div>
         </div>

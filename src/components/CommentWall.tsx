@@ -35,11 +35,23 @@ function stripHtml(html: string): string {
   return tmp.textContent || tmp.innerText || '';
 }
 
-function formatDate(iso: string): string {
+function formatRelativeTime(iso: string): string {
+  const now = Date.now();
+  const then = new Date(iso).getTime();
+  const diff = now - then;
+
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  const week = 7 * day;
+
+  if (diff < minute) return '刚刚';
+  if (diff < hour) return `${Math.floor(diff / minute)} 分钟前`;
+  if (diff < day) return `${Math.floor(diff / hour)} 小时前`;
+  if (diff < week) return `${Math.floor(diff / day)} 天前`;
+
   const d = new Date(iso);
-  const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
-  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-  return `${date} ${time}`;
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function hashString(str: string): number {
@@ -96,7 +108,10 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
     lastFetchRef.current = now;
 
     // Use GitHub Discussions API directly — proper CORS (access-control-allow-origin: *)
-    const url = `https://api.github.com/repos/zhaoyihui78/huizzzi-photography-website/discussions/1/comments?per_page=100&_=${Date.now()}`;
+    const isLocal = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    const url = isLocal
+      ? `https://api.github.com/repos/zhaoyihui78/huizzzi-photography-website/discussions/1/comments?per_page=100&_=${Date.now()}`
+      : `/api/comments/?_=${Date.now()}`;
 
     fetch(url)
       .then((res) => {
@@ -257,7 +272,7 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
               key={comment.id}
               text={text}
               author={comment.author.login}
-              date={formatDate(comment.createdAt)}
+              date={formatRelativeTime(comment.createdAt)}
               rotate={rotate}
               offsetY={offsetY}
               index={index}
@@ -286,8 +301,6 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
       {selected && (
         <LetterModal
           comment={selected}
-          stripHtml={stripHtml}
-          formatDate={formatDate}
           onClose={() => setSelected(null)}
         />
       )}
