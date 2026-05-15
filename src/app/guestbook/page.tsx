@@ -89,11 +89,10 @@ export default function GuestbookPage() {
             <AnimatePresence>
               {writeOpen && (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-                  className="overflow-hidden"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  transition={{ duration: 0.4 }}
                 >
                   <div className="relative bg-[#fdfcf9] border border-[#e8e4d9] p-6 md:p-10 shadow-lg">
                     {/* Close button */}

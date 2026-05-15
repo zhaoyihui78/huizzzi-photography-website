@@ -125,15 +125,22 @@ export default function CommentWall() {
     loadComments();
   }, [loadComments]);
 
+  // Refresh on giscus iframe resize (fired after comment submission)
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (event.origin !== 'https://giscus.app') return;
-      if (event.data?.giscus?.discussion || event.data?.giscus?.resize) {
+      if (event.data?.giscus?.resizeHeight) {
         loadComments();
       }
     };
     window.addEventListener('message', onMessage);
     return () => window.removeEventListener('message', onMessage);
+  }, [loadComments]);
+
+  // Poll every 60s as fallback (matches GitHub API cache TTL)
+  useEffect(() => {
+    const interval = setInterval(loadComments, 60000);
+    return () => clearInterval(interval);
   }, [loadComments]);
 
   const containerVariants = {
