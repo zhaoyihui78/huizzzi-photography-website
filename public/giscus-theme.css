@@ -1,0 +1,236 @@
+/*!
+ * Giscus Custom Theme for HUI ZZZI Photography Website
+ * Minimalist · Elegant · Monochrome with gold accent
+ */
+
+:root {
+  --color-canvas-default: #ffffff;
+  --color-canvas-overlay: #ffffff;
+  --color-canvas-inset: #fafafa;
+  --color-social-reaction-bg-hover-default: rgba(201, 169, 110, 0.08);
+  --color-fg-subtle: #f9f9f9;
+  --color-fg-default: #111111;
+  --color-fg-muted: #888888;
+  --color-fg-subtle: #cccccc;
+  --color-border-default: #f0f0f0;
+  --color-border-muted: #f5f5f5;
+  --color-accent-fg: #c9a96e;
+  --color-accent-emphasis: #c9a96e;
+  --color-accent-muted: rgba(201, 169, 110, 0.1);
+  --color-active-border: #e0e0e0;
+  --color-subtle: rgba(201, 169, 110, 0.05);
+  --color-neutral-muted: #f5f5f5;
+  --color-neutral-subtle: #fafafa;
+  --color-btn-text: #111111;
+  --color-btn-bg: #ffffff;
+  --color-btn-border: #f0f0f0;
+  --color-btn-shadow: none;
+  --color-input-bg: #ffffff;
+  --color-input-contrast-bg: #fafafa;
+  --color-input-border: #f0f0f0;
+  --color-input-shadow: none;
+  --input-disabled-bg: #f9f9f9;
+  --input-disabled-border: #f0f0f0;
+  --timeline-badge-bg: #fafafa;
+  --color-social-reaction-bg-reacted-hover: rgba(201, 169, 110, 0.12);
+  --shadow-resting-x: 0;
+  --shadow-resting-y: 0;
+  --shadow-resting-blur: 0;
+  --shadow-resting-spread: 0;
+  --shadow-resting-color: transparent;
+  --font-stack: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+}
+
+.gsc-main {
+  font-family: var(--font-stack);
+}
+
+.gsc-comments {
+  border-top: 1px solid var(--color-border-default);
+  padding-top: 24px;
+}
+
+.gsc-comment-box {
+  border: 1px solid var(--color-border-default);
+  border-radius: 0;
+  background: var(--color-canvas-default);
+}
+
+.gsc-comment-box .btn {
+  background: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
+}
+
+.gsc-reactions-button {
+  border: 1px solid var(--color-border-default);
+  border-radius: 0;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--color-fg-muted);
+  transition: all 0.3s ease;
+}
+
+.gsc-reactions-button:hover {
+  background: var(--color-social-reaction-bg-hover);
+  border-color: var(--color-accent-fg);
+  color: var(--color-accent-fg);
+}
+
+.gsc-reactions-button.has-reacted {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-fg);
+  color: var(--color-accent-fg);
+}
+
+.gsc-comment {
+  border-bottom: 1px solid var(--color-border-muted);
+  padding: 20px 0;
+}
+
+.gsc-comment-author {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-fg-default);
+}
+
+.gsc-comment-content {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--color-fg-muted);
+}
+
+.gsc-comment-content p {
+  margin-bottom: 12px;
+}
+
+.gsc-comment-content a {
+  color: var(--color-accent-fg);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.3s ease;
+}
+
+.gsc-comment-content a:hover {
+  border-bottom-color: var(--color-accent-fg);
+}
+
+.gsc-comment-content code {
+  background: var(--color-neutral-muted);
+  padding: 2px 6px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.gsc-comment-button.has-reacted {
+  background: var(--color-accent-subtle);
+  border-color: var(--color-accent-fg);
+  color: var(--color-accent-fg);
+}
+
+.gsc-comment-content pre {
+  background: var(--color-neutral-muted);
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 16px;
+  color: var(--color-fg-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.gsc-pagination-button {
+  border: 1px solid var(--color-border-default);
+  border-radius: 0;
+  padding: 8px 24px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-fg-muted);
+  background: var(--color-canvas-default);
+  transition: all 0.3s ease;
+}
+
+.gsc-pagination-button:hover {
+  background: var(--color-canvas-subtle);
+  border-color: var(--color-fg-subtle);
+  color: var(--color-fg-default);
+}
+
+.gsc-comment-box .markdown-toolbar {
+  border-bottom: 1px solid var(--color-border-muted);
+  padding: 4px 8px;
+}
+
+.gsc-comment-box .markdown-toolbar button {
+  color: var(--color-fg-subtle);
+  transition: color 0.3s ease;
+}
+
+.gsc-comment-box .markdown-toolbar button:hover {
+  color: var(--color-fg-default);
+}
+
+.gsc-loading {
+  color: var(--color-fg-subtle);
+}
+
+.gsc-loading svg {
+  stroke: var(--color-fg-subtle);
+}
+
+.gsc-reactions-count {
+  font-size: 11px;
+  color: var(--color-fg-subtle);
+}
+
+.gsc-login-box {
+  border: 1px solid var(--color-border-default);
+  padding: 24px;
+  text-align: center;
+  background: var(--color-canvas-subtle);
+}
+
+.gsc-login-box p {
+  font-size: 13px;
+  color: var(--color-fg-muted);
+  margin-bottom: 16px;
+}
+
+.gsc-login-box .btn {
+  border-radius: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--color-btn-primary-bg);
+  color: var(--color-btn-primary-text);
+  border-color: var(--color-btn-primary-border);
+}
+
+.gsc-login-box .btn:hover {
+  background: var(--color-btn-primary-hover-bg);
+  border-color: var(--color-btn-primary-hover-border);
+}
+
+.gsc-not-found {
+  text-align: center;
+  padding: 48px 0;
+  color: var(--color-fg-subtle);
+  font-size: 13px;
+}
+
+.gsc-not-found svg {
+  stroke: var(--color-fg-subtle);
+  margin-bottom: 16px;
+}
+
+/* Hide comment history - only show input box */
+
+.gsc-comments,
+.gsc-header,
+.gsc-timeline,
+.gsc-pagination {
+  display: none !important;
+}
+
+.gsc-comment-box {
+  border-top: none !important;
+}
