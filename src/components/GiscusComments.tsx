@@ -39,7 +39,7 @@ export default function GiscusComments() {
         ref={iframeRef}
         src={`https://giscus.app/zh-CN/widget?${params.toString()}`}
         className="giscus-frame"
-        style={{ width: '100%', border: 'none', minHeight: '200px' }}
+        style={{ width: '100%', border: 'none', minHeight: '500px' }}
         title="Comments"
         allow="clipboard-write"
       />

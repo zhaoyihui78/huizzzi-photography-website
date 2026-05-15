@@ -1,6 +1,15 @@
 {
   "headers": [
     {
+      "source": "/giscus-theme.css",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://giscus.app"
+        }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
