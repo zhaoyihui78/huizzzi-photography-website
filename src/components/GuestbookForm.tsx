@@ -63,6 +63,21 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
         throw new Error(data.error || '提交失败');
       }
 
+      const optimisticComment = {
+        id: `optimistic-${Date.now()}`,
+        bodyHTML: content.trim(),
+        createdAt: new Date().toISOString(),
+        author: {
+          login: nickname.trim() || '匿名访客',
+          avatarUrl: '',
+          url: '',
+        },
+        replyCount: 0,
+      };
+      window.dispatchEvent(new CustomEvent('guestbook:optimistic-comment', {
+        detail: optimisticComment,
+      }));
+
       setContent('');
       try {
         localStorage.removeItem(DRAFT_KEY_CONTENT);

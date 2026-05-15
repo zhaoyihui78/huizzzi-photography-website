@@ -145,15 +145,22 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
           };
         }).reverse();
 
-        const prevIds = new Set(commentsRef.current.map((c) => c.id));
-        const isFirstLoad = commentsRef.current.length === 0;
-        const added = isFirstLoad ? [] : fresh.filter((c) => !prevIds.has(c.id));
+        const prevRealIds = new Set(
+          commentsRef.current.filter((c) => !c.id.startsWith('optimistic-')).map((c) => c.id)
+        );
+        const isFirstLoad = prevRealIds.size === 0;
+        const added = isFirstLoad ? [] : fresh.filter((c) => !prevRealIds.has(c.id));
         if (added.length > 0) {
           setDropInIds(new Set(added.map((c) => c.id)));
           setTimeout(() => setDropInIds(new Set()), 2000);
         }
 
-        setComments(fresh);
+        // Remove optimistic comments whose bodyHTML now appears in real data
+        const freshBodies = new Set(fresh.map((c) => c.bodyHTML.trim()));
+        const keptOptimistic = commentsRef.current.filter(
+          (c) => c.id.startsWith('optimistic-') && !freshBodies.has(c.bodyHTML.trim())
+        );
+        setComments([...keptOptimistic, ...fresh]);
       })
       .catch((err) => {
         console.error('CommentWall fetch failed:', err);
@@ -210,6 +217,28 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
     window.addEventListener('guestbook:refresh', onRefresh);
     return () => window.removeEventListener('guestbook:refresh', onRefresh);
   }, [loadComments]);
+
+  // Insert optimistic comment immediately so it appears right away
+  useEffect(() => {
+    const onOptimistic = (event: CustomEvent) => {
+      const comment: GiscusComment = event.detail;
+      if (!comment?.id) return;
+      setComments((prev) => {
+        if (prev.some((c) => c.id === comment.id)) return prev;
+        return [comment, ...prev];
+      });
+      setDropInIds((prev) => new Set(prev).add(comment.id));
+      setTimeout(() => {
+        setDropInIds((prev) => {
+          const next = new Set(prev);
+          next.delete(comment.id);
+          return next;
+        });
+      }, 2000);
+    };
+    window.addEventListener('guestbook:optimistic-comment', onOptimistic as EventListener);
+    return () => window.removeEventListener('guestbook:optimistic-comment', onOptimistic as EventListener);
+  }, []);
 
   const containerVariants = {
     hidden: { opacity: 0 },
