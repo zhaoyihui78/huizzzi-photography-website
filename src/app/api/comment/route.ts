@@ -1,5 +1,6 @@
-// Vercel Serverless Function — posts comments to GitHub Discussions via GraphQL
-const ipMap = new Map();
+import { NextResponse } from 'next/server';
+
+const ipMap = new Map<string, number[]>();
 let requestCount = 0;
 
 function cleanExpiredEntries() {
@@ -12,43 +13,37 @@ function cleanExpiredEntries() {
   requestCount = 0;
 }
 
-// Simple content filter — blocks obvious spam / profanity
 const BLOCKED_PATTERNS = [
   /(博彩|赌球|彩票|投注|刷单|兼职.*日结|高价.*收购|代开.*发票|裸聊|约炮|办证|贷款.*秒批)/i,
   /(casino|porn|viagra|crypto.*invest|make money fast|click here to win)/i,
   /(<script|javascript:|onerror=|onload=)/i,
 ];
 
-function containsBlockedContent(text) {
+function containsBlockedContent(text: string) {
   return BLOCKED_PATTERNS.some((p) => p.test(text));
 }
 
-module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+export async function POST(request: Request) {
+  const { nickname, content, website } = await request.json().catch(() => ({}));
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const { nickname, content, website } = req.body;
-
-  if (website) return res.status(400).json({ error: 'Spam detected' });
+  if (website) {
+    return NextResponse.json({ error: 'Spam detected' }, { status: 400 });
+  }
 
   const text = content?.trim();
   if (!text || text.length < 2) {
-    return res.status(400).json({ error: 'Content too short' });
+    return NextResponse.json({ error: 'Content too short' }, { status: 400 });
   }
   if (text.length > 2000) {
-    return res.status(400).json({ error: 'Content too long (max 2000 chars)' });
+    return NextResponse.json({ error: 'Content too long (max 2000 chars)' }, { status: 400 });
   }
 
   if (containsBlockedContent(text) || containsBlockedContent(nickname || '')) {
-    return res.status(400).json({ error: 'Content contains inappropriate material' });
+    return NextResponse.json({ error: 'Content contains inappropriate material' }, { status: 400 });
   }
 
-  // Rate limit: 3 per minute per IP (memory-based, best-effort for serverless)
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+  const forwarded = request.headers.get('x-forwarded-for');
+  const ip = forwarded?.split(',')[0]?.trim() || 'unknown';
   const now = Date.now();
   const windowStart = now - 60000;
 
@@ -58,19 +53,17 @@ module.exports = async (req, res) => {
   const entries = ipMap.get(ip) || [];
   const recent = entries.filter((t) => t > windowStart);
   if (recent.length >= 3) {
-    return res.status(429).json({ error: 'Too many comments, please wait a minute' });
+    return NextResponse.json({ error: 'Too many comments, please wait a minute' }, { status: 429 });
   }
   recent.push(now);
   ipMap.set(ip, recent);
 
   const token = process.env.GITHUB_TOKEN;
   if (!token) {
-    return res.status(500).json({ error: 'Server not configured (missing GITHUB_TOKEN)' });
+    return NextResponse.json({ error: 'Server not configured (missing GITHUB_TOKEN)' }, { status: 500 });
   }
 
   const displayName = nickname?.trim() || '匿名访客';
-  // Embed nickname in an HTML comment so the frontend can extract it later.
-  // The comment is invisible on GitHub but readable by our parser.
   const body = `<!--guestbook-meta|nickname:${displayName}|end-->\n${text}`;
 
   try {
@@ -107,15 +100,15 @@ module.exports = async (req, res) => {
 
     if (data.errors) {
       console.error('GitHub GraphQL errors:', JSON.stringify(data.errors));
-      return res.status(500).json({ error: 'Failed to post comment' });
+      return NextResponse.json({ error: 'Failed to post comment' }, { status: 500 });
     }
 
-    return res.status(200).json({
+    return NextResponse.json({
       success: true,
       comment: data.data?.addDiscussionComment?.comment,
     });
   } catch (err) {
     console.error('Error posting comment:', err);
-    return res.status(500).json({ error: 'Internal server error' });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-};
+}

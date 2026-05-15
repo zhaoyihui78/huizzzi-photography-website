@@ -19,6 +19,8 @@ interface GiscusComment {
   replyCount: number;
 }
 
+const NEW_COMMENT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24h
+
 interface GiscusResponse {
   discussion: {
     comments: GiscusComment[];
@@ -74,7 +76,11 @@ function SkeletonCard({ index }: { index: number }) {
 
 const PAGE_SIZE = 12;
 
-export default function CommentWall() {
+interface CommentWallProps {
+  onCountChange?: (count: number) => void;
+}
+
+export default function CommentWall({ onCountChange }: CommentWallProps) {
   const [comments, setComments] = useState<GiscusComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -122,20 +128,17 @@ export default function CommentWall() {
           };
         }).reverse();
         setComments((prev) => {
-          const prevIds = new Set(prev.map((c) => c.id));
-          const added = fresh.filter((c) => !prevIds.has(c.id));
-          if (added.length > 0) {
-            setNewIds(new Set(added.map((c) => c.id)));
-            if (clearNewTimeoutRef.current) clearTimeout(clearNewTimeoutRef.current);
-            clearNewTimeoutRef.current = setTimeout(() => setNewIds(new Set()), 4000);
-          }
-          const hasNew = added.length > 0;
-          return hasNew ? fresh : prev;
+          const now = Date.now();
+          const newlyCreated = fresh.filter((c) => now - new Date(c.createdAt).getTime() < NEW_COMMENT_WINDOW_MS);
+          setNewIds(new Set(newlyCreated.map((c) => c.id)));
+          if (clearNewTimeoutRef.current) clearTimeout(clearNewTimeoutRef.current);
+          clearNewTimeoutRef.current = setTimeout(() => setNewIds(new Set()), 4000);
+          return fresh;
         });
       })
       .catch((err) => {
         console.error('CommentWall fetch failed:', err);
-        // 首次加载失败时降级为空状态，不显示错误提示
+        setError(true);
         setComments((prev) => (prev.length === 0 ? [] : prev));
       })
       .finally(() => setLoading(false));
@@ -144,6 +147,10 @@ export default function CommentWall() {
   useEffect(() => {
     loadComments();
   }, [loadComments]);
+
+  useEffect(() => {
+    onCountChange?.(comments.length);
+  }, [comments.length, onCountChange]);
 
   // Refresh on giscus iframe resize (fired after comment submission)
   useEffect(() => {

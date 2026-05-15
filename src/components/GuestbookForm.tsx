@@ -64,10 +64,9 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
       }
 
       setContent('');
-      setNickname('');
       try {
-        localStorage.removeItem(DRAFT_KEY_NICKNAME);
         localStorage.removeItem(DRAFT_KEY_CONTENT);
+        // Keep nickname for convenience
       } catch {
         // ignore
       }
@@ -118,7 +117,7 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
           placeholder="如果你从这里路过，欢迎留下一句话。可以是对某张照片的感受，也可以只是打个招呼。"
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          rows={2}
+          rows={4}
           maxLength={2000}
           required
           className="w-full px-3 py-2 border border-[#e0d5c0] bg-white font-mono text-[12px] text-[#555] placeholder:text-[#ccc] focus:outline-none focus:border-[#c9a96e] transition-colors resize-none"

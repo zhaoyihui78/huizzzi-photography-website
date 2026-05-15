@@ -8,6 +8,7 @@ import GuestbookForm from '@/components/GuestbookForm';
 
 export default function GuestbookPage() {
   const [writeOpen, setWriteOpen] = useState(false);
+  const [commentCount, setCommentCount] = useState(0);
 
   useEffect(() => {
     const onCloseForm = () => setWriteOpen(false);
@@ -27,9 +28,16 @@ export default function GuestbookPage() {
           <h1 className="font-heading text-[15px] font-normal tracking-tight text-[#111111] mb-3">
             留言墙
           </h1>
-          <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.25em] uppercase">
-            Guestbook Wall · 谢谢你看我的网站！
-          </p>
+          <div className="flex items-baseline gap-3">
+            <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.25em] uppercase">
+              Guestbook Wall · 谢谢你看我的网站！
+            </p>
+            {commentCount > 0 && (
+              <span className="font-mono text-[9px] text-[#c9a96e] tracking-[0.15em]">
+                {commentCount} 封信
+              </span>
+            )}
+          </div>
         </FadeIn>
       </section>
 
@@ -52,7 +60,7 @@ export default function GuestbookPage() {
             </p>
           </FadeIn>
 
-          <CommentWall />
+          <CommentWall onCountChange={setCommentCount} />
         </div>
       </section>
 
