@@ -127,14 +127,7 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
             replyCount: c.child_comment_count || 0,
           };
         }).reverse();
-        setComments((prev) => {
-          const now = Date.now();
-          const newlyCreated = fresh.filter((c) => now - new Date(c.createdAt).getTime() < NEW_COMMENT_WINDOW_MS);
-          setNewIds(new Set(newlyCreated.map((c) => c.id)));
-          if (clearNewTimeoutRef.current) clearTimeout(clearNewTimeoutRef.current);
-          clearNewTimeoutRef.current = setTimeout(() => setNewIds(new Set()), 4000);
-          return fresh;
-        });
+        setComments(fresh);
       })
       .catch((err) => {
         console.error('CommentWall fetch failed:', err);
@@ -151,6 +144,17 @@ export default function CommentWall({ onCountChange }: CommentWallProps) {
   useEffect(() => {
     onCountChange?.(comments.length);
   }, [comments.length, onCountChange]);
+
+  // Highlight comments created within the last 24h
+  useEffect(() => {
+    const now = Date.now();
+    const newlyCreated = comments.filter(
+      (c) => now - new Date(c.createdAt).getTime() < NEW_COMMENT_WINDOW_MS
+    );
+    setNewIds(new Set(newlyCreated.map((c) => c.id)));
+    if (clearNewTimeoutRef.current) clearTimeout(clearNewTimeoutRef.current);
+    clearNewTimeoutRef.current = setTimeout(() => setNewIds(new Set()), 4000);
+  }, [comments]);
 
   // Refresh on giscus iframe resize (fired after comment submission)
   useEffect(() => {
