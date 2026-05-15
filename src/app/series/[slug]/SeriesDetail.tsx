@@ -455,7 +455,13 @@ export default function SeriesDetail({ series }: Props) {
                   video={video}
                   index={i}
                   total={series.videos!.length}
-                  onClick={() => setVideoOpen(video)}
+                  onClick={() => {
+                    if (video.xiaohongshuUrl) {
+                      window.open(video.xiaohongshuUrl, '_blank');
+                    } else {
+                      setVideoOpen(video);
+                    }
+                  }}
                 />
               ))}
             </div>
@@ -471,7 +477,13 @@ export default function SeriesDetail({ series }: Props) {
                   <FadeIn key={i} delay={i * 0.1} direction="up">
                     <div
                       className="relative bg-[#0a0a0a] aspect-video overflow-hidden group cursor-pointer"
-                      onClick={() => setVideoOpen(video)}
+                      onClick={() => {
+                        if (video.xiaohongshuUrl) {
+                          window.open(video.xiaohongshuUrl, '_blank');
+                        } else {
+                          setVideoOpen(video);
+                        }
+                      }}
                     >
                       <Image
                         src={video.poster}
