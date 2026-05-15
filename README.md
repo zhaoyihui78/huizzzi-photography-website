@@ -11,12 +11,13 @@
 
 ## 技术栈
 
-- **框架**: [Next.js](https://nextjs.org) 15 (App Router)
+- **框架**: [Next.js](https://nextjs.org) 16 (App Router)
 - **语言**: TypeScript
 - **样式**: Tailwind CSS
 - **动画**: Framer Motion
 - **部署**: Vercel
 - **图片存储**: 腾讯云 COS (北京节点)
+- **留言系统**: GitHub Discussions + 自定义前端 UI
 - **域名**: huizzzi.art (腾讯云)
 - **PWA**: Service Worker 离线缓存 + 可安装到主屏幕
 
@@ -28,6 +29,9 @@
 # 安装依赖
 npm install
 
+# 创建本地环境变量（如需测试留言提交）
+echo "GITHUB_TOKEN=ghp_你的token" > .env.local
+
 # 启动开发服务器
 npm run dev
 
@@ -37,11 +41,15 @@ npm run build
 
 访问 [http://localhost:3000](http://localhost:3000) 查看效果。
 
+**注意**：由于项目路径含中文时 Turbopack 有兼容 bug，建议将项目放在纯英文路径下运行。
+
 ---
 
 ## 项目结构
 
 ```
+├── api/                     # Vercel Serverless Functions
+│   └── comment.js           # 留言提交接口（GitHub Discussions）
 ├── public/                  # 静态资源
 │   ├── works/               # 摄影作品与视频（main 分支已迁移至 COS，local-dev 分支保留本地副本）
 │   │   ├── photos/
@@ -53,7 +61,14 @@ npm run build
 │   └── huizzzi.png          # 个人肖像
 ├── src/
 │   ├── app/                 # Next.js App Router 页面
+│   │   ├── api/comment/     # 本地开发 API Route
+│   │   └── guestbook/       # 留言板页面
 │   ├── components/          # 公共组件
+│   │   ├── CommentWall.tsx  # 信件墙
+│   │   ├── GuestbookForm.tsx# 留言表单
+│   │   ├── LetterCard.tsx   # 信件卡片
+│   │   ├── LetterModal.tsx  # 信件详情弹窗
+│   │   └── GiscusComments.tsx# Giscus 备用组件
 │   ├── config/              # 配置文件（图片/视频 URL 解析）
 │   ├── data/                # 摄影系列数据
 │   └── utils/               # 工具函数
@@ -105,10 +120,28 @@ npm run dev
 
 ---
 
+## Guestbook 留言板
+
+网站内置留言板功能，访客可以留下文字留言，以信件墙的形式展示。
+
+- **数据存储**: GitHub Discussions（免费，无需自建数据库）
+- **前端展示**: 自定义信件墙 UI，散落的卡片布局，点击展开阅读完整内容
+- **提交方式**: 自定义表单（无需登录 GitHub）
+- **安全**: IP 限流、敏感词过滤、蜜罐防机器人
+
+### 环境变量
+
+| 变量名 | 值 | 说明 |
+|--------|-----|------|
+| `GITHUB_TOKEN` | `ghp_xxx` | GitHub Personal Access Token，用于发帖到 Discussions |
+
+在 Vercel 控制台 → Settings → Environment Variables 中配置。
+
+---
+
 ## 已知问题
 
-1. **About 页面个人照片加载失败**: `public/huizzzi.png` 尚未上传到 COS，需要手动上传至存储桶根目录。
-2. **图片体积较大**: `public/works` 总计约 91MB，建议后续压缩并开启 CDN 加速。
+1. **图片体积较大**: `public/works` 总计约 91MB，建议后续压缩并开启 CDN 加速。
 
 详见 [DEVELOPMENT_LOG.md](./DEVELOPMENT_LOG.md)。
 

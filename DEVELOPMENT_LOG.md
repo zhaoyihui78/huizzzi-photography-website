@@ -93,28 +93,39 @@
 - **使用方式**：`git checkout local-dev && npm run dev`，所有资源走本地，不消耗 COS 流量
 - **注意事项**：`local-dev` 分支的大文件不合并回 `main`，`main` 分支仍走 COS 加载
 
-### 8. Guestbook 留言板（2026-05-14）
-- **状态**: 开发中（位于 `guestbook` 分支）
-- **方案**: Giscus（基于 GitHub Discussions）
-- **已修改文件**:
-  - `src/app/guestbook/page.tsx` — 新增留言板页面
-  - `src/components/GiscusComments.tsx` — Giscus 组件封装，使用 base64 内嵌自定义 CSS 主题
+### 8. Guestbook 留言板（2026-05-14 ~ 2026-05-15）
+- **状态**: 已完成，已合并到 `main` 并部署上线
+- **方案**: GitHub Discussions 作为数据存储 + 自定义前端 UI（信件墙）
+- **前端组件**:
+  - `src/app/guestbook/page.tsx` — 留言板页面，信封打开动画
+  - `src/components/CommentWall.tsx` — 信件墙，从 GitHub API 拉取评论，散落卡片布局
+  - `src/components/LetterCard.tsx` — 单封信件卡片，带旋转角度和胶带装饰
+  - `src/components/LetterModal.tsx` — 信件详情弹窗，支持 ESC 关闭
+  - `src/components/GuestbookForm.tsx` — 留言提交表单，昵称可选，本地草稿自动保存
+  - `src/components/GiscusComments.tsx` — Giscus iframe 嵌入（备用方案）
   - `src/components/Sidebar.tsx` — 侧边栏新增 Guestbook 导航入口
-  - `public/giscus-custom.css` — 自定义主题 CSS，匹配网站黑白金极简风格
+- **后端接口**:
+  - `api/comment.js` — Vercel Serverless Function，通过 GitHub GraphQL API 发帖
+  - `src/app/api/comment/route.ts` — Next.js App Router API Route（供本地 `next dev` 使用）
+- **安全与防刷**:
+  - IP 限流：1 分钟 3 条（内存 Map + 过期清理）
+  - 蜜罐字段 `website` 防机器人
+  - 敏感词/内容过滤：拦截博彩、垃圾广告、脚本注入
+  - 内容长度限制：2~2000 字符
+- **交互优化**:
+  - 24 小时内新留言高亮入场动画
+  - 评论数量显示在页面头部
+  - 每 60 秒自动轮询刷新
+  - 骨架屏 loading 状态
+  - 空状态提示"还没有人留言"
 - **Giscus 配置**:
   - repo: `zhaoyihui78/huizzzi-photography-website`
   - repoId: `R_kgDOSaa2rQ`
   - category: `General`
   - categoryId: `DIC_kwDOSaa2rc4C9CSF`
   - mapping: `pathname`
-  - theme: 自定义 CSS（base64 内嵌）
+  - theme: 自定义 CSS
   - lang: `zh-CN`
-- **主题定制**:
-  - 白色背景，直角边框，去除阴影
-  - 按钮黑底白字 + 大写字母风格
-  - 链接/反应按钮悬停金色 `#c9a96e`
-  - 评论字体 13px，行高 1.8
-- **待完善**: 需用户确认样式后合并到 main 分支并部署
 
 ---
 
@@ -126,6 +137,11 @@
 - **状态**: 已修复（2026-05-14）
 - **根因**: Vercel 环境变量 `NEXT_PUBLIC_IMAGE_BASE` 指向 COS，导致 `getImageUrl('/huizzzi.png')` 请求了 COS 上并不存在的文件。
 - **修复**: `src/app/about/page.tsx` 改为直接使用本地路径 `src='/huizzzi.png'`，从 Vercel 自身加载。单张 2.6MB 的肖像图无需走 COS。
+
+### 问题 2: Guestbook 留言墙空白（线上）✅ 已修复
+- **状态**: 已修复（2026-05-15）
+- **根因**: `CommentWall.tsx` 在 `setComments` 的 state updater 函数中调用了 `setNewIds` 和 `setTimeout`。React 的 state updater 必须是纯函数，副作用导致 React 18 并发渲染丢弃更新。
+- **修复**: 将 `newIds` 的更新逻辑移到独立的 `useEffect` 中监听 `comments` 变化。
 
 ### 问题 2: 图片加载速度仍不理想
 - **状态**: 待优化
@@ -148,12 +164,12 @@
 ## 待办事项 (TODO)
 
 - [x] 将 `public/huizzzi.png` 上传到 COS 根目录，修复 About 页面照片 → 改为本地加载
+- [x] Guestbook 留言板开发、优化并合并到 main 分支
 - [ ] 开启腾讯云 CDN 加速，替换 COS 默认域名
 - [ ] 批量压缩 `works/photos/` 和 `works/thumbs/` 中的图片
 - [ ] 验证国内访问速度（F12 Network 检查图片加载时间）
 - [ ] 考虑移除 Git 仓库中的 `public/works` 大文件（使用 `git-filter-repo` 或 BFG）
 - [ ] 配置 GitHub Actions 自动部署到 COS（可选）
-- [ ] Guestbook 留言板样式最终确认后合并到 main 分支
 
 ---
 
@@ -177,4 +193,4 @@
 
 ---
 
-*最后更新: 2026-05-14*
+*最后更新: 2026-05-15*
