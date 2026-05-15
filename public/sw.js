@@ -1,5 +1,5 @@
-const CACHE_NAME = 'huizzzi-cache-v1';
-const IMAGE_CACHE_NAME = 'huizzzi-images-v1';
+const CACHE_NAME = 'huizzzi-cache-v2';
+const IMAGE_CACHE_NAME = 'huizzzi-images-v2';
 
 // COS domains to cache
 const COS_DOMAINS = [
