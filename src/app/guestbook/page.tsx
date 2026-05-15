@@ -22,7 +22,7 @@ export default function GuestbookPage() {
             留言墙
           </h1>
           <p className="font-mono text-[9px] text-[#cccccc] tracking-[0.25em] uppercase">
-            Guestbook Wall · 路过留痕
+            Guestbook Wall · 谢谢你看我的网站！
           </p>
         </FadeIn>
       </section>

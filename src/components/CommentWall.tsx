@@ -96,17 +96,27 @@ export default function CommentWall() {
       .then((data: unknown) => {
         const items = Array.isArray(data) ? data : [];
         // Map GitHub API shape to our internal GiscusComment shape
-        const fresh = items.map((c: any) => ({
-          id: String(c.id),
-          bodyHTML: c.body || '',
-          createdAt: c.created_at,
-          author: {
-            login: c.user?.login || 'unknown',
-            avatarUrl: c.user?.avatar_url || '',
-            url: c.user?.html_url || '',
-          },
-          replyCount: c.child_comment_count || 0,
-        })).reverse();
+        const fresh = items.map((c: any) => {
+          const rawBody = c.body || '';
+          // Extract embedded nickname from HTML comment (set by our API)
+          const metaMatch = rawBody.match(/<!--guestbook-meta\|nickname:([^|]+)\|end-->/);
+          const nickname = metaMatch ? metaMatch[1] : null;
+          const cleanBody = rawBody.replace(/<!--guestbook-meta\|nickname:[^|]+\|end-->\n?/, '').trim();
+          // Fallback for legacy comments without meta tag
+          const displayName = nickname || (c.user?.login === 'zhaoyihui78' ? '访客' : c.user?.login) || '访客';
+
+          return {
+            id: String(c.id),
+            bodyHTML: cleanBody,
+            createdAt: c.created_at,
+            author: {
+              login: displayName,
+              avatarUrl: c.user?.avatar_url || '',
+              url: c.user?.html_url || '',
+            },
+            replyCount: c.child_comment_count || 0,
+          };
+        }).reverse();
         setComments((prev) => {
           const prevIds = new Set(prev.map((c) => c.id));
           const hasNew = fresh.some((c) => !prevIds.has(c.id));

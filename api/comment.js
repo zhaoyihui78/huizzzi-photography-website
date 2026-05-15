@@ -39,7 +39,9 @@ module.exports = async (req, res) => {
   }
 
   const displayName = nickname?.trim() || '匿名访客';
-  const body = `${displayName}：${text}`;
+  // Embed nickname in an HTML comment so the frontend can extract it later.
+  // The comment is invisible on GitHub but readable by our parser.
+  const body = `<!--guestbook-meta|nickname:${displayName}|end-->\n${text}`;
 
   try {
     const response = await fetch('https://api.github.com/graphql', {
