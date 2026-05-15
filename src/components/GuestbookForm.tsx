@@ -48,7 +48,7 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
     setSuccess(false);
 
     try {
-      const res = await fetch('/api/comment', {
+      const res = await fetch('/api/comment/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
