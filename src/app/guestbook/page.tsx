@@ -54,15 +54,15 @@ export default function GuestbookPage() {
       <section className="px-6 md:px-10 py-14 max-w-[1200px] mx-auto">
         <FadeIn delay={0}>
           <div className="max-w-2xl mx-auto">
-            {/* Envelope closed state */}
             <AnimatePresence mode="wait">
-              {!writeOpen && (
+              {!writeOpen ? (
                 <motion.button
                   key="closed"
-                  initial={{ opacity: 0, y: 10 }}
+                  layout
+                  initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.35 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
                   onClick={() => setWriteOpen(true)}
                   className="group w-full cursor-pointer"
                 >
@@ -86,29 +86,25 @@ export default function GuestbookPage() {
                     </div>
                   </div>
                 </motion.button>
-              )}
-            </AnimatePresence>
-
-            {/* Envelope open state — Giscus */}
-            <AnimatePresence>
-              {writeOpen && (
+              ) : (
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  key="open"
+                  layout
+                  initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.4 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+                  className="relative bg-[#fdfcf9] border border-[#e8e4d9] p-6 md:p-8 shadow-lg"
                 >
-                  <div className="relative bg-[#fdfcf9] border border-[#e8e4d9] p-6 md:p-8 shadow-lg">
-                    {/* Close button */}
-                    <button
-                      onClick={() => setWriteOpen(false)}
-                      className="absolute top-3 right-4 font-mono text-[9px] text-[#ccc] tracking-[0.15em] uppercase hover:text-[#888] transition-colors cursor-pointer z-10"
-                    >
-                      Close
-                    </button>
+                  {/* Close button */}
+                  <button
+                    onClick={() => setWriteOpen(false)}
+                    className="absolute top-3 right-4 font-mono text-[9px] text-[#ccc] tracking-[0.15em] uppercase hover:text-[#888] transition-colors cursor-pointer z-10"
+                  >
+                    Close
+                  </button>
 
-                    <GuestbookForm onPosted={handlePosted} />
-                  </div>
+                  <GuestbookForm onPosted={handlePosted} />
                 </motion.div>
               )}
             </AnimatePresence>
