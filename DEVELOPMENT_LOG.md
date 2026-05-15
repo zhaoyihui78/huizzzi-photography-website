@@ -93,6 +93,29 @@
 - **使用方式**：`git checkout local-dev && npm run dev`，所有资源走本地，不消耗 COS 流量
 - **注意事项**：`local-dev` 分支的大文件不合并回 `main`，`main` 分支仍走 COS 加载
 
+### 8. Guestbook 留言板（2026-05-14）
+- **状态**: 开发中（位于 `guestbook` 分支）
+- **方案**: Giscus（基于 GitHub Discussions）
+- **已修改文件**:
+  - `src/app/guestbook/page.tsx` — 新增留言板页面
+  - `src/components/GiscusComments.tsx` — Giscus 组件封装，使用 base64 内嵌自定义 CSS 主题
+  - `src/components/Sidebar.tsx` — 侧边栏新增 Guestbook 导航入口
+  - `public/giscus-custom.css` — 自定义主题 CSS，匹配网站黑白金极简风格
+- **Giscus 配置**:
+  - repo: `zhaoyihui78/huizzzi-photography-website`
+  - repoId: `R_kgDOSaa2rQ`
+  - category: `General`
+  - categoryId: `DIC_kwDOSaa2rc4C9CSF`
+  - mapping: `pathname`
+  - theme: 自定义 CSS（base64 内嵌）
+  - lang: `zh-CN`
+- **主题定制**:
+  - 白色背景，直角边框，去除阴影
+  - 按钮黑底白字 + 大写字母风格
+  - 链接/反应按钮悬停金色 `#c9a96e`
+  - 评论字体 13px，行高 1.8
+- **待完善**: 需用户确认样式后合并到 main 分支并部署
+
 ---
 
 ## 已知问题
@@ -124,12 +147,13 @@
 
 ## 待办事项 (TODO)
 
-- [ ] 将 `public/huizzzi.png` 上传到 COS 根目录，修复 About 页面照片
+- [x] 将 `public/huizzzi.png` 上传到 COS 根目录，修复 About 页面照片 → 改为本地加载
 - [ ] 开启腾讯云 CDN 加速，替换 COS 默认域名
 - [ ] 批量压缩 `works/photos/` 和 `works/thumbs/` 中的图片
 - [ ] 验证国内访问速度（F12 Network 检查图片加载时间）
 - [ ] 考虑移除 Git 仓库中的 `public/works` 大文件（使用 `git-filter-repo` 或 BFG）
 - [ ] 配置 GitHub Actions 自动部署到 COS（可选）
+- [ ] Guestbook 留言板样式最终确认后合并到 main 分支
 
 ---
 

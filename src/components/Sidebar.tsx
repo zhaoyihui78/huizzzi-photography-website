@@ -128,7 +128,7 @@ export default function Sidebar() {
             </motion.div>
           ))}
 
-          <div className="mt-6">
+          <div className="mt-6 flex flex-col gap-3">
             <Link
               href="/about"
               className={`group relative text-[11px] tracking-wide transition-colors duration-1000 w-fit ${
@@ -150,6 +150,29 @@ export default function Sidebar() {
                 className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${
                   isDarkMode ? 'bg-white' : isOriental ? 'bg-[#8c3b31]' : 'bg-[#111111]'
                 } ${pathname === '/about' ? 'w-full' : 'w-0 group-hover:w-full'}`}
+              />
+            </Link>
+            <Link
+              href="/guestbook"
+              className={`group relative text-[11px] tracking-wide transition-colors duration-1000 w-fit ${
+                pathname === '/guestbook'
+                  ? isDarkMode
+                    ? 'text-white font-normal'
+                    : isOriental
+                    ? 'text-[#2c2824] font-medium'
+                    : 'text-[#111111] font-normal'
+                  : isDarkMode
+                  ? 'text-[#666666] hover:text-[#aaaaaa]'
+                  : isOriental
+                  ? 'text-[#8c8577] hover:text-[#2c2824]'
+                  : 'text-[#888888] hover:text-[#111111]'
+              }`}
+            >
+              Guestbook
+              <span
+                className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${
+                  isDarkMode ? 'bg-white' : isOriental ? 'bg-[#8c3b31]' : 'bg-[#111111]'
+                } ${pathname === '/guestbook' ? 'w-full' : 'w-0 group-hover:w-full'}`}
               />
             </Link>
           </div>
