@@ -4,10 +4,14 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FadeIn from '@/components/FadeIn';
 import CommentWall from '@/components/CommentWall';
-import GiscusComments from '@/components/GiscusComments';
+import GuestbookForm from '@/components/GuestbookForm';
 
 export default function GuestbookPage() {
   const [writeOpen, setWriteOpen] = useState(false);
+
+  const handlePosted = () => {
+    window.dispatchEvent(new CustomEvent('guestbook:refresh'));
+  };
 
   return (
     <main className="min-h-full">
@@ -107,7 +111,7 @@ export default function GuestbookPage() {
                       如果你从这里路过，欢迎留下一句话。可以是对某张照片的感受，也可以只是打个招呼。
                     </p>
 
-                    <GiscusComments />
+                    <GuestbookForm onPosted={handlePosted} />
                   </div>
                 </motion.div>
               )}

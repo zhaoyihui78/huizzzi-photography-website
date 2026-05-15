@@ -143,6 +143,13 @@ export default function CommentWall() {
     return () => clearInterval(interval);
   }, [loadComments]);
 
+  // Refresh when a new comment is posted via our custom form
+  useEffect(() => {
+    const onRefresh = () => loadComments();
+    window.addEventListener('guestbook:refresh', onRefresh);
+    return () => window.removeEventListener('guestbook:refresh', onRefresh);
+  }, [loadComments]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
