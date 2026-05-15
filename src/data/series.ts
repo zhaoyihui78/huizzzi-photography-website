@@ -78,8 +78,8 @@ export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
   const [width, height] = sizes[num] || [800, 600];
   const data = beijingData[i];
   return {
-    src: getImageUrl(`/works/photos/beijing${num}.jpg`),
-    thumb: getImageUrl(`/works/thumbs/beijing${num}.jpg`),
+    src: getImageUrl(`/works/webp/photos/beijing${num}.webp`),
+    thumb: getImageUrl(`/works/webp/thumbs/beijing${num}.webp`),
     alt: `Beijing Cityscape ${i + 1}`,
     caption: data.caption,
     width,
@@ -107,8 +107,8 @@ export const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
   const [width, height] = sizes[num] || [800, 600];
   const data = natureData[i];
   return {
-    src: getImageUrl(`/works/photos/nature${num}.jpg`),
-    thumb: getImageUrl(`/works/thumbs/nature${num}.jpg`),
+    src: getImageUrl(`/works/webp/photos/nature${num}.webp`),
+    thumb: getImageUrl(`/works/webp/thumbs/nature${num}.webp`),
     alt: `Nature & Landscape ${i + 1}`,
     caption: data.caption,
     width,
@@ -130,8 +130,8 @@ export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
   const [width, height] = sizes[num] || [800, 600];
   const data = architectureData[i];
   return {
-    src: getImageUrl(`/works/photos/architecture${num}.jpg`),
-    thumb: getImageUrl(`/works/thumbs/architecture${num}.jpg`),
+    src: getImageUrl(`/works/webp/photos/architecture${num}.webp`),
+    thumb: getImageUrl(`/works/webp/thumbs/architecture${num}.webp`),
     alt: `Architecture ${i + 1}`,
     caption: data.caption,
     width,
@@ -170,8 +170,8 @@ const FILM_DATES = [
 export const filmLifePhotos: Photo[] = Array.from({ length: 30 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   return {
-    src: getImageUrl(`/works/photos/film/film${num}.jpg`),
-    thumb: getImageUrl(`/works/photos/film/film${num}.jpg`),
+    src: getImageUrl(`/works/webp/photos/film/film${num}.webp`),
+    thumb: getImageUrl(`/works/webp/photos/film/film${num}.webp`),
     alt: `Film Life ${i + 1}`,
     width: 3578,
     height: 2397,
