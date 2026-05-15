@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import FadeIn from '@/components/FadeIn';
 import CommentWall from '@/components/CommentWall';
@@ -8,6 +8,12 @@ import GuestbookForm from '@/components/GuestbookForm';
 
 export default function GuestbookPage() {
   const [writeOpen, setWriteOpen] = useState(false);
+
+  useEffect(() => {
+    const onCloseForm = () => setWriteOpen(false);
+    window.addEventListener('guestbook:close-form', onCloseForm);
+    return () => window.removeEventListener('guestbook:close-form', onCloseForm);
+  }, []);
 
   const handlePosted = () => {
     window.dispatchEvent(new CustomEvent('guestbook:refresh'));

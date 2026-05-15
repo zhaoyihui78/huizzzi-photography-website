@@ -1,16 +1,43 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 interface GuestbookFormProps {
   onPosted?: () => void;
 }
+
+const DRAFT_KEY_NICKNAME = 'guestbook-draft-nickname';
+const DRAFT_KEY_CONTENT = 'guestbook-draft-content';
 
 export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
   const [nickname, setNickname] = useState('');
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
+
+  // Restore draft on mount
+  useEffect(() => {
+    try {
+      const savedNick = localStorage.getItem(DRAFT_KEY_NICKNAME);
+      const savedContent = localStorage.getItem(DRAFT_KEY_CONTENT);
+      if (savedNick) setNickname(savedNick);
+      if (savedContent) setContent(savedContent);
+    } catch {
+      // ignore localStorage errors
+    }
+  }, []);
+
+  // Auto-save draft
+  useEffect(() => {
+    try {
+      localStorage.setItem(DRAFT_KEY_NICKNAME, nickname);
+      localStorage.setItem(DRAFT_KEY_CONTENT, content);
+    } catch {
+      // ignore localStorage errors
+    }
+  }, [nickname, content]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,6 +45,7 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
 
     setSubmitting(true);
     setError('');
+    setSuccess(false);
 
     try {
       const res = await fetch('/api/comment', {
@@ -37,6 +65,14 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
 
       setContent('');
       setNickname('');
+      try {
+        localStorage.removeItem(DRAFT_KEY_NICKNAME);
+        localStorage.removeItem(DRAFT_KEY_CONTENT);
+      } catch {
+        // ignore
+      }
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 2500);
       onPosted?.();
     } catch (err: any) {
       setError(err.message);
@@ -49,6 +85,16 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
     <form onSubmit={handleSubmit} className="space-y-2">
       {error && (
         <p className="font-mono text-[10px] text-red-500 tracking-wide">{error}</p>
+      )}
+      {success && (
+        <motion.p
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          className="font-mono text-[10px] text-[#c9a96e] tracking-wide"
+        >
+          发布成功！
+        </motion.p>
       )}
       <div className="flex gap-2">
         <input
@@ -79,7 +125,7 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
         />
       </div>
       <div className="flex justify-end">
-        <span className="font-mono text-[9px] text-[#ccc] tracking-wide">
+        <span className={`font-mono text-[9px] tracking-wide transition-colors ${content.length >= 1900 ? 'text-red-400' : 'text-[#ccc]'}`}>
           {content.length}/2000
         </span>
       </div>

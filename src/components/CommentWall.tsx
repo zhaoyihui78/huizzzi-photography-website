@@ -35,7 +35,9 @@ function stripHtml(html: string): string {
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  return `${date} ${time}`;
 }
 
 function hashString(str: string): number {
@@ -78,7 +80,9 @@ export default function CommentWall() {
   const [error, setError] = useState(false);
   const [selected, setSelected] = useState<GiscusComment | null>(null);
   const [displayCount, setDisplayCount] = useState(PAGE_SIZE);
+  const [newIds, setNewIds] = useState<Set<string>>(new Set());
   const lastFetchRef = useRef<number>(0);
+  const clearNewTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const loadComments = useCallback(() => {
     const now = Date.now();
@@ -119,7 +123,13 @@ export default function CommentWall() {
         }).reverse();
         setComments((prev) => {
           const prevIds = new Set(prev.map((c) => c.id));
-          const hasNew = fresh.some((c) => !prevIds.has(c.id));
+          const added = fresh.filter((c) => !prevIds.has(c.id));
+          if (added.length > 0) {
+            setNewIds(new Set(added.map((c) => c.id)));
+            if (clearNewTimeoutRef.current) clearTimeout(clearNewTimeoutRef.current);
+            clearNewTimeoutRef.current = setTimeout(() => setNewIds(new Set()), 4000);
+          }
+          const hasNew = added.length > 0;
           return hasNew ? fresh : prev;
         });
       })
@@ -240,7 +250,11 @@ export default function CommentWall() {
               rotate={rotate}
               offsetY={offsetY}
               index={index}
-              onClick={() => setSelected(comment)}
+              isNew={newIds.has(comment.id)}
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('guestbook:close-form'));
+                setSelected(comment);
+              }}
             />
           );
         })}

@@ -9,6 +9,7 @@ interface LetterCardProps {
   rotate: number;
   offsetY: number;
   index: number;
+  isNew?: boolean;
   onClick: () => void;
 }
 
@@ -19,6 +20,7 @@ export default function LetterCard({
   rotate,
   offsetY,
   index,
+  isNew,
   onClick,
 }: LetterCardProps) {
   const itemVariants = {
@@ -44,11 +46,29 @@ export default function LetterCard({
   const displayText =
     text.length > 80 ? text.slice(0, 80) + '...' : text;
 
+  const newItemInitial = {
+    opacity: 0,
+    y: -50,
+    rotate: rotate - 10,
+    scale: 0.88,
+  };
+
+  const newItemAnimate = {
+    opacity: 1,
+    y: 0,
+    rotate,
+    scale: 1,
+    transition: {
+      duration: 0.6,
+      ease: [0.25, 0.1, 0.25, 1] as [number, number, number, number],
+    },
+  };
+
   return (
     <motion.div
-      variants={itemVariants}
-      initial="hidden"
-      animate="visible"
+      variants={isNew ? undefined : itemVariants}
+      initial={isNew ? newItemInitial : 'hidden'}
+      animate={isNew ? newItemAnimate : 'visible'}
       whileHover={{
         y: -6,
         rotate: 0,
