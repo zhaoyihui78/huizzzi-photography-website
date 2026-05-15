@@ -49,7 +49,7 @@ export default function LetterModal({
       onClick={onClose}
     >
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-[#0a0a0a]/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 z-[1] bg-[#0a0a0a]/40 backdrop-blur-sm" />
 
       {/* Letter */}
       <motion.div
@@ -58,7 +58,7 @@ export default function LetterModal({
         exit={{ scale: 0.9, y: 20, opacity: 0 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         onClick={(e) => e.stopPropagation()}
-        className="relative z-10 w-full max-w-lg bg-[#fdfcf9] p-8 md:p-12 shadow-2xl"
+        className="relative z-[2] w-full max-w-lg bg-[#fdfcf9] p-8 md:p-12 shadow-2xl"
       >
         {/* Tape */}
         <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-14 h-6 bg-[rgba(232,220,190,0.8)] rotate-[-1deg]" />

@@ -99,7 +99,7 @@ export default function GuestbookPage() {
                   {/* Close button */}
                   <button
                     onClick={() => setWriteOpen(false)}
-                    className="absolute top-3 right-4 font-mono text-[9px] text-[#ccc] tracking-[0.15em] uppercase hover:text-[#888] transition-colors cursor-pointer z-10"
+                    className="absolute top-3 right-4 font-mono text-[9px] text-[#ccc] tracking-[0.15em] uppercase hover:text-[#888] transition-colors cursor-pointer"
                   >
                     Close
                   </button>
