@@ -38,11 +38,16 @@ yarn-error.log*
 
 # large media files
 *.mp4
+*.WAV
+*.wav
 public/**/photos-original/
 
 # temporary dirs
 cache/
 new-picture/
+
+# raw private photos (processed webp lives in public/)
+/we/
 
 # typescript
 *.tsbuildinfo

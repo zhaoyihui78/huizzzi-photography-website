@@ -63,9 +63,39 @@ const beijingData = [
   { caption: '中国红-天安门晚霞', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '1/80s', iso: '100' } },
   { caption: '新工体的首场大胜', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '1/50s', iso: '100' } },
   { caption: '央视总部大楼悬日', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/8000s', iso: '100' } },
+  { caption: '2024中非合作论坛灯光秀', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/100s', iso: '200' } },
+  { caption: '不知天上宫阙，今夕是何年！', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '中国尊朝霞', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/160s', iso: '100' } },
+  { caption: '中央电视台悬月牙', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '云漫京城', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/500s', iso: '100' } },
+  { caption: '剑指北斗七星', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F2.8', shutter: '15s', iso: '1600' } },
+  { caption: '南京佛顶宫', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '南京古鸡鸣寺', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '团圆-十七孔桥悬月', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/100s', iso: '200' } },
+  { caption: '围城-中国尊悬日', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/1000s', iso: '100' } },
+  { caption: '在时光的尽头等你', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '城市内透', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/125s', iso: '400' } },
+  { caption: '夜幕下的国家大剧院', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/160s', iso: '200' } },
+  { caption: '奥林匹克塔峨眉月串', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F6.3', shutter: '0.5s', iso: '400' } },
+  { caption: '奥运星球', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/500s', iso: '100' } },
+  { caption: '定都阁星轨', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '30s', iso: '100' } },
+  { caption: '新春快乐-国贸灯光秀', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '200' } },
+  { caption: '浪漫至死不渝', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '浮云散去，月满人间', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '火除邪崇 百家安宁', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '聚焦', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '落暮-奥林匹克塔悬日', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/1000s', iso: '100' } },
+  { caption: '落霞与孤鹜齐飞，秋水共长天一色', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '遥望古今', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '钢铁森林', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '铺天 盖地', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '霞映古今-国贸明城墙朝霞', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '颐和园金光穿洞', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '首钢园晚霞', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '鸟巢三件套', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
 ];
 
-export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
+export const beijingPhotos: Photo[] = Array.from({ length: 52 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const sizes: Record<string, [number, number]> = {
     '01': [800, 533], '02': [800, 269], '03': [800, 533], '04': [537, 800],
@@ -74,6 +104,14 @@ export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
     '13': [800, 450], '14': [533, 800], '15': [800, 534], '16': [800, 449],
     '17': [534, 800], '18': [800, 534], '19': [800, 534], '20': [800, 450],
     '21': [800, 534], '22': [571, 800],
+    '23': [800, 534], '24': [800, 450], '25': [800, 450], '26': [800, 450],
+    '27': [800, 534], '28': [800, 533], '29': [534, 800], '30': [533, 800],
+    '31': [800, 450], '32': [800, 450], '33': [800, 450], '34': [800, 450],
+    '35': [800, 450], '36': [800, 534], '37': [800, 534], '38': [800, 534],
+    '39': [800, 534], '40': [534, 800], '41': [800, 534], '42': [640, 800],
+    '43': [800, 534], '44': [800, 450], '45': [800, 343], '46': [800, 450],
+    '47': [800, 450], '48': [800, 534], '49': [800, 534], '50': [800, 450],
+    '51': [800, 343], '52': [533, 800],
   };
   const [width, height] = sizes[num] || [800, 600];
   const data = beijingData[i];
@@ -86,7 +124,7 @@ export const beijingPhotos: Photo[] = Array.from({ length: 22 }, (_, i) => {
     height,
     exif: data.exif,
   };
-});
+}).filter((_, i) => ![27, 28, 42].includes(i));
 
 const natureData = [
   { caption: '星空下的守望者', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '20s', iso: '1000' } },
@@ -96,49 +134,83 @@ const natureData = [
   { caption: '南迦巴瓦日照金山', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/50s', iso: '100' } },
   { caption: '梅里日照金山', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/50s', iso: '100' } },
   { caption: '格聂神山日照金山', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/50s', iso: '100' } },
+  { caption: '剑指北斗七星', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F2.8', shutter: '15s', iso: '1600' } },
 ];
 
-export const naturePhotos: Photo[] = Array.from({ length: 7 }, (_, i) => {
-  const num = String(i + 1).padStart(2, '0');
-  const sizes: Record<string, [number, number]> = {
-    '01': [534, 800], '02': [800, 450], '03': [800, 534], '04': [800, 533],
-    '05': [800, 450], '06': [800, 342], '07': [800, 342],
-  };
-  const [width, height] = sizes[num] || [800, 600];
-  const data = natureData[i];
-  return {
-    src: getImageUrl(`/works/webp/photos/nature${num}.webp`),
-    thumb: getImageUrl(`/works/webp/thumbs/nature${num}.webp`),
-    alt: `Nature & Landscape ${i + 1}`,
-    caption: data.caption,
-    width,
-    height,
-    exif: data.exif,
-  };
-});
+export const naturePhotos: Photo[] = [
+  ...Array.from({ length: 7 }, (_, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const sizes: Record<string, [number, number]> = {
+      '01': [534, 800], '02': [800, 450], '03': [800, 534], '04': [800, 533],
+      '05': [800, 450], '06': [800, 342], '07': [800, 342],
+    };
+    const [width, height] = sizes[num] || [800, 600];
+    const data = natureData[i];
+    return {
+      src: getImageUrl(`/works/webp/photos/nature${num}.webp`),
+      thumb: getImageUrl(`/works/webp/thumbs/nature${num}.webp`),
+      alt: `Nature & Landscape ${i + 1}`,
+      caption: data.caption,
+      width,
+      height,
+      exif: data.exif,
+    };
+  }),
+  {
+    src: getImageUrl('/works/webp/photos/beijing28.webp'),
+    thumb: getImageUrl('/works/webp/thumbs/beijing28.webp'),
+    alt: 'Nature & Landscape 8',
+    caption: '剑指北斗七星',
+    width: 800,
+    height: 533,
+    exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F2.8', shutter: '15s', iso: '1600' },
+  },
+];
 
 const architectureData = [
   { caption: '未知', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '1/800s', iso: '100' } },
   { caption: '锋', exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '1/80s', iso: '100' } },
+  { caption: '南京佛顶宫', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
+  { caption: '聚焦', exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' } },
 ];
 
-export const architecturePhotos: Photo[] = Array.from({ length: 2 }, (_, i) => {
-  const num = String(i + 1).padStart(2, '0');
-  const sizes: Record<string, [number, number]> = {
-    '01': [600, 800], '02': [800, 450],
-  };
-  const [width, height] = sizes[num] || [800, 600];
-  const data = architectureData[i];
-  return {
-    src: getImageUrl(`/works/webp/photos/architecture${num}.webp`),
-    thumb: getImageUrl(`/works/webp/thumbs/architecture${num}.webp`),
-    alt: `Architecture ${i + 1}`,
-    caption: data.caption,
-    width,
-    height,
-    exif: data.exif,
-  };
-});
+export const architecturePhotos: Photo[] = [
+  ...Array.from({ length: 2 }, (_, i) => {
+    const num = String(i + 1).padStart(2, '0');
+    const sizes: Record<string, [number, number]> = {
+      '01': [600, 800], '02': [800, 450],
+    };
+    const [width, height] = sizes[num] || [800, 600];
+    const data = architectureData[i];
+    return {
+      src: getImageUrl(`/works/webp/photos/architecture${num}.webp`),
+      thumb: getImageUrl(`/works/webp/thumbs/architecture${num}.webp`),
+      alt: `Architecture ${i + 1}`,
+      caption: data.caption,
+      width,
+      height,
+      exif: data.exif,
+    };
+  }),
+  {
+    src: getImageUrl('/works/webp/photos/beijing29.webp'),
+    thumb: getImageUrl('/works/webp/thumbs/beijing29.webp'),
+    alt: 'Architecture 3',
+    caption: '南京佛顶宫',
+    width: 534,
+    height: 800,
+    exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' },
+  },
+  {
+    src: getImageUrl('/works/webp/photos/beijing43.webp'),
+    thumb: getImageUrl('/works/webp/thumbs/beijing43.webp'),
+    alt: 'Architecture 4',
+    caption: '聚焦',
+    width: 800,
+    height: 534,
+    exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1/200s', iso: '100' },
+  },
+];
 
 export const FILM_BRANDS = [
   'KODAK PORTRA 400',
