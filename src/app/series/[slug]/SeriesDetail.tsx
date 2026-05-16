@@ -236,7 +236,7 @@ function VideoTimelineItem({
   const isFirst = index === 0;
 
   return (
-    <div ref={ref} className="flex gap-4 md:gap-10 mb-16 md:mb-28 last:mb-0 relative">
+    <div ref={ref} id={video.title} className="flex gap-4 md:gap-10 mb-16 md:mb-28 last:mb-0 relative">
       {/* Timeline node */}
       <div className="w-[50px] md:w-[72px] flex flex-col items-end pr-3 md:pr-5 text-right shrink-0 pt-3">
         <motion.span
@@ -355,6 +355,25 @@ export default function SeriesDetail({ series }: Props) {
 
   const { scrollYProgress } = useScroll();
   const bgTextY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+
+  // Scroll to anchored work on mount
+  useEffect(() => {
+    const hash = decodeURIComponent(window.location.hash.slice(1));
+    if (!hash) return;
+    const el = document.getElementById(hash);
+    if (!el) return;
+    // Wait for layout/animations to settle
+    const timer = setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Brief highlight pulse
+      el.style.transition = 'background-color 0.5s ease';
+      el.style.backgroundColor = 'rgba(201,169,110,0.08)';
+      setTimeout(() => {
+        el.style.backgroundColor = 'transparent';
+      }, 1200);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <main 

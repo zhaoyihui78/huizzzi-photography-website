@@ -40,6 +40,10 @@ yarn-error.log*
 *.mp4
 public/**/photos-original/
 
+# temporary dirs
+cache/
+new-picture/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
