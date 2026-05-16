@@ -37,10 +37,11 @@ const PRIVATE_CDN =
 export const photos = Array.from({ length: 67 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const [width, height] = privateSizes[num] || [800, 600];
-  const base = PRIVATE_CDN || '/works/webp/private';
+  const base = PRIVATE_CDN;
+  const prefix = '/works/webp/private';
   return {
-    src: `${base}/photos/private${num}.webp`,
-    thumb: `${base}/thumbs/private${num}.webp`,
+    src: `${base}${prefix}/photos/private${num}.webp`,
+    thumb: `${base}${prefix}/thumbs/private${num}.webp`,
     width,
     height,
     num,
