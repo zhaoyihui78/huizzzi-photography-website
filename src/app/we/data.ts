@@ -29,12 +29,16 @@ export const privateSizes: Record<string, [number, number]> = {
   '65': [533, 800], '66': [533, 800], '67': [533, 800],
 };
 
+const PRIVATE_CDN =
+  typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_PRIVATE_CDN || '' : '';
+
 export const photos = Array.from({ length: 67 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
   const [width, height] = privateSizes[num] || [800, 600];
+  const base = PRIVATE_CDN || '/works/webp/private';
   return {
-    src: `/works/webp/private/photos/private${num}.webp`,
-    thumb: `/works/webp/private/thumbs/private${num}.webp`,
+    src: `${base}/photos/private${num}.webp`,
+    thumb: `${base}/thumbs/private${num}.webp`,
     width,
     height,
     num,
