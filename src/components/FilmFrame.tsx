@@ -119,6 +119,7 @@ export default function FilmFrame({
             alt={alt}
             width={1200}
             height={800}
+            loading="lazy"
             className={`w-full h-auto object-cover ${developing ? 'animate-develop' : ''}`}
             srcSet={srcSet}
             sizes={sizes}
