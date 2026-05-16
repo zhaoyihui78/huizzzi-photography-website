@@ -30,7 +30,9 @@ export const privateSizes: Record<string, [number, number]> = {
 };
 
 const PRIVATE_CDN =
-  typeof process !== 'undefined' ? process.env.NEXT_PUBLIC_PRIVATE_CDN || '' : '';
+  typeof process !== 'undefined'
+    ? process.env.NEXT_PUBLIC_PRIVATE_CDN || process.env.NEXT_PUBLIC_IMAGE_BASE || ''
+    : '';
 
 export const photos = Array.from({ length: 67 }, (_, i) => {
   const num = String(i + 1).padStart(2, '0');
