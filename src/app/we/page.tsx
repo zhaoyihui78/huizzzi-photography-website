@@ -41,7 +41,11 @@ function IntroSequence({ onDone }: { onDone: () => void }) {
       {phase < 4 && (
         <motion.div
           className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
-          style={{ background: '#050505' }}
+          style={{
+            background: '#050505',
+            paddingTop: 'env(safe-area-inset-top)',
+            paddingBottom: 'env(safe-area-inset-bottom)',
+          }}
           initial={{ opacity: 1 }}
           exit={{ y: '-100%', transition: { duration: 1.0, ease: [0.76, 0, 0.24, 1] } }}
         >
@@ -65,7 +69,7 @@ function IntroSequence({ onDone }: { onDone: () => void }) {
             {phase === 2 && (
               <motion.div className="absolute flex flex-col items-center">
                 <motion.h1
-                  className="font-heading text-white/90 text-[22px] tracking-tight whitespace-nowrap"
+                  className="font-heading text-white/90 text-[28px] sm:text-[22px] tracking-tight whitespace-nowrap"
                   initial={{ opacity: 0, filter: 'blur(16px)', letterSpacing: '0em', scale: 0.9 }}
                   animate={{ opacity: 1, filter: 'blur(0px)', letterSpacing: '0.3em', scale: 1 }}
                   exit={{ opacity: 0, filter: 'blur(16px)', scale: 1.08 }}
@@ -336,6 +340,7 @@ function LockScreen({ onUnlock }: { onUnlock: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-white"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="w-full max-w-sm px-6">
         <motion.div

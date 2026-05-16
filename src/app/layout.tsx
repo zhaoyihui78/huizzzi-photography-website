@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Playfair_Display, Inter, Noto_Sans_SC, Space_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
@@ -39,6 +39,12 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -49,7 +55,7 @@ export default function RootLayout({
       lang="zh-CN"
       className={`${playfair.variable} ${inter.variable} ${notoSansSC.variable} ${spaceMono.variable} antialiased`}
     >
-      <body className="font-body paper-grain transition-colors duration-1000 bg-white text-[#111111] has-[[data-theme='dark']]:bg-[#0a0a0a] has-[[data-theme='dark']]:text-white has-[[data-theme='oriental']]:bg-[#f4f1ea] has-[[data-theme='oriental']]:text-[#2c2824]">
+      <body className="font-body paper-grain transition-colors duration-1000 bg-white text-[#111111] has-[[data-theme='dark']]:bg-[#0a0a0a] has-[[data-theme='dark']]:text-white has-[[data-theme='oriental']]:bg-[#f4f1ea] has-[[data-theme='oriental']]:text-[#2c2824] pb-[env(safe-area-inset-bottom)]">
         <ServiceWorkerRegister />
         <SmoothScroll>
           <EntranceOverlay />
