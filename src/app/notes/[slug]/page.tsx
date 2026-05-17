@@ -1,11 +1,11 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import Link from 'next/link';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { getNoteBySlug, getNotes } from '@/lib/notes';
 import { getImageUrl } from '@/config/images';
 import FadeIn from '@/components/FadeIn';
 import GlossaryLink from '@/components/GlossaryLink';
+import NoteBackButton from '@/components/NoteBackButton';
 
 export async function generateStaticParams() {
   const notes = getNotes();
@@ -52,9 +52,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
       {/* Left / Main Content */}
       <article className="flex-1 max-w-[720px]">
         <FadeIn delay={0}>
-          <Link href="/notes" className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-[#aaaaaa] hover:text-[#111111] transition-colors mb-12">
-            <span>← Back to Notes</span>
-          </Link>
+          <NoteBackButton isGlossary={metadata.type === 'glossary'} />
           
           <header className="mb-14">
             <div className="flex items-center gap-3 text-[9px] font-mono uppercase tracking-[0.2em] text-[#aaaaaa] mb-5">
