@@ -1,9 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import FadeIn from '@/components/FadeIn';
-import { getImageUrl } from '@/config/images';
 
 export default function AboutPage() {
   const containerVariants = {
@@ -123,6 +123,17 @@ export default function AboutPage() {
               </ul>
             </motion.div>
           </div>
+
+          <motion.div variants={itemVariants} className="pt-6">
+            <Link
+              href="/we?auth=1"
+              className="group inline-flex items-center gap-3 font-mono text-[8px] uppercase tracking-[0.3em] text-[#b9b9b9] hover:text-[#7d7d7d] transition-colors duration-500"
+            >
+              <span className="h-px w-6 bg-[#dfdfdf] transition-all duration-500 group-hover:w-10 group-hover:bg-[#cfcfcf]" />
+              for us
+              <span className="h-px w-6 bg-[#dfdfdf] transition-all duration-500 group-hover:w-10 group-hover:bg-[#cfcfcf]" />
+            </Link>
+          </motion.div>
         </motion.div>
 
         {/* Right Portrait Image */}
@@ -145,6 +156,7 @@ export default function AboutPage() {
           </div>
         </FadeIn>
       </div>
+
     </main>
   );
 }

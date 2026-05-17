@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { useSearchParams } from 'next/navigation';
 import { verifyPassword, photos, meetings, cnNumerals } from './data';
 
 /* ---------- Portal ---------- */
@@ -960,14 +961,24 @@ function NotesSection() {
 
 /* ---------- Main Page ---------- */
 export default function WePage() {
+  const searchParams = useSearchParams();
   const [unlocked, setUnlocked] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const forceAuth = searchParams.get('auth') === '1';
 
   useEffect(() => {
+    if (forceAuth) {
+      setUnlocked(false);
+      setLoaded(true);
+      setShowIntro(false);
+      setIntroDone(false);
+      return;
+    }
+
     const isUnlocked = localStorage.getItem('we_unlocked') === '1';
     setUnlocked(isUnlocked);
     setLoaded(true);
@@ -976,7 +987,7 @@ export default function WePage() {
       if (!seen) setShowIntro(true);
       else setIntroDone(true);
     }
-  }, []);
+  }, [forceAuth]);
 
   const handleUnlock = useCallback(() => {
     setUnlocked(true);

@@ -114,9 +114,15 @@ export default function Sidebar() {
           type="button"
           onClick={() => setDesktopCollapsed((prev) => !prev)}
           aria-label={isCollapsed ? '展开侧边栏' : '收起侧边栏'}
-          className={`hidden md:flex absolute top-1/2 right-0 translate-x-1/2 -translate-y-1/2 z-20 h-32 w-8 items-center justify-center group`}
+          className={`hidden md:flex absolute top-1/2 right-[2px] -translate-y-1/2 z-20 h-32 w-6 items-center justify-center group`}
         >
-          <div className="absolute inset-0" />
+          <div className={`absolute inset-0 rounded-full ${
+            isDarkMode
+              ? 'bg-white/[0.02] group-hover:bg-white/[0.04]'
+              : isOriental
+              ? 'bg-[#8c3b31]/[0.02] group-hover:bg-[#8c3b31]/[0.05]'
+              : 'bg-black/[0.015] group-hover:bg-black/[0.03]'
+          } transition-colors duration-500`} />
           <motion.div
             className={`flex flex-col items-center justify-center opacity-40 transition-all duration-500 group-hover:opacity-100 ${accentText}`}
             animate={{ rotate: isCollapsed ? 180 : 0 }}
