@@ -49,6 +49,9 @@ new-picture/
 # raw private photos (processed webp lives in public/)
 /we/
 
+# processed private webp files (served from COS)
+public/works/webp/private/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

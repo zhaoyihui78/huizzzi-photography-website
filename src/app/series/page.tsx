@@ -31,7 +31,7 @@ export default function SeriesPage() {
   };
 
   return (
-    <main className="min-h-full px-10 py-14">
+    <main className="min-h-full px-6 md:px-10 py-10 md:py-14">
       <FadeIn delay={0}>
         <h1 className="font-heading text-[15px] font-normal tracking-tight text-[#111111] mb-16">
           All Series
@@ -39,7 +39,7 @@ export default function SeriesPage() {
       </FadeIn>
 
       <motion.div
-        className="grid grid-cols-3 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
         variants={containerVariants}
         initial="hidden"
         animate="visible"

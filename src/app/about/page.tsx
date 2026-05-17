@@ -30,7 +30,7 @@ export default function AboutPage() {
   };
 
   return (
-    <main className="min-h-full px-10 py-14 max-w-[1400px] mx-auto">
+    <main className="min-h-full px-6 md:px-10 py-10 md:py-14 max-w-[1400px] mx-auto">
       <FadeIn delay={0}>
         <h1 className="font-heading text-[15px] font-normal tracking-tight text-[#111111] mb-16">
           About
@@ -40,7 +40,7 @@ export default function AboutPage() {
       <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
         {/* Left Text Content */}
         <motion.div
-          className="flex-1 flex flex-col gap-7 text-[13px] text-[#888888] leading-[2] font-light max-w-xl"
+          className="flex-1 flex flex-col gap-7 text-[14px] md:text-[13px] text-[#888888] leading-[2] font-light max-w-xl"
           variants={containerVariants}
           initial="hidden"
           animate="visible"

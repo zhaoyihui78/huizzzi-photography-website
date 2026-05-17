@@ -195,7 +195,7 @@ export default function Home() {
                 「一台相机的背后只能有一双眼睛，一个快门只给唯一的手指。在无法分析的瞬间快速地判断，充满乐趣。人很难同时在这里，又在那里，可是你看到刚刚拍下的照片，所有曾经存在过的瞬间一起绽放，生命的丰盛和喜悦，都在里面。」
               </p>
             </div>
-            <p className="font-heading text-[9px] md:text-[10px] font-light tracking-[0.2em] pt-2 text-[#aaaaaa]">
+            <p className="font-heading text-[11px] md:text-[10px] font-light tracking-[0.2em] pt-2 text-[#aaaaaa]">
               —— 陈绮贞
             </p>
           </div>

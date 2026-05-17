@@ -10,7 +10,7 @@ export default function MapPage() {
   const [selected, setSelected] = useState<Location | null>(null);
 
   return (
-    <main className="h-screen flex flex-col bg-white">
+    <main className="h-[100dvh] flex flex-col bg-white">
       {/* Header */}
       <section className="px-6 md:px-10 pt-14 pb-4 shrink-0">
         <FadeIn delay={0}>

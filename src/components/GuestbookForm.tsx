@@ -123,7 +123,7 @@ export default function GuestbookForm({ onPosted }: GuestbookFormProps) {
         <button
           type="submit"
           disabled={submitting || !content.trim()}
-          className="shrink-0 px-6 py-2 border border-[#c9a96e] bg-transparent font-mono text-[10px] text-[#c9a96e] tracking-[0.15em] uppercase hover:bg-[#c9a96e] hover:text-white transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+          className="shrink-0 px-6 py-2.5 border border-[#c9a96e] bg-transparent font-mono text-[10px] text-[#c9a96e] tracking-[0.15em] uppercase hover:bg-[#c9a96e] hover:text-white transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer min-h-[44px]"
         >
           {submitting ? '...' : '发布'}
         </button>

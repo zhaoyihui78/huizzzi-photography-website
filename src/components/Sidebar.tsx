@@ -49,7 +49,7 @@ export default function Sidebar() {
         <Link href="/" className={`font-heading text-[15px] font-medium tracking-[0.08em] ${isDarkMode ? 'text-[#e8d088]' : isOriental ? 'text-[#8c3b31]' : 'text-[#111111]'}`}>
           HUI ZZZI
         </Link>
-        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 -mr-2 outline-none">
+        <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-3 -mr-2 outline-none min-h-[44px] min-w-[44px] flex items-center justify-center">
           <div className="w-5 flex flex-col gap-[5px]">
              <span className={`block h-[1px] w-full transition-transform duration-300 ${isDarkMode ? 'bg-white' : 'bg-[#111111]'} ${mobileMenuOpen ? 'rotate-45 translate-y-[6px]' : ''}`} />
              <span className={`block h-[1px] w-full transition-opacity duration-300 ${isDarkMode ? 'bg-white' : 'bg-[#111111]'} ${mobileMenuOpen ? 'opacity-0' : ''}`} />
