@@ -6,6 +6,9 @@ import { getImageUrl } from '@/config/images';
 import FadeIn from '@/components/FadeIn';
 import GlossaryLink from '@/components/GlossaryLink';
 import NoteBackButton from '@/components/NoteBackButton';
+import ReadingProgress from '@/components/ReadingProgress';
+import TableOfContents from '@/components/TableOfContents';
+import ArticleNavigation from '@/components/ArticleNavigation';
 
 export async function generateStaticParams() {
   const notes = getNotes();
@@ -55,8 +58,20 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
 
   const { metadata, content } = note;
 
+  // Calculate prev/next notes (excluding glossary)
+  const allNotes = getNotes().filter((n) => n.type !== 'glossary');
+  const currentIndex = allNotes.findIndex((n) => n.slug === resolvedParams.slug);
+  
+  // Since allNotes is sorted by date descending (newest first):
+  // "Previous" usually means newer (index - 1)
+  // "Next" usually means older (index + 1)
+  const prevNote = currentIndex > 0 ? allNotes[currentIndex - 1] : null;
+  const nextNote = currentIndex < allNotes.length - 1 ? allNotes[currentIndex + 1] : null;
+
   return (
-    <main className="min-h-full px-5 md:px-10 py-8 md:py-16 max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 md:gap-12 lg:gap-24">
+    <>
+      <ReadingProgress />
+      <main className="min-h-full px-5 md:px-10 py-8 md:py-16 max-w-[1200px] mx-auto flex flex-col lg:flex-row gap-10 md:gap-12 lg:gap-24">
       {/* Left / Main Content */}
       <article className="flex-1 max-w-[720px] min-w-0">
         <FadeIn delay={0}>
@@ -107,6 +122,10 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           <div className="prose-custom">
             <MDXRemote source={content} components={components} />
           </div>
+
+          {metadata.type !== 'glossary' && (
+            <ArticleNavigation prevNote={prevNote} nextNote={nextNote} />
+          )}
         </FadeIn>
       </article>
 
@@ -116,7 +135,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
           <h3 className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#cccccc] mb-6">
             Metadata
           </h3>
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-8">
             <div>
               <span className="block text-[10px] text-[#aaaaaa] mb-1">Tags</span>
               <div className="flex flex-wrap gap-2">
@@ -127,9 +146,16 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
                 ))}
               </div>
             </div>
+
+            {metadata.type !== 'glossary' && (
+              <div className="pt-8 border-t border-[#f0f0f0]">
+                <TableOfContents />
+              </div>
+            )}
           </div>
         </div>
       </aside>
     </main>
+    </>
   );
 }
