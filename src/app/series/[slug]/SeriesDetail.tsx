@@ -15,6 +15,10 @@ interface Props {
   series: Series;
 }
 
+function getPhotoAnchor(photo: Photo) {
+  return photo.caption || photo.alt;
+}
+
 function ContactSheetGallery({
   photos,
   onPhotoClick,
@@ -160,6 +164,7 @@ function ContactSheetGallery({
               return (
                 <motion.div
                   key={photo.src}
+                  id={getPhotoAnchor(photo)}
                   variants={itemVariants}
                   className="group flex flex-col relative"
                   onMouseEnter={() => setHoveredIndex(idx)}
@@ -554,6 +559,7 @@ export default function SeriesDetail({ series }: Props) {
           {series.photos.map((photo, i) => (
             <FadeIn key={i} delay={0} direction={i % 2 === 0 ? 'left' : 'right'}>
               <div
+                id={getPhotoAnchor(photo)}
                 className={`flex flex-col md:flex-row items-center relative ${
                   i % 2 === 1 ? 'md:flex-row-reverse' : ''
                 }`}

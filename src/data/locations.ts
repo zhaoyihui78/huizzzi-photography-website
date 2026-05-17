@@ -152,6 +152,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing13.webp'),
     exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F6.3', shutter: '1/200s', iso: '400' },
+    workAnchor: '清晨CBD',
   },
   {
     id: 'yangxiehu',
@@ -167,6 +168,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing07.webp'),
     exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '0.5s', iso: '100' },
+    workAnchor: '雁栖湖夜景',
   },
   {
     id: 'shougang',
@@ -182,6 +184,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing09.webp'),
     exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '30s', iso: '100' },
+    workAnchor: '首钢园星轨',
   },
   {
     id: 'zhonggulou',
@@ -197,6 +200,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing05.webp'),
     exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F8', shutter: '1s', iso: '200' },
+    workAnchor: '遥望古今',
   },
   {
     id: 'mingchengqiang',
@@ -212,6 +216,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing06.webp'),
     exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F7.1', shutter: '1/200s', iso: '100' },
+    workAnchor: '明城墙日出',
   },
   {
     id: 'dianshiteta',
@@ -228,6 +233,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing10.webp'),
     exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F11', shutter: '1/1000s', iso: '100' },
+    workAnchor: '中央电视塔悬日',
   },
   {
     id: 'yangshanzhen',
@@ -243,6 +249,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing22.webp'),
     exif: { camera: 'Nikon Z5', lens: 'NIKKOR Z 24-200MM F/4-6.3', aperture: 'F9', shutter: '1/8000s', iso: '100' },
+    workAnchor: '央视总部大楼悬日',
   },
   {
     id: 'gongti',
@@ -258,6 +265,7 @@ const rawLocations = [
     ],
     cover: getImageUrl('/works/webp/thumbs/beijing21.webp'),
     exif: { camera: 'Nikon Z5', lens: 'TTArtisan 11mm f2.8', aperture: 'F2.8', shutter: '1/50s', iso: '100' },
+    workAnchor: '新工体的首场大胜',
   },
 ];
 

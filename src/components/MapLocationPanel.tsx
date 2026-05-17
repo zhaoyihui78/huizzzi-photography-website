@@ -120,7 +120,7 @@ export default function MapLocationPanel({ location, onClose }: MapLocationPanel
                 href={`/series/${location.seriesSlug}/${location.workAnchor ? `#${encodeURIComponent(location.workAnchor)}` : ''}`}
                 className="inline-block px-5 py-2 border border-[#a08060] font-mono text-[9px] text-[#a08060] tracking-[0.15em] uppercase hover:bg-[#a08060] hover:text-[#fdfcf9] transition-colors duration-300"
               >
-                查看系列作品
+                查看该作品
               </Link>
             </div>
           </motion.div>
