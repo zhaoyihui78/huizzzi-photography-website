@@ -5,6 +5,13 @@ import {
   WE_AUTH_COOKIE,
 } from '@/lib/we-auth';
 
+function normalizePathname(pathname: string) {
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
 function buildRedirectToLogin(request: NextRequest) {
   const loginUrl = request.nextUrl.clone();
   loginUrl.pathname = '/we/login';
@@ -17,14 +24,16 @@ function buildRedirectToLogin(request: NextRequest) {
 
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
-  if (!pathname.startsWith('/we')) {
+  const normalizedPathname = normalizePathname(pathname);
+
+  if (!normalizedPathname.startsWith('/we')) {
     return NextResponse.next();
   }
 
   const hasAuth = await hasValidWeSessionToken(
     request.cookies.get(WE_AUTH_COOKIE)?.value
   );
-  const isLoginPage = pathname === '/we/login';
+  const isLoginPage = normalizedPathname === '/we/login';
 
   if (isLoginPage) {
     if (hasAuth) {
