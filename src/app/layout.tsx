@@ -63,7 +63,7 @@ export default function RootLayout({
           <ScrollProgress />
           <Sidebar />
           {/* Main content wrapper - scrollable area on mobile, standard layout on desktop */}
-          <div className="md:ml-[220px] mt-16 md:mt-0 h-[calc(100vh-4rem)] md:h-auto md:min-h-screen overflow-y-auto md:overflow-y-visible" id="main-scroll-container">
+          <div className="md:ml-[var(--sidebar-w,220px)] mt-16 md:mt-0 h-[calc(100vh-4rem)] md:h-auto md:min-h-screen overflow-y-auto md:overflow-y-visible transition-[margin] duration-700 ease-in-out" id="main-scroll-container">
             <PageTransition>
               {children}
             </PageTransition>
