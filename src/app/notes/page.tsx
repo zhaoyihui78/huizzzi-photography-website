@@ -15,23 +15,23 @@ export default function NotesPage() {
   const notes = allNotes.filter(note => note.type !== 'glossary');
 
   return (
-    <main className="min-h-full px-6 md:px-10 py-10 md:py-14 max-w-[1400px] mx-auto">
+    <main className="min-h-full px-5 md:px-10 py-8 md:py-14 max-w-[1400px] mx-auto">
       <FadeIn delay={0}>
-        <div className="mb-16">
-          <h1 className="font-heading text-[15px] font-normal tracking-[0.2em] text-[#111111] uppercase mb-3">
+        <div className="mb-12 md:mb-16">
+          <h1 className="font-heading text-[14px] md:text-[15px] font-normal tracking-[0.18em] md:tracking-[0.2em] text-[#111111] uppercase mb-3">
             Field Notes
           </h1>
-          <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#888888]">
+          <p className="font-mono text-[9px] uppercase tracking-[0.16em] md:tracking-[0.2em] text-[#888888] leading-relaxed">
             摄影手记 / Thoughts & Techniques
           </p>
         </div>
       </FadeIn>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-10 md:gap-y-16">
         {notes.map((note, index) => (
           <FadeIn key={note.slug} delay={index * 0.1}>
-            <Link href={`/notes/${note.slug}`} className="group flex flex-col gap-5 block h-full">
-              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#f9f9f9] border border-[#f0f0f0]">
+            <Link href={`/notes/${note.slug}`} className="group flex flex-col gap-4 md:gap-5 block h-full">
+              <div className="relative aspect-[5/4] md:aspect-[4/3] w-full overflow-hidden bg-[#f9f9f9] border border-[#f0f0f0]">
                 {note.cover && (
                   <Image
                     src={getImageUrl(note.cover)}
@@ -44,16 +44,16 @@ export default function NotesPage() {
                 )}
               </div>
               
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3 text-[9px] font-mono uppercase tracking-[0.2em] text-[#aaaaaa]">
+              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] font-mono uppercase tracking-[0.16em] md:tracking-[0.2em] text-[#aaaaaa]">
                   <span>{note.category}</span>
                   <span className="w-1 h-1 rounded-full bg-[#e0e0e0]" />
                   <span>{note.date.replace(/-/g, '.')}</span>
                 </div>
-                <h2 className="text-[15px] text-[#111111] font-light leading-snug tracking-wide group-hover:underline underline-offset-4 decoration-[#e0e0e0] transition-all">
+                <h2 className="text-[17px] md:text-[15px] text-[#111111] font-light leading-[1.55] md:leading-snug tracking-[0.01em] md:tracking-wide group-hover:underline underline-offset-4 decoration-[#e0e0e0] transition-all">
                   {note.title}
                 </h2>
-                <p className="text-[12px] text-[#888888] leading-relaxed line-clamp-2 mt-1">
+                <p className="text-[13px] md:text-[12px] text-[#888888] leading-[1.85] md:leading-relaxed line-clamp-3 md:line-clamp-2 mt-0.5 md:mt-1">
                   {note.excerpt}
                 </p>
               </div>

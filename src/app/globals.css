@@ -188,27 +188,27 @@ html {
     @apply text-[#555555] font-light leading-relaxed;
   }
   .prose-custom p {
-    @apply mb-6 text-[14px] md:text-[15px] leading-[2.2];
+    @apply mb-5 md:mb-6 text-[15px] md:text-[15px] leading-[2] md:leading-[2.2];
   }
   .prose-custom h2 {
-    @apply text-[18px] md:text-[20px] font-normal text-[#111111] mt-14 mb-6 tracking-wide;
+    @apply text-[19px] md:text-[20px] font-normal text-[#111111] mt-10 md:mt-14 mb-5 md:mb-6 tracking-[0.01em] md:tracking-wide;
   }
   .prose-custom h3 {
-    @apply text-[16px] md:text-[17px] font-normal text-[#111111] mt-10 mb-4 tracking-wide;
+    @apply text-[17px] md:text-[17px] font-normal text-[#111111] mt-7 md:mt-10 mb-3.5 md:mb-4 tracking-[0.01em] md:tracking-wide;
   }
   .prose-custom blockquote {
-    @apply border-l-[2px] border-[#e0e0e0] pl-6 py-1 my-10 text-[14px] text-[#888888] italic tracking-wide;
+    @apply border-l-[2px] border-[#e0e0e0] pl-4 md:pl-6 py-1 my-7 md:my-10 text-[13px] md:text-[14px] text-[#888888] italic tracking-wide;
   }
   .prose-custom strong {
     @apply font-normal text-[#111111];
   }
   .prose-custom ul {
-    @apply list-disc pl-5 mb-8 text-[14px] md:text-[15px] leading-[2.2] marker:text-[#cccccc];
+    @apply list-disc pl-5 mb-6 md:mb-8 text-[15px] md:text-[15px] leading-[2] md:leading-[2.2] marker:text-[#cccccc];
   }
   .prose-custom li {
     @apply mb-2;
   }
   .prose-custom img {
-    @apply w-full h-auto my-12;
+    @apply w-full h-auto my-8 md:my-12;
   }
 }

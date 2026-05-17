@@ -18,6 +18,7 @@
 - **部署**: Vercel
 - **图片存储**: 腾讯云 COS (北京节点)
 - **留言系统**: GitHub Discussions + 自定义前端 UI
+- **内容系统**: MDX 手记 + Glossary 术语词条
 - **域名**: huizzzi.art (腾讯云)
 - **PWA**: Service Worker 离线缓存 + 可安装到主屏幕
 
@@ -62,14 +63,17 @@ npm run build
 ├── src/
 │   ├── app/                 # Next.js App Router 页面
 │   │   ├── api/comment/     # 本地开发 API Route
-│   │   └── guestbook/       # 留言板页面
+│   │   ├── guestbook/       # 留言板页面
+│   │   └── notes/           # Field Notes 手记页面
 │   ├── components/          # 公共组件
 │   │   ├── CommentWall.tsx  # 信件墙
 │   │   ├── GuestbookForm.tsx# 留言表单
 │   │   ├── LetterCard.tsx   # 信件卡片
 │   │   ├── LetterModal.tsx  # 信件详情弹窗
+│   │   ├── GlossaryLink.tsx # 手记术语链接
 │   │   └── GiscusComments.tsx# Giscus 备用组件
 │   ├── config/              # 配置文件（图片/视频 URL 解析）
+│   ├── content/notes/       # MDX 手记与 glossary 词条
 │   ├── data/                # 摄影系列数据
 │   └── utils/               # 工具函数
 └── next.config.ts           # Next.js 配置
@@ -94,6 +98,8 @@ npm run build
 
 - `src/config/images.ts` — 图片 URL 解析器，根据环境变量自动拼接完整路径
 - `src/config/media.ts` — 视频 URL 解析器，支持本地/GitHub Release/CDN 三种模式
+- 所有正式环境图片统一走 COS，`About` 肖像图也不再保留本地例外
+- 新增或替换图片时，需同步上传到 COS 对应路径；`huizzzi.png` 必须位于 COS 根目录
 - 本地开发时若不设置 `NEXT_PUBLIC_IMAGE_BASE`，图片会回退到本地 `public/` 目录
 
 ### PWA 与离线缓存
@@ -140,6 +146,18 @@ npm run dev
 | `GITHUB_TOKEN` | `ghp_xxx` | GitHub Personal Access Token，用于发帖到 Discussions |
 
 在 Vercel 控制台 → Settings → Environment Variables 中配置。
+
+---
+
+## Field Notes 手记
+
+网站内置 `Field Notes` 摄影手记板块，使用 MDX 管理长文内容与术语词条。
+
+- **列表页**: `/notes`
+- **详情页**: `/notes/[slug]`
+- **词条类型**: `glossary`，默认不出现在列表中，只在正文里通过 `<Glossary />` 组件触发
+- **返回体验**: 从手记跳到 Glossary 词条后，可通过返回按钮回到原文阅读位置
+- **移动端优化**: 已针对手机端优化列表卡片密度、详情页标题节奏、tags 展示与正文阅读间距
 
 ---
 

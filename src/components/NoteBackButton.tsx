@@ -10,7 +10,7 @@ export default function NoteBackButton({ isGlossary }: { isGlossary: boolean }) 
     return (
       <button 
         onClick={() => router.back()}
-        className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-[#aaaaaa] hover:text-[#111111] transition-colors mb-12"
+        className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.16em] md:tracking-[0.2em] text-[#aaaaaa] hover:text-[#111111] transition-colors mb-8 md:mb-12"
       >
         <span>← Back to Article</span>
       </button>
@@ -20,7 +20,7 @@ export default function NoteBackButton({ isGlossary }: { isGlossary: boolean }) 
   return (
     <Link 
       href="/notes" 
-      className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.2em] text-[#aaaaaa] hover:text-[#111111] transition-colors mb-12"
+      className="inline-flex items-center gap-2 text-[9px] font-mono uppercase tracking-[0.16em] md:tracking-[0.2em] text-[#aaaaaa] hover:text-[#111111] transition-colors mb-8 md:mb-12"
     >
       <span>← Back to Notes</span>
     </Link>
