@@ -62,6 +62,7 @@ export default function Sidebar() {
   const aboutActive = pathname === '/about' || pathname === '/about/';
   const guestbookActive = pathname === '/guestbook' || pathname === '/guestbook/';
   const mapActive = pathname === '/map' || pathname === '/map/';
+  const notesActive = pathname.startsWith('/notes');
   const isCollapsed = hydrated && desktopCollapsed;
   const collapsedCategoryLabels: Record<string, string> = {
     CITY: 'CTY',
@@ -292,6 +293,30 @@ export default function Sidebar() {
               <span
                 className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${lineColor} ${
                   isCollapsed ? 'opacity-0' : guestbookActive ? 'w-full' : 'w-0 group-hover:w-full'
+                }`}
+              />
+            </Link>
+            <Link
+              href="/notes"
+              aria-label="Field Notes"
+              title={isCollapsed ? 'Field Notes' : undefined}
+              className={`group relative tracking-wide transition-colors duration-1000 ${
+                isCollapsed ? 'w-9 text-center text-[10px]' : 'w-fit text-[11px]'
+              } ${notesActive ? activeText : mutedText}`}
+            >
+              {isCollapsed ? (
+                <>
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-transparent transition-all duration-500 group-hover:border-current/20">
+                    FN
+                  </span>
+                  <span className={`pointer-events-none absolute left-full top-1/2 ml-4 -translate-y-1/2 whitespace-nowrap border px-3 py-2 font-mono text-[8px] uppercase tracking-[0.24em] opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 ${accentBorder} ${accentSurface} ${accentText}`}>
+                    Field Notes
+                  </span>
+                </>
+              ) : 'Field Notes'}
+              <span
+                className={`absolute -bottom-[3px] left-0 h-[1px] transition-all duration-500 ease-out ${lineColor} ${
+                  isCollapsed ? 'opacity-0' : notesActive ? 'w-full' : 'w-0 group-hover:w-full'
                 }`}
               />
             </Link>
