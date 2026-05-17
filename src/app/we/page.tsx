@@ -859,6 +859,9 @@ export default function WePage() {
   const [showIntro, setShowIntro] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [musicEnabled, setMusicEnabled] = useState(true);
+  const [musicBlocked, setMusicBlocked] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const forced = new URLSearchParams(window.location.search).get('auth') === '1';
@@ -916,6 +919,28 @@ export default function WePage() {
     });
   }, []);
 
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !unlocked) return;
+
+    if (!musicEnabled) {
+      audio.pause();
+      return;
+    }
+
+    if (showIntro && !introDone) return;
+
+    audio.volume = 0.42;
+    audio.loop = true;
+
+    const playPromise = audio.play();
+    if (playPromise) {
+      playPromise
+        .then(() => setMusicBlocked(false))
+        .catch(() => setMusicBlocked(true));
+    }
+  }, [unlocked, musicEnabled, showIntro, introDone]);
+
   if (!loaded) return null;
 
   if (!unlocked) {
@@ -928,6 +953,11 @@ export default function WePage() {
 
   return (
     <>
+      <audio ref={audioRef} preload="none" loop playsInline>
+        <source src="/works/audio/等你的季节.m4a" type="audio/mp4" />
+        <source src="/works/audio/等你的季节.mp3" type="audio/mpeg" />
+      </audio>
+
       <main className="min-h-screen bg-white">
         {introDone && (
           <>
@@ -955,6 +985,30 @@ export default function WePage() {
             >
               <Typewriter text="Even if we can't meet You are the hope in my weary life" delay={introDone ? 800 : 0} />
             </p>
+
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = !musicEnabled;
+                  setMusicEnabled(next);
+                  if (next) setMusicBlocked(false);
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500 transition-colors hover:border-stone-300 hover:text-stone-700"
+              >
+                <span className={`h-1.5 w-1.5 rounded-full ${musicEnabled ? 'bg-[#b59a5b]' : 'bg-stone-300'}`} />
+                {musicEnabled ? 'Music On' : 'Music Off'}
+              </button>
+              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-stone-300">
+                low data audio
+              </span>
+            </div>
+
+            {musicBlocked && (
+              <p className="mt-3 text-[11px] text-stone-400">
+                浏览器拦截了自动播放，点一下上面的 `Music On` 就能恢复。
+              </p>
+            )}
           </motion.div>
 
           {/* Meeting Chronicle */}
