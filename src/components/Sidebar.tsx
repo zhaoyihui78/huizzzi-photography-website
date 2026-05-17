@@ -63,6 +63,13 @@ export default function Sidebar() {
   const guestbookActive = pathname === '/guestbook' || pathname === '/guestbook/';
   const mapActive = pathname === '/map' || pathname === '/map/';
   const isCollapsed = hydrated && desktopCollapsed;
+  const collapsedCategoryLabels: Record<string, string> = {
+    CITY: 'CTY',
+    NATURE: 'NAT',
+    ARCHITECTURE: 'ARC',
+    FILM: 'FLM',
+    LIFE: 'LIF',
+  };
 
   const lineColor = isDarkMode ? 'bg-white' : isOriental ? 'bg-[#8c3b31]' : 'bg-[#111111]';
   const mutedText = isDarkMode ? 'text-[#666666] hover:text-[#aaaaaa]' : isOriental ? 'text-[#8c8577] hover:text-[#2c2824]' : 'text-[#888888] hover:text-[#111111]';
@@ -183,11 +190,11 @@ export default function Sidebar() {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -6 }}
-                    className={`font-mono text-[8px] font-normal uppercase tracking-[0.35em] transition-colors duration-1000 [writing-mode:vertical-rl] ${
+                    className={`font-mono text-[8px] font-normal uppercase tracking-[0.24em] text-center transition-colors duration-1000 ${
                       isDarkMode ? 'text-[#555555]' : isOriental ? 'text-[#a6a092]' : 'text-[#cccccc]'
                     }`}
                   >
-                    {category.split(' ')[0]}
+                    {collapsedCategoryLabels[category] ?? category.slice(0, 3)}
                   </motion.span>
                 ) : (
                   <motion.span
@@ -251,7 +258,7 @@ export default function Sidebar() {
               {isCollapsed ? (
                 <>
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-transparent transition-all duration-500 group-hover:border-current/20">
-                    A
+                    AB
                   </span>
                   <span className={`pointer-events-none absolute left-full top-1/2 ml-4 -translate-y-1/2 whitespace-nowrap border px-3 py-2 font-mono text-[8px] uppercase tracking-[0.24em] opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 ${accentBorder} ${accentSurface} ${accentText}`}>
                     About
@@ -275,7 +282,7 @@ export default function Sidebar() {
               {isCollapsed ? (
                 <>
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-transparent transition-all duration-500 group-hover:border-current/20">
-                    G
+                    GB
                   </span>
                   <span className={`pointer-events-none absolute left-full top-1/2 ml-4 -translate-y-1/2 whitespace-nowrap border px-3 py-2 font-mono text-[8px] uppercase tracking-[0.24em] opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 ${accentBorder} ${accentSurface} ${accentText}`}>
                     Guestbook
@@ -299,7 +306,7 @@ export default function Sidebar() {
               {isCollapsed ? (
                 <>
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-transparent transition-all duration-500 group-hover:border-current/20">
-                    M
+                    MP
                   </span>
                   <span className={`pointer-events-none absolute left-full top-1/2 ml-4 -translate-y-1/2 whitespace-nowrap border px-3 py-2 font-mono text-[8px] uppercase tracking-[0.24em] opacity-0 shadow-[0_10px_30px_rgba(0,0,0,0.12)] transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100 ${accentBorder} ${accentSurface} ${accentText}`}>
                     Map
@@ -322,7 +329,7 @@ export default function Sidebar() {
               isDarkMode ? 'text-[#444444]' : isOriental ? 'text-[#b8b3a5]' : 'text-[#dddddd]'
             } ${isCollapsed ? 'opacity-0 md:opacity-100 text-[7px]' : ''}`}
           >
-            {isCollapsed ? '©' : `© ${new Date().getFullYear()}`}
+            {isCollapsed ? '©' : `© ${new Date().getFullYear()} HuiZzzzi Photography`}
           </p>
         </div>
       </aside>
