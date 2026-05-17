@@ -1,9 +1,18 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { verifyPassword, photos, meetings, cnNumerals } from './data';
+
+/* ---------- Portal ---------- */
+function Portal({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
+}
 
 /* ---------- Types ---------- */
 interface Note {
@@ -1007,62 +1016,76 @@ export default function WePage() {
   if (!loaded) return null;
 
   if (!unlocked) {
-    return <LockScreen onUnlock={handleUnlock} />;
+    return (
+      <Portal>
+        <LockScreen onUnlock={handleUnlock} />
+      </Portal>
+    );
   }
 
   return (
-    <main className="min-h-screen bg-white">
-      {showIntro && <IntroSequence onDone={handleIntroDone} />}
-      {introDone && (
-        <>
-          <DustParticles />
-          <LightCursor />
-        </>
+    <>
+      <main className="min-h-screen bg-white">
+        {introDone && (
+          <>
+            <DustParticles />
+            <LightCursor />
+          </>
+        )}
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-12"
+          >
+            <h1
+              className="font-heading text-[1.75rem] md:text-[2.25rem] font-extralight tracking-[0.1em] text-stone-800 mb-3"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              Our Moments
+            </h1>
+            <p
+              className="text-[13px] text-stone-400 font-light tracking-[0.12em] italic mb-8"
+              style={{ fontFamily: 'var(--font-heading)' }}
+            >
+              <Typewriter text="Even if we can't meet You are the hope in my weary life" delay={introDone ? 800 : 0} />
+            </p>
+            <div className="flex justify-center">
+              <AudioPlayer audioRef={audioRef} />
+            </div>
+          </motion.div>
+
+          {/* Meeting Chronicle */}
+          <MeetingChronicle openLightbox={openLightbox} />
+
+          {/* Notes */}
+          <NotesSection />
+        </div>
+      </main>
+
+      {/* IntroSequence — rendered via Portal to escape PageTransition transform */}
+      {showIntro && (
+        <Portal>
+          <IntroSequence onDone={handleIntroDone} />
+        </Portal>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <h1
-            className="font-heading text-[1.75rem] md:text-[2.25rem] font-extralight tracking-[0.1em] text-stone-800 mb-3"
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            Our Moments
-          </h1>
-          <p
-            className="text-[13px] text-stone-400 font-light tracking-[0.12em] italic mb-8"
-            style={{ fontFamily: 'var(--font-heading)' }}
-          >
-            <Typewriter text="Even if we can't meet You are the hope in my weary life" delay={introDone ? 800 : 0} />
-          </p>
-          <div className="flex justify-center">
-            <AudioPlayer audioRef={audioRef} />
-          </div>
-        </motion.div>
-
-        {/* Meeting Chronicle */}
-        <MeetingChronicle openLightbox={openLightbox} />
-
-        {/* Notes */}
-        <NotesSection />
-      </div>
-
-      {/* Lightbox */}
+      {/* Lightbox — rendered via Portal to escape PageTransition transform */}
       <AnimatePresence>
         {lightboxIndex !== null && (
-          <Lightbox
-            index={lightboxIndex}
-            onClose={closeLightbox}
-            onPrev={prevPhoto}
-            onNext={nextPhoto}
-            audioRef={audioRef}
-          />
+          <Portal>
+            <Lightbox
+              index={lightboxIndex}
+              onClose={closeLightbox}
+              onPrev={prevPhoto}
+              onNext={nextPhoto}
+              audioRef={audioRef}
+            />
+          </Portal>
         )}
       </AnimatePresence>
-    </main>
+    </>
   );
 }
