@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Photo } from '@/data/series';
 import { playShutter } from '@/utils/audio';
 
+import LikeButton from './LikeButton';
+
 interface LightboxProps {
   photo: Photo | null;
   seriesTitle?: string;
@@ -263,26 +265,30 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
             </motion.div>
 
             {/* Cinematic EXIF info */}
-            {exifText && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ delay: 0.5, duration: 0.8 }}
-                className="absolute bottom-6 left-8 font-mono text-[9px] text-white/30 tracking-[0.2em] pointer-events-none"
-              >
-                {exifText}
-              </motion.div>
-            )}
-            
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
-              className="absolute bottom-6 right-8 font-mono text-[9px] text-white/20 tracking-[0.15em] pointer-events-none uppercase"
+              className="absolute bottom-6 left-8 flex items-center gap-6 z-30 pointer-events-none"
             >
-              Press ESC to close
+              {exifText && (
+                <span className="font-mono text-[9px] text-white/30 tracking-[0.2em]">
+                  {exifText}
+                </span>
+              )}
+            </motion.div>
+            
+            {/* Like Button */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: isStoryMode ? 0 : 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="absolute bottom-5 right-8 z-[110]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <LikeButton photoId={p.src.split('/').pop()?.split('.')[0] || 'unknown'} />
             </motion.div>
           </motion.div>
         )}

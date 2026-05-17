@@ -127,6 +127,35 @@
   - theme: 自定义 CSS
   - lang: `zh-CN`
 
+### 9. Photo Map 摄影地图（2026-05-15 ~ 2026-05-17）
+- **状态**: 已完成
+- **方案**: 以北京城区为底图，用精致标记点定位拍摄机位，点击弹出代表作、最佳拍摄时段和交通提示
+- **前端组件**:
+  - `src/app/map/page.tsx` — 摄影地图页面，包含标题、地图容器和详情面板
+  - `src/components/PhotoMap.tsx` — 地图核心交互组件，支持缩放、拖拽和标记点动画
+  - `src/components/MapLocationPanel.tsx` — 地点详情弹窗，底部滑出，包含照片、拍摄时间、交通方式和 EXIF 信息
+- **数据层**: `src/data/locations.ts`，纯静态配置，包含经纬度、描述及 SVG 坐标映射函数
+- **资源**: 使用 SVG 格式作为底图（基于 OSM 数据提取）
+- **交互优化**: 标记点 stagger 动画逐个显现，复古极简设计，与网站整体的画廊质感保持一致
+
+### 10. 图片资源压缩与优化
+- **状态**: 已完成
+- **操作**: 
+  - 编写了 `scripts/compress-images.js` 脚本，使用 `sharp` 库将 `public/works/photos/` 和 `works/thumbs/` 目录下的所有 `jpg/png` 图片批量压缩转换为了 WebP 格式。
+  - 大图（Photos）统一缩放为 1920px 宽（Quality 90），缩略图（Thumbs）统一缩放为 800px 宽（Quality 80）。
+  - 更新了 `src/data/series.ts` 以引用 `.webp` 文件。
+  - 大幅减小了文件体积，提升了加载速度和带宽利用率。
+
+### 11. 照片点赞功能 (Like Feature)
+- **状态**: 已完成
+- **方案**: GitHub Discussions 作为后端存储 (零成本) + `localStorage` 前端防重
+- **核心实现**:
+  - `src/app/api/likes/route.ts`: 利用 `GITHUB_TOKEN`，在仓库的 General 分类下自动寻找/创建一个标题为 `photo_likes_db` 的 Discussion，将其 `body` 作为 JSON 数据库存储所有照片的点赞数。
+  - 包含内存级 IP 限流（1 分钟 30 次）。
+  - `src/components/LikeButton.tsx`: 乐观更新（Optimistic UI）点赞按钮，配合 Framer Motion 的微交互动画（心形跳动与数字递增）。
+  - 集成在 `Lightbox` 组件右下角，与 EXIF 信息呼应。
+- **优势**: 完全复用了已有的 GitHub 基础设施和环境变量，**彻底免费**，无需注册或开启任何第三方数据库（如 Redis）。
+
 ---
 
 ## 已知问题
@@ -165,8 +194,8 @@
 
 - [x] 将 `public/huizzzi.png` 上传到 COS 根目录，修复 About 页面照片 → 改为本地加载
 - [x] Guestbook 留言板开发、优化并合并到 main 分支
+- [x] 批量压缩 `works/photos/` 和 `works/thumbs/` 中的图片 (已转换为 WebP 格式)
 - [ ] 开启腾讯云 CDN 加速，替换 COS 默认域名
-- [ ] 批量压缩 `works/photos/` 和 `works/thumbs/` 中的图片
 - [ ] 验证国内访问速度（F12 Network 检查图片加载时间）
 - [ ] 考虑移除 Git 仓库中的 `public/works` 大文件（使用 `git-filter-repo` 或 BFG）
 - [ ] 配置 GitHub Actions 自动部署到 COS（可选）
@@ -202,7 +231,7 @@
 
 ---
 
-*最后更新: 2026-05-15*
+*最后更新: 2026-05-17*
 
 ---
 
@@ -239,7 +268,7 @@
 
 ### Photo Map 摄影地图
 - **提出日期**: 2026-05-15
-- **状态**: 已记录，待开发
+- **状态**: 已完成 (开发记录见上文)
 - **方案概要**:
   - 以北京城区为底图，用精致标记点定位拍摄机位，点击弹出代表作 + 拍摄时段 + 交通提示
   - 路由: `/map`
