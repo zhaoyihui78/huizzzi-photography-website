@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 
 function getSafeNextPath(value: string | null) {
@@ -12,11 +12,13 @@ function getSafeNextPath(value: string | null) {
 
 export default function WeLoginPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const nextPath = useMemo(
-    () => getSafeNextPath(searchParams.get('next')),
-    [searchParams]
-  );
+  const [nextPath] = useState(() => {
+    if (typeof window === 'undefined') {
+      return '/we';
+    }
+
+    return getSafeNextPath(new URLSearchParams(window.location.search).get('next'));
+  });
 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
