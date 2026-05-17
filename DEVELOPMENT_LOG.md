@@ -189,11 +189,26 @@
 
 ### 15. About 肖像图压缩与恢复（2026-05-17）
 - **状态**: 已完成
-- **问题**: `About` 页肖像图改为统一走 COS 后，因 COS 根目录缺少 `huizzzi.png`，线上出现图片丢失。
+- **问题**: `About` 页肖像图纳入统一 COS 策略后，因线上实际上传的是私密目录下的 WebP 文件，而页面仍请求根目录 `huizzzi.png`，导致线上 404。
 - **处理**:
-  - 将 `public/huizzzi.png` 从 `1122 x 1402 / 2.6MB` 压缩为 `1000 x 1250 / 786KB`，保持文件名不变，便于继续沿用 `getImageUrl('/huizzzi.png')`。
-  - 额外生成 `public/works/webp/private/photos/huizzzi.webp` 作为私密目录备用资源，体积约 `158KB`。
-  - 重新上传压缩后的 `huizzzi.png` 至 COS 根目录，恢复 `https://www.huizzzi.art/about/` 页面显示。
+  - 将 `public/huizzzi.png` 从 `1122 x 1402 / 2.6MB` 压缩为 `1000 x 1250 / 786KB`，保留原始 PNG 作为本地源文件。
+  - 生成 `public/works/webp/private/photos/huizzzi.webp`，体积约 `158KB`，并上传到 COS 对应路径。
+  - 调整 `src/app/about/page.tsx`，让 `About` 页肖像图直接读取 `getImageUrl('/works/webp/private/photos/huizzzi.webp')`，与 COS 实际资源路径保持一致。
+
+### 16. 手记详情页阅读增强（2026-05-17）
+- **状态**: 已完成
+- **目标**: 提升 `Field Notes` 长文的沉浸感、结构感与连续阅读体验。
+- **新增能力**:
+  - `src/components/ReadingProgress.tsx`：为手记详情页增加顶部阅读进度条，随后改为更克制的古铜金配色，并增加浅金底轨。
+  - `src/components/TableOfContents.tsx`：新增桌面端右侧悬浮目录，支持点击平滑跳转与当前章节高亮。
+  - `src/components/ArticleNavigation.tsx`：在文章底部新增前后篇导航，自动关联上一篇 / 下一篇非 glossary 文章。
+- **页面改造**:
+  - `src/app/notes/[slug]/page.tsx`：为正文 `h2` / `h3` 自动生成稳定锚点，补充 `data-note-heading` 标记，并接入进度条、目录与前后篇导航。
+  - 目录逻辑从“扫描整篇 `article` 标签”改为“仅扫描 `.prose-custom` 正文区标题”，修复侧栏标题被误识别导致的层级错误。
+  - 当前阅读高亮改为基于滚动位置计算，不再依赖不稳定的可见性判断，滚动时目录状态更准确。
+- **设计结果**:
+  - 阅读条颜色从纯黑调整为金色系，整体更贴近杂志纸张与摄影作品集的质感。
+  - 目录层级更清晰，`h3` 以缩进和更小字号呈现，当前项以金色竖线强调。
 
 ---
 
@@ -202,10 +217,10 @@
 > **备注**: 2026-05-14 视频资产丢失问题已完全解决，6 部核心视频已恢复并迁移至 COS。
 
 ### 问题 1: About 页面个人照片无法加载（历史问题）✅ 已处理
-- **状态**: 已处理（2026-05-14 首次修复，2026-05-17 纳入统一 COS 策略并恢复线上图片）
-- **根因**: `NEXT_PUBLIC_IMAGE_BASE` 指向 COS 后，`/huizzzi.png` 未在 COS 根目录存在，导致肖像图请求失败。
-- **历史处理**: 曾临时改为本地路径绕过加载问题。
-- **当前策略**: 现已恢复为通过 `getImageUrl('/huizzzi.png')` 从 COS 加载，且已补传压缩后的肖像图；后续全站图片不再保留“Vercel 本地图片”例外，新增或替换图片时必须同步上传 COS。
+- **状态**: 已处理（2026-05-14 首次修复，2026-05-17 根据 COS 实际目录再次修正）
+- **根因**: `NEXT_PUBLIC_IMAGE_BASE` 指向 COS 后，页面一度仍请求根目录 `/huizzzi.png`，但线上实际可用资源位于 `works/webp/private/photos/huizzzi.webp`。
+- **历史处理**: 曾尝试通过补传根目录图片恢复，但最终选择直接对齐已上传的 WebP 路径。
+- **当前策略**: `About` 页现通过 `getImageUrl('/works/webp/private/photos/huizzzi.webp')` 读取肖像图；后续全站图片仍统一走 COS，且路径必须与 COS 中的实际对象 key 保持一致。
 
 ### 问题 2: Guestbook 留言墙空白（线上）✅ 已修复
 - **状态**: 已修复（2026-05-15）

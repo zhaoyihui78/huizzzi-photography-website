@@ -14,45 +14,53 @@ export default function TableOfContents() {
   const [activeId, setActiveId] = useState<string>('');
 
   useEffect(() => {
-    // Query all h2 and h3 inside the article content
-    const elements = Array.from(document.querySelectorAll('article h2, article h3'));
-    
-    const items: TocItem[] = elements.map((el, index) => {
-      // Add id if it doesn't exist
-      if (!el.id) {
-        // Slugify the text content
-        const text = el.textContent || '';
-        const id = text.toLowerCase().replace(/[\s\W-]+/g, '-') || `heading-${index}`;
-        el.id = id;
-      }
-      
-      return {
+    let frameId = 0;
+    let elements: HTMLElement[] = [];
+
+    const collectHeadings = () => {
+      elements = Array.from(
+        document.querySelectorAll<HTMLElement>('.prose-custom [data-note-heading]')
+      );
+      const items: TocItem[] = elements.map((el) => ({
         id: el.id,
         text: el.textContent || '',
-        level: el.tagName === 'H2' ? 2 : 3,
-      };
+        level: Number(el.dataset.noteHeading) || 2,
+      }));
+
+      setHeadings(items);
+      return elements;
+    };
+
+    const updateActiveHeading = (elements: HTMLElement[]) => {
+      if (elements.length === 0) return;
+
+      const offset = 140;
+      let current = elements[0].id;
+
+      for (const element of elements) {
+        if (element.getBoundingClientRect().top - offset <= 0) {
+          current = element.id;
+        } else {
+          break;
+        }
+      }
+
+      setActiveId(current);
+    };
+
+    const handleScroll = () => updateActiveHeading(elements);
+
+    frameId = window.requestAnimationFrame(() => {
+      collectHeadings();
+      updateActiveHeading(elements);
+      window.addEventListener('scroll', handleScroll, { passive: true });
+      window.addEventListener('resize', handleScroll);
     });
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHeadings(items);
-
-    // Set up IntersectionObserver to highlight active heading
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Find the first visible heading
-        const visibleEntries = entries.filter((entry) => entry.isIntersecting);
-        if (visibleEntries.length > 0) {
-          setActiveId(visibleEntries[0].target.id);
-        }
-      },
-      { rootMargin: '-100px 0px -40% 0px' }
-    );
-
-    elements.forEach((el) => observer.observe(el));
-
     return () => {
-      elements.forEach((el) => observer.unobserve(el));
-      observer.disconnect();
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
@@ -60,10 +68,10 @@ export default function TableOfContents() {
 
   return (
     <div className="sticky top-32">
-      <h4 className="font-mono text-[9px] uppercase tracking-[0.2em] text-[#aaaaaa] mb-6">
+      <h4 className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#b19a5f] mb-6">
         Contents
       </h4>
-      <nav className="flex flex-col gap-3">
+      <nav className="flex flex-col gap-2.5">
         {headings.map((heading) => (
           <Link
             key={heading.id}
@@ -78,12 +86,12 @@ export default function TableOfContents() {
               }
             }}
             className={`
-              text-[12px] transition-colors duration-300
-              ${heading.level === 3 ? 'ml-4' : ''}
+              group relative block border-l transition-all duration-300
+              ${heading.level === 3 ? 'ml-4 pl-4 py-1.5 text-[11px] border-transparent' : 'pl-4 py-2 text-[12px] border-transparent'}
               ${
                 activeId === heading.id
-                  ? 'text-[#111111] font-medium'
-                  : 'text-[#999999] hover:text-[#111111]'
+                  ? 'text-[#111111] border-[#b19a5f]'
+                  : 'text-[#999999] hover:text-[#111111] hover:border-[#d7c79f]'
               }
             `}
           >
