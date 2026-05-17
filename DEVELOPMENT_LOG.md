@@ -20,13 +20,18 @@
   - `@` → A 记录 → Vercel 提供的 IP
 
 ### 2. 国内图片加速方案（COS）
-- **状态**: 已完成代码修改，待优化
-- **背景**: 网站部署在 Vercel（海外节点），国内访问图片加载缓慢。
-- **方案**: 将图片迁移到腾讯云对象存储（COS）北京节点，通过环境变量控制图片加载来源。
+- **状态**: 已完成，并确立为全站统一策略
+- **背景**: 网站部署在 Vercel（海外节点），国内访问静态图片资源明显偏慢。
+- **统一方案**: `main` 分支中的所有图片资源统一走腾讯云对象存储（COS）北京节点；Vercel 负责页面渲染，图片不再作为默认源站提供。
+- **执行原则**:
+  - 所有正式环境图片统一通过 `NEXT_PUBLIC_IMAGE_BASE` 指向 COS 域名加载
+  - 新增图片、替换图片、手记正文配图和封面图时，必须同步上传到 COS 对应路径
+  - 本地开发可按需使用本地路径调试，但线上发布以 COS 为准
 - **已修改文件**:
   - `src/config/images.ts` — 新增图片 URL 解析器
   - `src/data/series.ts` — 所有照片路径改为通过 `getImageUrl()` 生成
-  - `src/app/about/page.tsx` — 个人照片路径改为通过 `getImageUrl()` 生成
+  - `src/app/about/page.tsx` — 个人肖像图恢复并统一改为通过 `getImageUrl()` 生成
+  - `src/app/notes/[slug]/page.tsx` — MDX 正文图片通过自定义 `img` 组件统一接入 `getImageUrl()`
   - `src/config/media.ts` — 视频 URL 解析器（已有）
 - **环境变量**:
   - `NEXT_PUBLIC_IMAGE_BASE` = `https://photo-1392627581.cos.ap-beijing.myqcloud.com`
@@ -167,6 +172,7 @@
   - `glossary`：专有名词词条解释（采用隐藏彩蛋模式，不出现在列表页中）。
 - **Glossary 悬浮联动机制**：开发了 `<Glossary />` MDX 组件，在长文中遇到专有名词时，鼠标悬停即可显示带中文简要解释的黑色悬浮框，点击跳转至独立的词条页面。
 - **智能导航**：引入 `NoteBackButton` 组件，如果是从长文跳转到 Glossary 词条页，点击“返回”会智能执行 `router.back()` 回到刚才阅读的长文位置，而不是退回主列表。
+- **图片加载统一**：手记封面图与正文插图统一切换为 WebP，并通过 `getImageUrl()` 接入 COS；新增手记图片也必须同步上传到 COS 对应路径。
 - **样板内容**：创建了长文《为什么城市摄影要等那10分钟》和词条《光比 (Light Ratio)》。
 
 ---
@@ -175,10 +181,11 @@
 
 > **备注**: 2026-05-14 视频资产丢失问题已完全解决，6 部核心视频已恢复并迁移至 COS。
 
-### 问题 1: About 页面个人照片无法加载 ✅ 已修复
-- **状态**: 已修复（2026-05-14）
-- **根因**: Vercel 环境变量 `NEXT_PUBLIC_IMAGE_BASE` 指向 COS，导致 `getImageUrl('/huizzzi.png')` 请求了 COS 上并不存在的文件。
-- **修复**: `src/app/about/page.tsx` 改为直接使用本地路径 `src='/huizzzi.png'`，从 Vercel 自身加载。单张 2.6MB 的肖像图无需走 COS。
+### 问题 1: About 页面个人照片无法加载（历史问题）✅ 已处理
+- **状态**: 已处理（2026-05-14 首次修复，2026-05-17 纳入统一 COS 策略）
+- **根因**: `NEXT_PUBLIC_IMAGE_BASE` 指向 COS 后，`/huizzzi.png` 未在 COS 根目录存在，导致肖像图请求失败。
+- **历史处理**: 曾临时改为本地路径绕过加载问题。
+- **当前策略**: 现已恢复为通过 `getImageUrl('/huizzzi.png')` 从 COS 加载，后续全站图片不再保留“Vercel 本地图片”例外；新增或替换图片时必须同步上传 COS。
 
 ### 问题 2: Guestbook 留言墙空白（线上）✅ 已修复
 - **状态**: 已修复（2026-05-15）
@@ -205,7 +212,7 @@
 
 ## 待办事项 (TODO)
 
-- [x] 将 `public/huizzzi.png` 上传到 COS 根目录，修复 About 页面照片 → 改为本地加载
+- [ ] 新增或替换图片后，同步上传到 COS 对应路径（包括 `huizzzi.png` 与 Field Notes 配图）
 - [x] Guestbook 留言板开发、优化并合并到 main 分支
 - [x] 批量压缩 `works/photos/` 和 `works/thumbs/` 中的图片 (已转换为 WebP 格式)
 - [ ] 开启腾讯云 CDN 加速，替换 COS 默认域名

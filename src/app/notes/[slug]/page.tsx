@@ -34,6 +34,14 @@ const components = {
   strong: (props: any) => <strong className="font-normal text-[#333333]" {...props} />,
   ul: (props: any) => <ul className="list-disc pl-5 mb-6 text-[14px] text-[#666666] leading-[2.2] font-light marker:text-[#cccccc]" {...props} />,
   li: (props: any) => <li className="mb-2" {...props} />,
+  img: ({ src = '', alt = '', ...props }: any) => (
+    <img
+      src={typeof src === 'string' ? getImageUrl(src) : src}
+      alt={alt}
+      loading="lazy"
+      {...props}
+    />
+  ),
   Glossary: GlossaryLink,
 };
 

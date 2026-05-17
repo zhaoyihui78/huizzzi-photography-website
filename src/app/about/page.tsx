@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import FadeIn from '@/components/FadeIn';
+import { getImageUrl } from '@/config/images';
 
 export default function AboutPage() {
   const containerVariants = {
@@ -142,7 +143,7 @@ export default function AboutPage() {
             <div className="absolute inset-0 border border-[#e8e8e8] m-2 pointer-events-none z-10" />
             <div className="relative w-full h-full overflow-hidden">
               <Image
-                src='/huizzzi.png'
+                src={getImageUrl('/huizzzi.png')}
                 alt="Portrait of HUI ZZZI"
                 fill
                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"

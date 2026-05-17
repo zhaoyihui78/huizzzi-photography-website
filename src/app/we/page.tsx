@@ -434,13 +434,11 @@ function Lightbox({
   onClose,
   onPrev,
   onNext,
-  audioRef,
 }: {
   index: number;
   onClose: () => void;
   onPrev: () => void;
   onNext: () => void;
-  audioRef: React.RefObject<HTMLAudioElement | null>;
 }) {
   const photo = photos[index];
   const [loaded, setLoaded] = useState(false);
@@ -473,11 +471,6 @@ function Lightbox({
 
   useEffect(() => {
     if (isStoryMode) {
-      // Auto-play music when story starts
-      audioRef.current?.play().catch(() => {
-        // Browser may block autoplay
-      });
-
       setProgress(0);
       const interval = 5000;
       const tick = 50;
@@ -503,7 +496,7 @@ function Lightbox({
       if (storyTimerRef.current) clearInterval(storyTimerRef.current);
       if (progressTimerRef.current) clearInterval(progressTimerRef.current);
     }
-  }, [isStoryMode, onNext, audioRef]);
+  }, [isStoryMode, onNext]);
 
   return (
     <motion.div
@@ -669,105 +662,6 @@ function Lightbox({
         </span>
       </motion.div>
     </motion.div>
-  );
-}
-
-/* ---------- Audio Player ---------- */
-function AudioPlayer({ audioRef }: { audioRef: React.RefObject<HTMLAudioElement | null> }) {
-  const [playing, setPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [error, setError] = useState(false);
-
-  const toggle = useCallback(() => {
-    if (!audioRef.current) return;
-    if (playing) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play().catch(() => setError(true));
-    }
-    setPlaying(!playing);
-  }, [playing, audioRef]);
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const onTime = () => setCurrentTime(audio.currentTime);
-    const onLoaded = () => setDuration(audio.duration);
-    const onEnded = () => setPlaying(false);
-    const onError = () => setError(true);
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
-
-    audio.addEventListener('timeupdate', onTime);
-    audio.addEventListener('loadedmetadata', onLoaded);
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('error', onError);
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
-
-    return () => {
-      audio.removeEventListener('timeupdate', onTime);
-      audio.removeEventListener('loadedmetadata', onLoaded);
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('error', onError);
-      audio.removeEventListener('play', onPlay);
-      audio.removeEventListener('pause', onPause);
-    };
-  }, [audioRef]);
-
-  const format = (t: number) => {
-    if (!t || isNaN(t)) return '0:00';
-    const m = Math.floor(t / 60);
-    const s = Math.floor(t % 60);
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
-  return (
-    <div className="flex items-center gap-3 bg-stone-50 border border-stone-200 rounded-full px-4 py-2">
-      <audio ref={audioRef} src="/works/audio/等你的季节.mp3" preload="metadata" />
-
-      <button
-        onClick={toggle}
-        className="w-8 h-8 flex items-center justify-center rounded-full bg-stone-800 text-white hover:bg-stone-700 transition-colors flex-shrink-0"
-      >
-        {playing ? (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <rect x="6" y="4" width="4" height="16" rx="1" />
-            <rect x="14" y="4" width="4" height="16" rx="1" />
-          </svg>
-        ) : (
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        )}
-      </button>
-
-      <div className="flex-1 min-w-0">
-        <p className="text-xs text-stone-500 truncate">等你的季节</p>
-        <div className="flex items-center gap-2 mt-0.5">
-          <span className="text-[10px] text-stone-300 tabular-nums w-8 text-right">
-            {format(currentTime)}
-          </span>
-          <div className="flex-1 h-1 bg-stone-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-stone-400 rounded-full transition-all"
-              style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}
-            />
-          </div>
-          <span className="text-[10px] text-stone-300 tabular-nums w-8">
-            {format(duration)}
-          </span>
-        </div>
-      </div>
-
-      {error && (
-        <span className="text-[10px] text-amber-500 whitespace-nowrap">
-          请添加音频文件
-        </span>
-      )}
-    </div>
   );
 }
 
@@ -965,7 +859,6 @@ export default function WePage() {
   const [showIntro, setShowIntro] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const forced = new URLSearchParams(window.location.search).get('auth') === '1';
@@ -1062,9 +955,6 @@ export default function WePage() {
             >
               <Typewriter text="Even if we can't meet You are the hope in my weary life" delay={introDone ? 800 : 0} />
             </p>
-            <div className="flex justify-center">
-              <AudioPlayer audioRef={audioRef} />
-            </div>
           </motion.div>
 
           {/* Meeting Chronicle */}
@@ -1091,7 +981,6 @@ export default function WePage() {
               onClose={closeLightbox}
               onPrev={prevPhoto}
               onNext={nextPhoto}
-              audioRef={audioRef}
             />
           </Portal>
         )}

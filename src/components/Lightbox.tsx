@@ -3,7 +3,6 @@
 import { useEffect, useCallback, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Photo } from '@/data/series';
-import { playShutter } from '@/utils/audio';
 
 import LikeButton from './LikeButton';
 
@@ -16,7 +15,7 @@ interface LightboxProps {
   onNext?: () => void;
 }
 
-export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, onNext }: LightboxProps) {
+export default function Lightbox({ photo, isOpen, onClose, onPrev, onNext }: LightboxProps) {
   const [loaded, setLoaded] = useState(false);
   const [direction, setDirection] = useState(0); // -1 prev, 1 next, 0 initial
   const [isStoryMode, setIsStoryMode] = useState(false);
@@ -32,7 +31,6 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
       const timer = setInterval(() => {
         if (onNext) {
           setDirection(1);
-          playShutter();
           onNext();
         } else {
           setIsStoryMode(false);
@@ -46,14 +44,6 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
   useEffect(() => {
     if (!displayPhoto) return;
     setLoaded(false);
-    
-    // Play shutter sound when a new photo is opened/navigated to (if not first render and not closing)
-    if (isOpen && direction !== 0) {
-      playShutter();
-    } else if (isOpen && direction === 0 && !isStoryMode) {
-      // First open
-      playShutter();
-    }
 
     const img = new window.Image();
     img.src = displayPhoto.src;
@@ -111,7 +101,7 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
 
   // Slide variants for image change
   const imageVariants: any = {
-    enter: (dir: number) => ({
+    enter: () => ({
       scale: isStoryMode ? 1 : 1.05,
       filter: isStoryMode ? 'blur(0px)' : 'blur(10px)',
       opacity: 0,
@@ -125,7 +115,7 @@ export default function Lightbox({ photo, seriesTitle, isOpen, onClose, onPrev, 
         ease: isStoryMode ? [0.25, 0.1, 0.25, 1] : [0.25, 0.1, 0.25, 1],
       }
     },
-    exit: (dir: number) => ({
+    exit: () => ({
       scale: isStoryMode ? 1 : 0.95,
       filter: isStoryMode ? 'blur(0px)' : 'blur(10px)',
       opacity: 0,
