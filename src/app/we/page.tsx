@@ -4,12 +4,15 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { verifyPassword, photos, meetings, cnNumerals } from './data';
+import { photos, meetings, cnNumerals } from './data';
 
 /* ---------- Portal ---------- */
 function Portal({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
   if (!mounted) return null;
   return createPortal(children, document.body);
 }
@@ -304,130 +307,6 @@ function MeetingChronicle({ openLightbox }: { openLightbox: (index: number) => v
   );
 }
 
-/* ---------- Lock Screen ---------- */
-function LockScreen({ onUnlock }: { onUnlock: () => void }) {
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(false);
-  const [shaking, setShaking] = useState(false);
-  const [lockedUntil, setLockedUntil] = useState<number>(0);
-
-  useEffect(() => {
-    const raw = localStorage.getItem('we_lock');
-    if (raw) setLockedUntil(parseInt(raw, 10));
-  }, []);
-
-  const isLocked = Date.now() < lockedUntil;
-  const lockSeconds = isLocked ? Math.ceil((lockedUntil - Date.now()) / 1000) : 0;
-
-  const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
-      e.preventDefault();
-      if (isLocked) return;
-      if (verifyPassword(password)) {
-        localStorage.removeItem('we_attempts');
-        localStorage.removeItem('we_lock');
-        localStorage.setItem('we_unlocked', '1');
-        onUnlock();
-      } else {
-        const attempts = (parseInt(localStorage.getItem('we_attempts') || '0', 10) + 1);
-        localStorage.setItem('we_attempts', attempts.toString());
-        if (attempts >= 5) {
-          const until = Date.now() + 60000;
-          localStorage.setItem('we_lock', until.toString());
-          setLockedUntil(until);
-        }
-        setError(true);
-        setShaking(true);
-        setTimeout(() => setShaking(false), 500);
-      }
-    },
-    [password, onUnlock, isLocked]
-  );
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-white"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
-    >
-      <div className="w-full max-w-sm px-6">
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="text-center mb-10"
-        >
-          <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-stone-100 flex items-center justify-center">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              className="text-stone-400"
-            >
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-          </div>
-          <h1 className="text-xl font-light tracking-wide text-stone-800 mb-2">
-            Our Space
-          </h1>
-          <p className="text-sm text-stone-400 font-light">
-            This place is just for us.
-          </p>
-        </motion.div>
-
-        <motion.form
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          onSubmit={handleSubmit}
-          className={shaking ? 'animate-shake' : ''}
-        >
-          <div className="relative">
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError(false);
-              }}
-              placeholder={isLocked ? `Locked for ${lockSeconds}s` : 'Enter password'}
-              disabled={isLocked}
-              className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg text-stone-700 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors text-center tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
-              autoFocus
-            />
-          </div>
-
-          <AnimatePresence>
-            {error && !isLocked && (
-              <motion.p
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="text-center text-red-400 text-xs mt-3"
-              >
-                Incorrect password
-              </motion.p>
-            )}
-          </AnimatePresence>
-
-          <button
-            type="submit"
-            disabled={isLocked}
-            className="w-full mt-4 py-3 bg-stone-800 text-white rounded-lg text-sm tracking-wide hover:bg-stone-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLocked ? `Retry in ${lockSeconds}s` : 'Unlock'}
-          </button>
-        </motion.form>
-      </div>
-    </motion.div>
-  );
-}
-
 /* ---------- Lightbox ---------- */
 function Lightbox({
   index,
@@ -448,6 +327,7 @@ function Lightbox({
   const progressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoaded(false);
     const img = new window.Image();
     img.src = photo.src;
@@ -471,6 +351,7 @@ function Lightbox({
 
   useEffect(() => {
     if (isStoryMode) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setProgress(0);
       const interval = 5000;
       const tick = 50;
@@ -676,7 +557,10 @@ function NotesSection() {
   useEffect(() => {
     try {
       const raw = localStorage.getItem('we_notes');
-      if (raw) setNotes(JSON.parse(raw));
+      if (raw) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setNotes(JSON.parse(raw));
+      }
     } catch {
       // ignore
     }
@@ -854,7 +738,6 @@ function NotesSection() {
 
 /* ---------- Main Page ---------- */
 export default function WePage() {
-  const [unlocked, setUnlocked] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [showIntro, setShowIntro] = useState(false);
   const [introDone, setIntroDone] = useState(false);
@@ -864,31 +747,14 @@ export default function WePage() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    const forced = new URLSearchParams(window.location.search).get('auth') === '1';
-
-    if (forced) {
-      setUnlocked(false);
-      setLoaded(true);
-      setShowIntro(false);
-      setIntroDone(false);
-      return;
-    }
-
-    const isUnlocked = localStorage.getItem('we_unlocked') === '1';
-    setUnlocked(isUnlocked);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoaded(true);
-    if (isUnlocked) {
-      const seen = sessionStorage.getItem('we_intro_seen');
-      if (!seen) setShowIntro(true);
-      else setIntroDone(true);
-    }
-  }, []);
-
-  const handleUnlock = useCallback(() => {
-    setUnlocked(true);
     const seen = sessionStorage.getItem('we_intro_seen');
-    if (!seen) setShowIntro(true);
-    else setIntroDone(true);
+    if (!seen) {
+      setShowIntro(true);
+    } else {
+      setIntroDone(true);
+    }
   }, []);
 
   const handleIntroDone = useCallback(() => {
@@ -921,7 +787,7 @@ export default function WePage() {
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !unlocked) return;
+    if (!audio) return;
 
     if (!musicEnabled) {
       audio.pause();
@@ -939,17 +805,9 @@ export default function WePage() {
         .then(() => setMusicBlocked(false))
         .catch(() => setMusicBlocked(true));
     }
-  }, [unlocked, musicEnabled, showIntro, introDone]);
+  }, [musicEnabled, showIntro, introDone]);
 
   if (!loaded) return null;
-
-  if (!unlocked) {
-    return (
-      <Portal>
-        <LockScreen onUnlock={handleUnlock} />
-      </Portal>
-    );
-  }
 
   return (
     <>
@@ -958,7 +816,7 @@ export default function WePage() {
         <source src="/works/audio/等你的季节.mp3" type="audio/mpeg" />
       </audio>
 
-      <main className="min-h-screen bg-white">
+      <main className="min-h-screen bg-[#fdf9f3]">
         {introDone && (
           <>
             <DustParticles />
@@ -967,55 +825,82 @@ export default function WePage() {
         )}
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center mb-12"
-          >
-            <h1
-              className="font-heading text-[1.75rem] md:text-[2.25rem] font-extralight tracking-[0.1em] text-stone-800 mb-3"
-              style={{ fontFamily: 'var(--font-heading)' }}
+          <section id="moments" className="scroll-mt-24 md:scroll-mt-16">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center mb-12"
             >
-              Our Moments
-            </h1>
-            <p
-              className="text-[13px] text-stone-400 font-light tracking-[0.12em] italic mb-8"
-              style={{ fontFamily: 'var(--font-heading)' }}
-            >
-              <Typewriter text="Even if we can't meet You are the hope in my weary life" delay={introDone ? 800 : 0} />
-            </p>
-
-            <div className="flex items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  const next = !musicEnabled;
-                  setMusicEnabled(next);
-                  if (next) setMusicBlocked(false);
-                }}
-                className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500 transition-colors hover:border-stone-300 hover:text-stone-700"
+              <p className="font-mono text-[10px] uppercase tracking-[0.28em] text-[#c4b39f] mb-4">
+                Private Archive
+              </p>
+              <h1
+                className="font-heading text-[1.75rem] md:text-[2.25rem] font-extralight tracking-[0.1em] text-stone-800 mb-3"
+                style={{ fontFamily: 'var(--font-heading)' }}
               >
-                <span className={`h-1.5 w-1.5 rounded-full ${musicEnabled ? 'bg-[#b59a5b]' : 'bg-stone-300'}`} />
-                {musicEnabled ? 'Music On' : 'Music Off'}
-              </button>
-              <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-stone-300">
-                low data audio
-              </span>
+                Our Moments
+              </h1>
+              <p
+                className="text-[13px] text-stone-400 font-light tracking-[0.12em] italic mb-8"
+                style={{ fontFamily: 'var(--font-heading)' }}
+              >
+                <Typewriter text="Even if we can't meet You are the hope in my weary life" delay={introDone ? 800 : 0} />
+              </p>
+
+              <div className="flex items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next = !musicEnabled;
+                    setMusicEnabled(next);
+                    if (next) setMusicBlocked(false);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-stone-200 bg-white/80 px-3 py-1.5 text-[10px] font-mono uppercase tracking-[0.18em] text-stone-500 transition-colors hover:border-stone-300 hover:text-stone-700"
+                >
+                  <span className={`h-1.5 w-1.5 rounded-full ${musicEnabled ? 'bg-[#b59a5b]' : 'bg-stone-300'}`} />
+                  {musicEnabled ? 'Music On' : 'Music Off'}
+                </button>
+                <span className="text-[10px] font-mono uppercase tracking-[0.14em] text-stone-300">
+                  low data audio
+                </span>
+              </div>
+
+              {musicBlocked && (
+                <p className="mt-3 text-[11px] text-stone-400">
+                  浏览器拦截了自动播放，点一下上面的 `Music On` 就能恢复。
+                </p>
+              )}
+            </motion.div>
+          </section>
+
+          <section id="timeline" className="scroll-mt-24 md:scroll-mt-16">
+            <div className="mb-8 md:mb-10">
+              <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#c4b39f] mb-3">
+                Timeline
+              </p>
+              <h2 className="font-heading text-[22px] md:text-[26px] font-light tracking-[0.06em] text-stone-700">
+                Every Meeting We Kept
+              </h2>
             </div>
 
-            {musicBlocked && (
-              <p className="mt-3 text-[11px] text-stone-400">
-                浏览器拦截了自动播放，点一下上面的 `Music On` 就能恢复。
-              </p>
-            )}
-          </motion.div>
+            <MeetingChronicle openLightbox={openLightbox} />
+          </section>
 
-          {/* Meeting Chronicle */}
-          <MeetingChronicle openLightbox={openLightbox} />
+          <section id="notes" className="scroll-mt-24 md:scroll-mt-16">
+            <div className="mt-16 md:mt-20">
+              <div className="mb-6">
+                <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#c4b39f] mb-3">
+                  Notes
+                </p>
+                <h2 className="font-heading text-[22px] md:text-[26px] font-light tracking-[0.06em] text-stone-700">
+                  Things We Leave For Each Other
+                </h2>
+              </div>
 
-          {/* Notes */}
-          <NotesSection />
+              <NotesSection />
+            </div>
+          </section>
         </div>
       </main>
 

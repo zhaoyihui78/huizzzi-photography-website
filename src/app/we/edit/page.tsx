@@ -1,13 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { meetings as initialMeetings, photos, cnNumerals, verifyPassword } from '../data';
+import { meetings as initialMeetings, photos, cnNumerals } from '../data';
 
 export default function EditPage() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [password, setPassword] = useState('');
   const [assignments, setAssignments] = useState<Record<number, string[]>>(() => {
     const map: Record<number, string[]> = {};
     for (const m of initialMeetings) {
@@ -25,37 +23,6 @@ export default function EditPage() {
     return map;
   });
   const [editingNth, setEditingNth] = useState<number | null>(null);
-  const [lockMsg, setLockMsg] = useState('');
-
-  useEffect(() => {
-    setUnlocked(localStorage.getItem('we_unlocked') === '1');
-  }, []);
-
-  const handleUnlock = useCallback(() => {
-    const raw = localStorage.getItem('we_lock');
-    if (raw && Date.now() < parseInt(raw, 10)) {
-      const sec = Math.ceil((parseInt(raw, 10) - Date.now()) / 1000);
-      setLockMsg(`Too many attempts. Retry in ${sec}s`);
-      return;
-    }
-    if (verifyPassword(password)) {
-      localStorage.removeItem('we_attempts');
-      localStorage.removeItem('we_lock');
-      localStorage.setItem('we_unlocked', '1');
-      setUnlocked(true);
-      setLockMsg('');
-    } else {
-      const attempts = (parseInt(localStorage.getItem('we_attempts') || '0', 10) + 1);
-      localStorage.setItem('we_attempts', attempts.toString());
-      if (attempts >= 5) {
-        const until = Date.now() + 60000;
-        localStorage.setItem('we_lock', until.toString());
-        setLockMsg('Too many attempts. Locked for 60s');
-      } else {
-        setLockMsg('Incorrect password');
-      }
-    }
-  }, [password]);
 
   const movePhoto = useCallback((num: string, targetNth: number) => {
     setAssignments((prev) => {
@@ -92,36 +59,6 @@ export default function EditPage() {
     a.click();
     URL.revokeObjectURL(url);
   }, [assignments, names]);
-
-  if (!unlocked) {
-    return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="w-full max-w-sm px-6 text-center">
-          <h1 className="text-xl font-light tracking-wide text-stone-800 mb-6">Layout Editor</h1>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              setLockMsg('');
-            }}
-            placeholder="Enter password"
-            className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg text-stone-700 placeholder:text-stone-300 focus:outline-none focus:border-stone-400 transition-colors text-center tracking-widest"
-            onKeyDown={(e) => e.key === 'Enter' && handleUnlock()}
-          />
-          {lockMsg && (
-            <p className="text-center text-red-400 text-xs mt-3 mb-1">{lockMsg}</p>
-          )}
-          <button
-            onClick={handleUnlock}
-            className="w-full mt-4 py-3 bg-stone-800 text-white rounded-lg text-sm tracking-wide hover:bg-stone-700 transition-colors"
-          >
-            Unlock Editor
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <main className="min-h-screen bg-white pb-32">

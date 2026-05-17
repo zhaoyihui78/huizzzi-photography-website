@@ -8,6 +8,19 @@ import { seriesList } from '@/data/series';
 
 export default function Sidebar() {
   const pathname = usePathname();
+
+  if (pathname === '/we/login' || pathname === '/we/login/') {
+    return <PrivateEntrySidebar />;
+  }
+
+  if (pathname.startsWith('/we')) {
+    return <PrivateSidebar pathname={pathname} />;
+  }
+
+  return <PublicSidebar pathname={pathname} />;
+}
+
+function PublicSidebar({ pathname }: { pathname: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopCollapsed, setDesktopCollapsed] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -25,12 +38,14 @@ export default function Sidebar() {
 
   // Close mobile menu on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileMenuOpen(false);
   }, [pathname]);
 
   useEffect(() => {
     const stored = window.localStorage.getItem('sidebar-collapsed');
     if (stored === '1') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setDesktopCollapsed(true);
     }
     setHydrated(true);
@@ -385,5 +400,261 @@ function Clock({ theme, collapsed }: { theme?: 'default' | 'dark' | 'oriental'; 
     >
       {collapsed ? time.slice(0, 5) : time}
     </p>
+  );
+}
+
+function PrivateSidebar({ pathname }: { pathname: string }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<'moments' | 'timeline' | 'notes'>('moments');
+
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-w', '236px');
+    return () => {
+      document.documentElement.style.setProperty('--sidebar-w', '220px');
+    };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    const sectionIds = ['moments', 'timeline', 'notes'] as const;
+    const scroller =
+      window.innerWidth < 768 ? document.getElementById('main-scroll-container') : window;
+
+    const updateActiveSection = () => {
+      let current: (typeof sectionIds)[number] = 'moments';
+      for (const id of sectionIds) {
+        const element = document.getElementById(id);
+        if (!element) continue;
+
+        if (element.getBoundingClientRect().top <= 180) {
+          current = id;
+        }
+      }
+      setActiveSection(current);
+    };
+
+    updateActiveSection();
+    scroller?.addEventListener('scroll', updateActiveSection, { passive: true });
+    window.addEventListener('resize', updateActiveSection);
+
+    return () => {
+      scroller?.removeEventListener('scroll', updateActiveSection);
+      window.removeEventListener('resize', updateActiveSection);
+    };
+  }, []);
+
+  const navigateToSection = (id: 'moments' | 'timeline' | 'notes') => {
+    const element = document.getElementById(id);
+    setMobileMenuOpen(false);
+    if (!element) return;
+
+    setActiveSection(id);
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const navItems: Array<{
+    label: string;
+    slug: 'moments' | 'timeline' | 'notes' | 'trips-map';
+    status?: string;
+  }> = [
+    { label: 'Moments', slug: 'moments' },
+    { label: 'Timeline', slug: 'timeline' },
+    { label: 'Notes', slug: 'notes' },
+    { label: 'Trips Map', slug: 'trips-map', status: 'Soon' },
+  ];
+
+  return (
+    <>
+      <header className="md:hidden fixed top-0 left-0 w-full h-16 z-50 flex items-center justify-between px-6 border-b border-[#efe7dc] bg-[#fdf9f3]/95 text-[#4f4033] backdrop-blur-md">
+        <Link href="/" className="flex flex-col">
+          <span className="font-heading text-[15px] font-medium tracking-[0.08em] text-[#7c624a]">
+            HUI ZZZI
+          </span>
+          <span className="font-mono text-[8px] uppercase tracking-[0.24em] text-[#b39b82]">
+            Private Archive
+          </span>
+        </Link>
+        <button
+          onClick={() => setMobileMenuOpen((prev) => !prev)}
+          className="p-3 -mr-2 outline-none min-h-[44px] min-w-[44px] flex items-center justify-center"
+          aria-label={mobileMenuOpen ? '关闭私人导航' : '打开私人导航'}
+        >
+          <div className="w-5 flex flex-col gap-[5px]">
+            <span className={`block h-[1px] w-full bg-[#7c624a] transition-transform duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-[6px]' : ''}`} />
+            <span className={`block h-[1px] w-full bg-[#7c624a] transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`} />
+            <span className={`block h-[1px] w-full bg-[#7c624a] transition-transform duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-[6px]' : ''}`} />
+          </div>
+        </button>
+      </header>
+
+      <aside
+        className={`fixed top-0 left-0 h-screen w-[236px] z-40 flex flex-col pt-24 md:pt-12 pb-12 overflow-y-auto border-r border-[#efe7dc] bg-[#fdf9f3] text-[#4f4033] transition-transform duration-700 ease-in-out md:translate-x-0 ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } px-8`}
+      >
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,154,91,0.08),transparent_28%),linear-gradient(to_bottom,rgba(255,255,255,0.2),transparent_22%,transparent_82%,rgba(199,172,139,0.05))]" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-[#eadfce]" />
+
+        <Link href="/" className="relative mb-14 block transition-opacity duration-500 hover:opacity-75">
+          <div className="space-y-2">
+            <p className="font-heading text-[15px] font-medium tracking-[0.12em] text-[#7c624a]">
+              HUI ZZZI
+            </p>
+            <p className="font-mono text-[8px] uppercase tracking-[0.3em] text-[#b39b82]">
+              Private Archive
+            </p>
+            <p className="text-[11px] italic tracking-[0.04em] text-[#9f8a76]">
+              only for us
+            </p>
+          </div>
+        </Link>
+
+        <nav className="relative flex flex-col gap-8">
+          <div className="flex flex-col gap-2.5">
+            <span className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#cab9a3]">
+              Our Pages
+            </span>
+            {navItems.map((item) => {
+              const isSoon = item.slug === 'trips-map';
+              const isActive = !isSoon && activeSection === item.slug;
+
+              if (isSoon) {
+                return (
+                  <div
+                    key={item.slug}
+                    className="flex items-center justify-between text-[11px] tracking-wide text-[#bda994]"
+                  >
+                    <span>{item.label}</span>
+                    <span className="font-mono text-[8px] uppercase tracking-[0.22em] text-[#cfb98f]">
+                      {item.status}
+                    </span>
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={item.slug}
+                  type="button"
+                  onClick={() => {
+                    if (item.slug !== 'trips-map') {
+                      navigateToSection(item.slug);
+                    }
+                  }}
+                  className={`group relative w-fit text-left text-[11px] tracking-wide transition-colors duration-500 ${
+                    isActive ? 'text-[#4f4033]' : 'text-[#9f8a76] hover:text-[#6d5846]'
+                  }`}
+                >
+                  {item.label}
+                  <span
+                    className={`absolute -bottom-[3px] left-0 h-[1px] bg-[#b59a5b] transition-all duration-500 ${
+                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                    }`}
+                  />
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="pt-8 border-t border-[#efe7dc]">
+            <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#cab9a3] mb-3">
+              Boundary
+            </p>
+            <Link
+              href="/"
+              className="group relative w-fit text-[11px] tracking-wide text-[#9f8a76] transition-colors duration-500 hover:text-[#6d5846]"
+            >
+              Back Home
+              <span className="absolute -bottom-[3px] left-0 h-[1px] w-0 bg-[#b59a5b] transition-all duration-500 group-hover:w-full" />
+            </Link>
+          </div>
+        </nav>
+
+        <div className="mt-auto pt-10">
+          <p className="font-mono text-[9px] tracking-[0.15em] text-[#c9b8a4]">
+            PRIVATE MODE
+          </p>
+          <p className="font-mono text-[8px] tracking-[0.2em] uppercase mt-2 text-[#d6cabd]">
+            © {new Date().getFullYear()} HuiZzzzi
+          </p>
+        </div>
+      </aside>
+
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-[#2b2118]/25 z-30 backdrop-blur-sm transition-opacity"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function PrivateEntrySidebar() {
+  useEffect(() => {
+    document.documentElement.style.setProperty('--sidebar-w', '236px');
+    return () => {
+      document.documentElement.style.setProperty('--sidebar-w', '220px');
+    };
+  }, []);
+
+  return (
+    <>
+      <header className="md:hidden fixed top-0 left-0 w-full h-16 z-50 flex items-center justify-between px-6 border-b border-[#efe7dc] bg-[#fdf9f3]/95 text-[#4f4033] backdrop-blur-md">
+        <Link href="/" className="flex flex-col">
+          <span className="font-heading text-[15px] font-medium tracking-[0.08em] text-[#7c624a]">
+            HUI ZZZI
+          </span>
+          <span className="font-mono text-[8px] uppercase tracking-[0.24em] text-[#b39b82]">
+            Private Entry
+          </span>
+        </Link>
+      </header>
+
+      <aside className="fixed top-0 left-0 h-screen w-[236px] z-40 hidden md:flex flex-col pt-12 pb-12 px-8 overflow-y-auto border-r border-[#efe7dc] bg-[#fdf9f3] text-[#4f4033]">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(181,154,91,0.08),transparent_28%),linear-gradient(to_bottom,rgba(255,255,255,0.2),transparent_22%,transparent_82%,rgba(199,172,139,0.05))]" />
+        <div className="pointer-events-none absolute inset-y-0 right-0 w-px bg-[#eadfce]" />
+
+        <Link href="/" className="relative mb-14 block transition-opacity duration-500 hover:opacity-75">
+          <div className="space-y-2">
+            <p className="font-heading text-[15px] font-medium tracking-[0.12em] text-[#7c624a]">
+              HUI ZZZI
+            </p>
+            <p className="font-mono text-[8px] uppercase tracking-[0.3em] text-[#b39b82]">
+              Private Entry
+            </p>
+            <p className="text-[11px] italic tracking-[0.04em] text-[#9f8a76]">
+              a closed room
+            </p>
+          </div>
+        </Link>
+
+        <div className="relative pt-8 border-t border-[#efe7dc]">
+          <p className="font-mono text-[9px] uppercase tracking-[0.25em] text-[#cab9a3] mb-3">
+            Boundary
+          </p>
+          <Link
+            href="/"
+            className="group relative w-fit text-[11px] tracking-wide text-[#9f8a76] transition-colors duration-500 hover:text-[#6d5846]"
+          >
+            Back Home
+            <span className="absolute -bottom-[3px] left-0 h-[1px] w-0 bg-[#b59a5b] transition-all duration-500 group-hover:w-full" />
+          </Link>
+        </div>
+
+        <div className="mt-auto pt-10">
+          <p className="font-mono text-[9px] tracking-[0.15em] text-[#c9b8a4]">
+            PRIVATE MODE
+          </p>
+          <p className="font-mono text-[8px] tracking-[0.2em] uppercase mt-2 text-[#d6cabd]">
+            © {new Date().getFullYear()} HuiZzzzi
+          </p>
+        </div>
+      </aside>
+    </>
   );
 }

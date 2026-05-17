@@ -1,12 +1,3 @@
-const ENCODED_PASSWORD = 'MTY0MjIw';
-
-export function verifyPassword(input: string): boolean {
-  try {
-    return btoa(input) === ENCODED_PASSWORD;
-  } catch {
-    return false;
-  }
-}
 export const START_DATE = new Date('2025-03-14');
 
 export const privateSizes: Record<string, [number, number]> = {
