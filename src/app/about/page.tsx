@@ -143,7 +143,7 @@ export default function AboutPage() {
             <div className="absolute inset-0 border border-[#e8e8e8] m-2 pointer-events-none z-10" />
             <div className="relative w-full h-full overflow-hidden">
               <Image
-                src={getImageUrl('/huizzzi.png')}
+                src={getImageUrl('/works/webp/private/photos/huizzzi.webp')}
                 alt="Portrait of HUI ZZZI"
                 fill
                 className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
