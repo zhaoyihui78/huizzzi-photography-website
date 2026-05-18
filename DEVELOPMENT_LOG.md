@@ -3,7 +3,7 @@
 ## 项目概述
 
 - **项目名称**: HUI ZZZI Photography Website
-- **技术栈**: Next.js 15 + React + TypeScript + Tailwind CSS
+- **技术栈**: Next.js 16 + React 19 + TypeScript + Tailwind CSS
 - **部署平台**: Vercel
 - **自定义域名**: www.huizzzi.art / huizzzi.art
 - **创建日期**: 2026-05-13
@@ -163,7 +163,7 @@
 
 ### 12. 细节打磨：侧边栏折叠与私人页面入口（2026-05-17）
 - **侧边栏折叠机制**：引入了极简风格的侧边栏折叠功能，使用细长箭头设计，完美贴合边缘，支持本地持久化存储折叠状态，收起状态下分类标题简化为三字母缩写，保持版面干净。
-- **`/we` 私密空间入口**：在 `About` 页内容区末尾新增了一个克制的 `for us` 入口链接。点击后会携带 `?auth=1` 参数，强制 `/we` 页面展示密码验证屏幕，增加仪式感。
+- **`/we` 私密空间入口**：在 `About` 页内容区末尾新增了一个克制的 `for us` 入口链接。后续已从前端 `?auth=1` 方案升级为跳转到 `/we/login` 的独立登录页，并交由服务端鉴权流程统一处理。
 
 ### 13. Field Notes 摄影手记板块架构搭建（2026-05-17）
 - **数据层**：引入 `gray-matter` 和 `next-mdx-remote`，使用无数据库方案，在 `src/content/notes/` 目录下通过 MDX 管理内容。
@@ -210,6 +210,27 @@
   - 阅读条颜色从纯黑调整为金色系，整体更贴近杂志纸张与摄影作品集的质感。
   - 目录层级更清晰，`h3` 以缩进和更小字号呈现，当前项以金色竖线强调。
 
+### 17. `/we` 私密空间服务端鉴权升级与部署修复（2026-05-17）
+- **状态**: 已完成并上线
+- **安全升级目标**: 将 `/we` 从“知道参数就能进入”的前端门禁，升级为真正由服务端控制访问权限的私密空间。
+- **鉴权方案**:
+  - 新增 `src/lib/we-auth.ts`，统一管理 `WE_PASSWORD`、`WE_AUTH_SALT`、`WE_AUTH_COOKIE`、安全跳转白名单和 session token 生成逻辑。
+  - 新增 `src/app/api/we-auth/login/route.ts`，由服务端校验密码、执行基础限流，并设置 `httpOnly` Cookie。
+  - 新增 `middleware.ts`，保护 `/we/:path*`；未登录时统一跳转 `/we/login?next=...`，已登录用户访问登录页时自动回跳 `/we`。
+  - 新增 `src/app/we/login/page.tsx`，作为独立登录页承接 `About` 页的 `for us` 入口。
+- **页面调整**:
+  - `src/app/we/page.tsx` 删除旧的前端密码门与 `localStorage` 解锁逻辑，改为“仅在已鉴权后可访问的内容页”。
+  - `src/app/we/edit/page.tsx` 同步移除本地假鉴权逻辑，完全依赖中间件保护。
+  - `src/components/Sidebar.tsx` 为 `/we` 和 `/we/login` 拆分独立的私人导航形态，避免和公共站点导航共用 Hook 路径。
+  - `src/app/about/page.tsx` 中的 `for us` 入口正式改为跳转 `/we/login`。
+- **环境变量**:
+  - `WE_PASSWORD`：私密空间访问密码
+  - `WE_AUTH_SALT`：session token 盐值
+- **部署问题排查与修复**:
+  - 修复 `/we/login` 在 Next.js 16 生产构建中的 `useSearchParams` / `Suspense` 构建失败问题，改为在客户端安全读取 `window.location.search`。
+  - 修复 `trailingSlash: true` 下 `/we/login/` 被 `middleware` 误判导致的无限重定向问题；现已兼容 `/we/login` 与 `/we/login/` 两种路径。
+  - 本地已通过 `npm run build` 验证后推送上线。
+
 ---
 
 ## 已知问题
@@ -254,15 +275,7 @@
 - [ ] 验证国内访问速度（F12 Network 检查图片加载时间）
 - [ ] 考虑移除 Git 仓库中的 `public/works` 大文件（使用 `git-filter-repo` 或 BFG）
 - [ ] 配置 GitHub Actions 自动部署到 COS（可选）
-- [ ] **新增 Field Notes 手记板块**
-  - **方案**: 短篇摄影知识文章，杂志排版风格（Editorial Layout）
-  - **路由**: `/notes`（封面网格列表）+ `/notes/[slug]`（沉浸式单篇阅读）
-  - **数据层**: `src/content/notes/*.mdx`，frontmatter 驱动，无需 CMS
-  - **视觉**: 列表页左侧大图 + 右侧标题/摘要；详情页非对称双栏，正文 60% + 右侧 sticky 参数表/参考图
-  - **交互**: 列表页悬停封面图放大 + 标题笔触下划线；详情页滚动进度条变章节锚点
-  - **主题**: 保持 `#fdfcf9` 暖白纸底色，与留言板形成「阅读区」视觉共识
-  - **导航**: 侧边栏 `Guestbook` 下方新增 `Field Notes` 入口
-  - **内容形式**: 每篇 800–1500 字，聚焦一个具体话题（如 Zone System、黄金时刻、胶片宽容度）
+- [x] 新增 `Field Notes` 手记板块，并完成 MDX 内容、Glossary、阅读进度条、目录与前后篇导航
 
 ---
 
@@ -286,7 +299,7 @@
 
 ---
 
-*最后更新: 2026-05-17*
+*最后更新: 2026-05-17（已补充 `/we` 服务端鉴权与部署修复记录）*
 
 ---
 
