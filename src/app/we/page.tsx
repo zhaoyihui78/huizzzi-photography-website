@@ -588,44 +588,58 @@ function LettersPreview() {
   };
 
   return (
-    <div className="rounded-[30px] border border-[#eadfce] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(252,247,241,0.98))] px-6 py-7 shadow-[0_24px_70px_rgba(96,73,48,0.05)] md:px-8 md:py-8">
-      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+    <div className="relative overflow-hidden rounded-[32px] border border-[#eadfce] bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(252,247,241,0.98))] px-6 py-7 shadow-[0_24px_70px_rgba(96,73,48,0.05)] md:px-8 md:py-8">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(201,169,110,0.08),transparent_28%),linear-gradient(135deg,rgba(255,255,255,0.14),transparent_48%)]" />
+      <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div className="max-w-2xl">
-          <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#bda58a] mb-3">
+          <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.24em] text-[#bda58a]">
             Private Mailbox
           </p>
           <h3 className="text-[22px] md:text-[24px] font-light tracking-[0.05em] text-stone-700">
             给彼此留下可以慢慢拆开的信
           </h3>
           <p className="mt-3 text-[13px] leading-[1.95] text-[#8f7c69]">
-            现在 `/we` 里已经有独立信箱了。你们可以分别登录自己的账号，给彼此写信、回信，
-            每封信都会安静地保存在私密空间里，而不是像聊天记录一样被冲散。
+            用各自的名字慢慢写信、回信，把想留住的话安静地折好，放进只属于彼此的信箱里。
+          </p>
+          <p className="mt-3 text-[12px] leading-[1.9] text-[#ab977f]">
+            它不急着被读完，也不会像聊天记录一样很快沉下去。
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="rounded-2xl border border-[#eee2d3] bg-white/75 px-4 py-3">
-            <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#bea991]">
-              Unread
-            </p>
-            <p className="mt-2 text-[12px] text-[#8a7561]">
-              {currentUser ? `${currentUser === 'hui' ? 'Hui' : 'DuDu'} ${unreadCount}` : unreadCount}
-            </p>
+        <div className="flex flex-col gap-3 md:min-w-[330px] md:max-w-[360px]">
+          <div className="rounded-[22px] border border-[#efe2d3] bg-white/78 p-3 shadow-[0_12px_30px_rgba(96,73,48,0.05)] backdrop-blur-sm">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="font-mono text-[8px] uppercase tracking-[0.22em] text-[#bea991]">
+                  Unread Letters
+                </p>
+                <p className="mt-2 text-[12px] text-[#8a7561]">
+                  {currentUser
+                    ? `${currentUser === 'hui' ? 'Hui' : 'DuDu'} 还有 ${unreadCount} 封未拆开的信`
+                    : `还有 ${unreadCount} 封未拆开的信`}
+                </p>
+              </div>
+              <div className="flex h-12 min-w-[54px] items-center justify-center rounded-[18px] border border-[#eadcc9] bg-[#fcf7ef] px-3 font-serif text-[21px] text-[#7b6249] shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </div>
+            </div>
           </div>
-          <Link
-            href="/we/letters"
-            className="inline-flex items-center gap-3 rounded-full bg-[#6d5846] px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#5b4939]"
-          >
-            Open Letters
-            <span className="h-px w-6 bg-white/70" />
-          </Link>
-          <button
-            type="button"
-            onClick={() => void handleLogout()}
-            className="inline-flex items-center rounded-full border border-[#eadfce] bg-white/75 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8f7c69] transition-colors hover:border-[#d9c0a1] hover:text-[#4f4033]"
-          >
-            Log Out
-          </button>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/we/letters"
+              className="inline-flex flex-1 items-center justify-center gap-3 rounded-full bg-[#6d5846] px-5 py-3 text-[11px] uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#5b4939]"
+            >
+              Open Letters
+              <span className="h-px w-6 bg-white/70" />
+            </Link>
+            <button
+              type="button"
+              onClick={() => void handleLogout()}
+              className="inline-flex items-center justify-center rounded-full border border-[#eadfce] bg-white/78 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8f7c69] transition-colors hover:border-[#d9c0a1] hover:text-[#4f4033]"
+            >
+              Log Out
+            </button>
+          </div>
         </div>
       </div>
 
@@ -797,7 +811,7 @@ export default function WePage() {
                   Letters
                 </p>
                 <h2 className="font-heading text-[22px] md:text-[26px] font-light tracking-[0.06em] text-stone-700">
-                  Things We Write For Each Other
+                  Letters We Leave For Each Other
                 </h2>
               </div>
 

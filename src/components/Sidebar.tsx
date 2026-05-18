@@ -406,12 +406,13 @@ function Clock({ theme, collapsed }: { theme?: 'default' | 'dark' | 'oriental'; 
 function PrivateSidebar({ pathname }: { pathname: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<'moments' | 'timeline' | 'notes'>('moments');
-  const [letterViewer, setLetterViewer] = useState<'hui' | 'dudu'>('hui');
-  const [letterUnread, setLetterUnread] = useState({ hui: 0, dudu: 0 });
+  const [currentLetterUser, setCurrentLetterUser] = useState<'hui' | 'dudu' | null>(null);
+  const [letterUnreadCount, setLetterUnreadCount] = useState(0);
 
   const isRootWePage = pathname === '/we' || pathname === '/we/';
   const isLettersPage = pathname === '/we/letters' || pathname === '/we/letters/';
-  const hasUnreadLetters = letterUnread[letterViewer] > 0;
+  const hasUnreadLetters = letterUnreadCount > 0;
+  const unreadBadge = letterUnreadCount > 99 ? '99+' : String(letterUnreadCount);
 
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-w', '236px');
@@ -454,24 +455,25 @@ function PrivateSidebar({ pathname }: { pathname: string }) {
   }, []);
 
   useEffect(() => {
-    const storedViewer = window.localStorage.getItem('we_letters_viewer');
-    if (storedViewer === 'hui' || storedViewer === 'dudu') {
-      setLetterViewer(storedViewer);
-    }
-
     let cancelled = false;
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
     const loadUnread = async () => {
       try {
         const response = await fetch('/api/we-letters/unread', { cache: 'no-store' });
-        if (!response.ok) return;
+        if (!response.ok) {
+          if (!cancelled) {
+            setLetterUnreadCount(0);
+            setCurrentLetterUser(null);
+          }
+          return;
+        }
         const payload = await response.json().catch(() => ({}));
-        if (!cancelled && payload.unread) {
-          setLetterUnread({
-            hui: Number(payload.unread.hui) || 0,
-            dudu: Number(payload.unread.dudu) || 0,
-          });
+        if (!cancelled) {
+          if (payload.currentUser === 'hui' || payload.currentUser === 'dudu') {
+            setCurrentLetterUser(payload.currentUser);
+          }
+          setLetterUnreadCount(typeof payload.unreadCount === 'number' ? payload.unreadCount : 0);
         }
       } catch {
         // Ignore sidebar badge fetch errors.
@@ -610,13 +612,32 @@ function PrivateSidebar({ pathname }: { pathname: string }) {
                 <Link
                   key={item.slug}
                   href={item.href || '/we'}
-                  className={`group relative flex w-fit items-center gap-2 text-[11px] tracking-wide transition-colors duration-500 ${
+                  className={`group relative flex items-center gap-3 text-[11px] tracking-wide transition-colors duration-500 ${
+                    isLettersItem ? 'w-[122px] justify-between' : 'w-fit'
+                  } ${
                     isActive ? 'text-[#4f4033]' : 'text-[#9f8a76] hover:text-[#6d5846]'
                   }`}
                 >
-                  <span>{item.label}</span>
+                  <span className="inline-flex items-center gap-2">
+                    <span>{item.label}</span>
+                    {isLettersItem && hasUnreadLetters && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#b59a5b] shadow-[0_0_8px_rgba(181,154,91,0.35)]" />
+                    )}
+                  </span>
                   {isLettersItem && hasUnreadLetters && (
-                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#b59a5b]" />
+                    <motion.span
+                      initial={{ scale: 0.92, opacity: 0.85 }}
+                      animate={{ scale: [0.92, 1, 0.92], opacity: [0.85, 1, 0.85] }}
+                      transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+                      className="inline-flex min-w-[22px] items-center justify-center rounded-full border border-[#d8c1a0] bg-[#fbf3e4] px-1.5 py-[2px] font-mono text-[8px] uppercase tracking-[0.12em] text-[#9f7b49] shadow-[0_3px_10px_rgba(181,154,91,0.12)]"
+                      title={
+                        currentLetterUser
+                          ? `${currentLetterUser === 'hui' ? 'Hui' : 'DuDu'} 有 ${letterUnreadCount} 封未读信`
+                          : `${letterUnreadCount} unread letters`
+                      }
+                    >
+                      {unreadBadge}
+                    </motion.span>
                   )}
                   <span
                     className={`absolute -bottom-[3px] left-0 h-[1px] bg-[#b59a5b] transition-all duration-500 ${
