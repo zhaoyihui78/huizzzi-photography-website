@@ -8,7 +8,7 @@ import CustomDatePicker from '@/components/CustomDatePicker';
 import AttachmentModal from '@/components/AttachmentModal';
 
 type MailboxTab = 'inbox' | 'sent';
-type ViewState = 'list' | 'read' | 'write';
+type ViewState = 'list' | 'read' | 'write' | 'opening';
 
 function getOtherParty(viewer: WeLetterParty): WeLetterParty {
   return viewer === 'hui' ? 'dudu' : 'hui';
@@ -53,6 +53,33 @@ export default function WeLettersPage() {
   const [configured, setConfigured] = useState(true);
   const [previewMode, setPreviewMode] = useState(false);
   const [error, setError] = useState('');
+
+  const upcomingSpecialDate = useMemo(() => {
+    const today = new Date();
+    const currentMonth = today.getMonth() + 1;
+    
+    const dates = [
+      { name: '情人节', month: 2, day: 14 },
+      { name: '520', month: 5, day: 20 },
+      { name: '圣诞节', month: 12, day: 25 },
+      { name: '跨年', month: 12, day: 31 },
+      { name: '新年', month: 1, day: 1 },
+    ];
+    
+    for (const d of dates) {
+      const eventDate = new Date(today.getFullYear(), d.month - 1, d.day);
+      if (eventDate < today && !(d.month === 1 && currentMonth === 12)) {
+        eventDate.setFullYear(today.getFullYear() + 1);
+      }
+      const diffTime = eventDate.getTime() - today.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays >= 0 && diffDays <= 14) {
+        return { ...d, diffDays };
+      }
+    }
+    return null;
+  }, []);
 
   const loadLetters = async () => {
     setLoading(true);
@@ -145,7 +172,10 @@ export default function WeLettersPage() {
 
   const openLetter = (id: string) => {
     setSelectedId(id);
-    setView('read');
+    setView('opening');
+    setTimeout(() => {
+      setView('read');
+    }, 2400); // 2.4 seconds animation
   };
 
   const handleReply = (letter: WeLetter) => {
@@ -306,6 +336,19 @@ export default function WeLettersPage() {
               </div>
             ) : (
               <>
+                {upcomingSpecialDate && activeLetters.length > 0 && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-10 rounded-sm border border-dashed border-[#d9c0a1] bg-[#fcf7ef] px-4 py-3 text-center text-[12px] text-[#9b8975] shadow-sm"
+                  >
+                    {upcomingSpecialDate.diffDays === 0 
+                      ? `今天就是 `
+                      : `再过 ${upcomingSpecialDate.diffDays} 天就是 `}
+                    <span className="font-serif italic text-[#8c7b68]">{upcomingSpecialDate.name}</span> 
+                    了，要不要{upcomingSpecialDate.diffDays > 0 ? '提前' : ''}留一封信？
+                  </motion.div>
+                )}
                 <div className="mb-12 flex items-center justify-between border-b border-[#f2ebe0] pb-4">
                   <div className="flex gap-6">
                     {([
@@ -369,15 +412,15 @@ export default function WeLettersPage() {
                         >
                           <div className="flex items-center gap-6">
                             {/* Wax seal indicator */}
-                            <span
-                              className={`h-2 w-2 rounded-full transition-colors ${
-                                isDelayed && !canOpen 
-                                  ? 'bg-[#d0c2b2]' // Grey for future
-                                  : unread 
-                                    ? 'bg-[#c89c54] shadow-[0_0_8px_rgba(200,156,84,0.4)]' // Gold for unread
-                                    : 'bg-transparent border border-[#e5d8c8]' // Empty/Read
-                              }`}
-                            />
+                            {isDelayed && !canOpen ? (
+                              <span className="h-2.5 w-2.5 rounded-full bg-[#d0c2b2]" />
+                            ) : unread ? (
+                              <span className="relative flex h-3.5 w-3.5 items-center justify-center rounded-full bg-[#9a2a2a] shadow-[0_1px_3px_rgba(154,42,42,0.4)]">
+                                <span className="h-2 w-2 rounded-full border border-[#7a2222]" />
+                              </span>
+                            ) : (
+                              <span className="h-2 w-2 rounded-full border border-[#e5d8c8]" />
+                            )}
                             <div className="flex flex-col gap-1">
                               <span className="font-serif text-[15px] text-[#4f4033] transition-colors">
                                 {isDelayed && !canOpen ? '一封来自过去的信 (未到时间)' : letter.title}
@@ -409,6 +452,67 @@ export default function WeLettersPage() {
                 )}
               </>
             )}
+          </motion.div>
+        )}
+
+        {view === 'opening' && (
+          <motion.div
+            key="opening"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-[#fdf9f3]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.6 } }}
+          >
+            <div className="relative w-[280px] h-[180px] sm:w-[360px] sm:h-[230px]">
+              {/* Back of envelope */}
+              <div className="absolute inset-0 bg-[#d9c9b4]" />
+              
+              {/* Paper inside sliding out */}
+              <motion.div
+                className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[90%] h-[150%] bg-[#fcf7ef] shadow-[0_0_10px_rgba(0,0,0,0.1)] z-10"
+                initial={{ y: '10%' }}
+                animate={{ y: '-60%' }}
+                transition={{ delay: 1.0, duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              >
+                <div className="pt-8 px-6 space-y-4 opacity-20">
+                  <div className="h-1.5 w-1/3 bg-[#8a7561] rounded" />
+                  <div className="h-1.5 w-full bg-[#8a7561] rounded" />
+                  <div className="h-1.5 w-5/6 bg-[#8a7561] rounded" />
+                </div>
+              </motion.div>
+
+              {/* Left, Right, Bottom flaps of envelope (Front) */}
+              <svg className="absolute inset-0 w-full h-full z-20 pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+                <polygon points="0,0 50,50 0,100" fill="#e0d1bb" />
+                <polygon points="100,0 50,50 100,100" fill="#dfd0b9" />
+                <polygon points="0,100 50,50 100,100" fill="#e6d9c5" />
+              </svg>
+
+              {/* Top Flap (opens) */}
+              <motion.div 
+                className="absolute top-0 left-0 w-full h-[50%] origin-top z-30"
+                initial={{ rotateX: 0, zIndex: 30 }}
+                animate={{ rotateX: 180, zIndex: 5 }}
+                transition={{ delay: 0.3, duration: 0.8, ease: "easeInOut" }}
+              >
+                <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+                  <polygon points="0,0 100,0 50,100" fill="#e3d5c0" />
+                </svg>
+              </motion.div>
+
+              {/* Wax seal */}
+              <motion.div
+                className="absolute top-[50%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 rounded-full z-40 flex items-center justify-center shadow-md"
+                style={{ background: 'radial-gradient(circle at 30% 30%, #a73333, #7a2222)' }}
+                initial={{ scale: 1, opacity: 1 }}
+                animate={{ scale: 1.3, opacity: 0 }}
+                transition={{ delay: 0.2, duration: 0.4 }}
+              >
+                <div className="w-10 h-10 rounded-full border border-[#912b2b] flex items-center justify-center">
+                  <span className="font-serif text-[#e8dcc8] text-sm opacity-90">封</span>
+                </div>
+              </motion.div>
+            </div>
           </motion.div>
         )}
 
@@ -450,6 +554,28 @@ export default function WeLettersPage() {
               <h2 className={`font-serif text-[22px] tracking-wide md:text-[24px] ${new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? 'text-[#e5d8c8]' : 'text-[#4f4033]'}`}>
                 {selectedLetter.title}
               </h2>
+            </div>
+
+            {/* Postmark inside the read view article/header */}
+            <div className="absolute right-6 top-8 opacity-[0.15] pointer-events-none rotate-12 select-none md:right-12 md:top-12">
+              <svg width="150" height="100" viewBox="0 0 180 120">
+                <circle cx="60" cy="60" r="54" fill="none" stroke={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} strokeWidth="2" strokeDasharray="4 4" />
+                <circle cx="60" cy="60" r="38" fill="none" stroke={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} strokeWidth="1.5" />
+                <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" id="curve" />
+                <text fontSize="14" fill={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} fontFamily="serif" letterSpacing="4">
+                  <textPath href="#curve" startOffset="50%" textAnchor="middle">HUI & DUDU</textPath>
+                </text>
+                <text x="60" y="64" textAnchor="middle" fill={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} fontSize="12" fontFamily="mono" letterSpacing="1">
+                  {new Date(selectedLetter.createdAt).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: '2-digit' }).replace(/\//g, '.')}
+                </text>
+                <text x="60" y="82" textAnchor="middle" fill={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} fontSize="10" fontFamily="serif" letterSpacing="4">
+                  POST
+                </text>
+                {/* Wavy cancellation lines */}
+                <path d="M 115 45 Q 130 35 145 45 T 175 45" fill="none" stroke={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} strokeWidth="1.5" />
+                <path d="M 115 60 Q 130 50 145 60 T 175 60" fill="none" stroke={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} strokeWidth="1.5" />
+                <path d="M 115 75 Q 130 65 145 75 T 175 75" fill="none" stroke={new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5 ? '#e5d8c8' : '#8a7561'} strokeWidth="1.5" />
+              </svg>
             </div>
 
             <article 
