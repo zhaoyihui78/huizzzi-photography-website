@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getWeSessionUser, WE_AUTH_COOKIE } from '@/lib/we-auth';
 import {
   createWeLetter,
+  deleteWeLetterForViewer,
+  getVisibleWeLetters,
+  getWeLetterUnreadCount,
   isWeLettersConfigured,
   isWeLettersPreviewMode,
   listWeLetters,
@@ -54,10 +57,11 @@ export async function GET(request: NextRequest) {
 
   try {
     const letters = await listWeLetters();
+    const visibleLetters = getVisibleWeLetters(letters, currentUser);
     return NextResponse.json({
-      letters,
+      letters: visibleLetters,
       currentUser,
-      unreadCount: letters.filter((letter) => letter.to === currentUser && !letter.readAt).length,
+      unreadCount: getWeLetterUnreadCount(letters, currentUser),
       preview: isWeLettersPreviewMode(),
     });
   } catch (error) {
@@ -123,11 +127,13 @@ export async function POST(request: NextRequest) {
     const to: WeLetterParty = currentUser === 'hui' ? 'dudu' : 'hui';
     const letter = await createWeLetter({ from, to, title, content, replyToId, deliverAt, attachment, paperStyle });
     const letters = await listWeLetters();
+    const visibleLetters = getVisibleWeLetters(letters, currentUser);
     return NextResponse.json({
       ok: true,
       letter,
+      letters: visibleLetters,
       currentUser,
-      unreadCount: letters.filter((item) => item.to === currentUser && !item.readAt).length,
+      unreadCount: getWeLetterUnreadCount(letters, currentUser),
       preview: isWeLettersPreviewMode(),
     });
   } catch (error) {
@@ -163,15 +169,60 @@ export async function PATCH(request: NextRequest) {
     }
 
     const letters = await listWeLetters();
+    const visibleLetters = getVisibleWeLetters(letters, currentUser);
     return NextResponse.json({
       ok: true,
       letter,
+      letters: visibleLetters,
       currentUser,
-      unreadCount: letters.filter((item) => item.to === currentUser && !item.readAt).length,
+      unreadCount: getWeLetterUnreadCount(letters, currentUser),
       preview: isWeLettersPreviewMode(),
     });
   } catch (error) {
     console.error('Failed to update WE letter:', error);
     return NextResponse.json({ error: 'Failed to update letter.' }, { status: 500 });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  const currentUser = await getCurrentUser(request);
+  if (!currentUser) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (!isWeLettersConfigured() && !isWeLettersPreviewMode()) {
+    return NextResponse.json(
+      { error: 'WE letters storage is not configured on the server.' },
+      { status: 503 }
+    );
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const id = typeof body.id === 'string' ? body.id : '';
+
+  if (!id) {
+    return NextResponse.json({ error: 'Invalid letter delete payload.' }, { status: 400 });
+  }
+
+  try {
+    const result = await deleteWeLetterForViewer(id, currentUser);
+    if (!result) {
+      return NextResponse.json({ error: 'Letter not found.' }, { status: 404 });
+    }
+
+    const letters = await listWeLetters();
+    const visibleLetters = getVisibleWeLetters(letters, currentUser);
+    return NextResponse.json({
+      ok: true,
+      deletedId: id,
+      removedEverywhere: result.removedEverywhere,
+      letters: visibleLetters,
+      currentUser,
+      unreadCount: getWeLetterUnreadCount(letters, currentUser),
+      preview: isWeLettersPreviewMode(),
+    });
+  } catch (error) {
+    console.error('Failed to delete WE letter:', error);
+    return NextResponse.json({ error: 'Failed to delete letter.' }, { status: 500 });
   }
 }

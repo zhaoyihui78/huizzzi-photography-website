@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getWeSessionUser, WE_AUTH_COOKIE } from '@/lib/we-auth';
 import {
+  getWeLetterUnreadCount,
   isWeLettersConfigured,
   isWeLettersPreviewMode,
   listWeLetters,
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
   try {
     const letters = await listWeLetters();
     return NextResponse.json({
-      unreadCount: letters.filter((letter) => letter.to === currentUser && !letter.readAt).length,
+      unreadCount: getWeLetterUnreadCount(letters, currentUser),
       currentUser,
       configured: true,
       preview: isWeLettersPreviewMode(),

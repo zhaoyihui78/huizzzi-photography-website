@@ -14,6 +14,7 @@ export interface WeLetter {
     type: 'photo';
     url: string;
   };
+  deletedFor?: WeLetterParty[];
   paperStyle?: 'default' | 'handwritten';
 }
 
@@ -101,6 +102,9 @@ function normalizeLetter(value: unknown): WeLetter | null {
     attachment: raw.attachment && raw.attachment.type === 'photo' && typeof raw.attachment.url === 'string' 
       ? { type: raw.attachment.type, url: raw.attachment.url } 
       : undefined,
+    deletedFor: Array.isArray(raw.deletedFor)
+      ? raw.deletedFor.filter((party): party is WeLetterParty => party === 'hui' || party === 'dudu')
+      : undefined,
     paperStyle: raw.paperStyle === 'handwritten' ? 'handwritten' : 'default',
   };
 }
@@ -187,6 +191,16 @@ export async function listWeLetters() {
   return sortLetters(letters);
 }
 
+export function getVisibleWeLetters(letters: WeLetter[], viewer: WeLetterParty) {
+  return letters.filter((letter) => !letter.deletedFor?.includes(viewer));
+}
+
+export function getWeLetterUnreadCount(letters: WeLetter[], viewer: WeLetterParty) {
+  return getVisibleWeLetters(letters, viewer).filter(
+    (letter) => letter.to === viewer && !letter.readAt
+  ).length;
+}
+
 export function getWeLetterUnreadCounts(letters: WeLetter[]) {
   return {
     hui: letters.filter((letter) => letter.to === 'hui' && !letter.readAt).length,
@@ -216,6 +230,7 @@ export async function createWeLetter(input: {
     replyToId: input.replyToId,
     deliverAt: input.deliverAt,
     attachment: input.attachment,
+    deletedFor: [],
     paperStyle: input.paperStyle,
   } as WeLetter;
 
@@ -235,4 +250,35 @@ export async function markWeLetterRead(id: string, viewer: WeLetterParty) {
   }
 
   return target;
+}
+
+export async function deleteWeLetterForViewer(id: string, viewer: WeLetterParty) {
+  const letters = await fetchLettersFromGist();
+  const targetIndex = letters.findIndex((letter) => letter.id === id);
+  if (targetIndex === -1) return null;
+
+  const target = letters[targetIndex];
+  if (target.from !== viewer && target.to !== viewer) {
+    return null;
+  }
+
+  const nextDeletedFor = Array.from(new Set([...(target.deletedFor || []), viewer]));
+  const allPartiesDeleted =
+    nextDeletedFor.includes('hui') && nextDeletedFor.includes('dudu');
+
+  if (allPartiesDeleted) {
+    letters.splice(targetIndex, 1);
+  } else {
+    letters[targetIndex] = {
+      ...target,
+      deletedFor: nextDeletedFor,
+    };
+  }
+
+  await saveLettersToGist(letters);
+
+  return {
+    removedEverywhere: allPartiesDeleted,
+    letterId: id,
+  };
 }

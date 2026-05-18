@@ -49,6 +49,7 @@ export default function WeLettersPage() {
   
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [configured, setConfigured] = useState(true);
   const [previewMode, setPreviewMode] = useState(false);
   const [error, setError] = useState('');
@@ -213,6 +214,43 @@ export default function WeLettersPage() {
     } finally {
       router.replace('/we/login');
       router.refresh();
+    }
+  };
+
+  const handleDelete = async (letter: WeLetter) => {
+    if (deleting) return;
+
+    const confirmed = window.confirm(
+      '删除后，这封信会先从你的信箱里消失；只有当对方也删除后，它才会真正被清除。确定要删除吗？'
+    );
+    if (!confirmed) return;
+
+    setDeleting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/we-letters', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: letter.id }),
+      });
+
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to delete letter.');
+      }
+
+      if (Array.isArray(payload.letters)) {
+        setLetters(payload.letters);
+      } else {
+        setLetters((current) => current.filter((item) => item.id !== letter.id));
+      }
+      setSelectedId(null);
+      setView('list');
+    } catch (deleteError) {
+      setError(deleteError instanceof Error ? deleteError.message : 'Failed to delete letter.');
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -453,16 +491,37 @@ export default function WeLettersPage() {
                       : 'Delivered, unread'
                     : 'End of Letter'}
                 </span>
-                {selectedLetter.to === viewer && (
+                <div className="flex items-center gap-5">
                   <button
                     type="button"
-                    onClick={() => handleReply(selectedLetter)}
-                    className="group flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#806f5e] transition-colors hover:text-[#4f4033]"
+                    onClick={() => void handleDelete(selectedLetter)}
+                    disabled={deleting}
+                    className={`group relative rotate-[-2deg] border-b border-dashed px-2 py-1 font-serif text-[13px] italic tracking-[0.04em] shadow-[0_1px_0_rgba(201,169,110,0.12)] transition-colors disabled:opacity-40 ${
+                      new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5
+                        ? 'border-[#6e5a49] bg-[#302821] text-[#b89f86] hover:bg-[#392f27] hover:text-[#e0d0bf]'
+                        : 'border-[#d8c1a0] bg-[#fcf7ef] text-[#9a7560] hover:bg-[#f7efdf] hover:text-[#6c5643]'
+                    }`}
                   >
-                    <span>Reply</span>
-                    <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
+                    <span className="relative z-10">{deleting ? '删除中...' : '从我的信箱删除'}</span>
+                    <span
+                      className={`absolute left-2 right-2 bottom-[5px] h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${
+                        new Date(selectedLetter.createdAt).getHours() >= 22 || new Date(selectedLetter.createdAt).getHours() < 5
+                          ? 'bg-[#7d6755]'
+                          : 'bg-[#d8c1a0]'
+                      }`}
+                    />
                   </button>
-                )}
+                  {selectedLetter.to === viewer && (
+                    <button
+                      type="button"
+                      onClick={() => handleReply(selectedLetter)}
+                      className="group flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[#806f5e] transition-colors hover:text-[#4f4033]"
+                    >
+                      <span>Reply</span>
+                      <span className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1">↗</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>
