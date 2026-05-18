@@ -4,6 +4,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { photos, meetings, cnNumerals } from './data';
 
 /* ---------- Portal ---------- */
@@ -15,14 +17,6 @@ function Portal({ children }: { children: React.ReactNode }) {
   }, []);
   if (!mounted) return null;
   return createPortal(children, document.body);
-}
-
-/* ---------- Types ---------- */
-interface Note {
-  id: string;
-  text: string;
-  timestamp: number;
-  author: 'me' | 'her';
 }
 
 /* ---------- Intro Sequence ---------- */
@@ -546,192 +540,101 @@ function Lightbox({
   );
 }
 
-/* ---------- Notes ---------- */
-function NotesSection() {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const [text, setText] = useState('');
-  const [author, setAuthor] = useState<'me' | 'her'>('me');
-  const [syncOpen, setSyncOpen] = useState(false);
-  const [syncCode, setSyncCode] = useState('');
+function LettersPreview() {
+  const router = useRouter();
+  const [configured, setConfigured] = useState(true);
+  const [currentUser, setCurrentUser] = useState<'hui' | 'dudu' | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('we_notes');
-      if (raw) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setNotes(JSON.parse(raw));
+    let cancelled = false;
+
+    const loadUnread = async () => {
+      try {
+        const response = await fetch('/api/we-letters/unread', { cache: 'no-store' });
+        const payload = await response.json().catch(() => ({}));
+        if (cancelled) return;
+
+        if (payload.configured === false) {
+          setConfigured(false);
+          return;
+        }
+
+        if (payload.currentUser === 'hui' || payload.currentUser === 'dudu') {
+          setCurrentUser(payload.currentUser);
+        }
+
+        if (typeof payload.unreadCount === 'number') {
+          setUnreadCount(payload.unreadCount);
+        }
+      } catch {
+        // Ignore preview errors.
       }
-    } catch {
-      // ignore
-    }
+    };
+
+    void loadUnread();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const save = useCallback(
-    (next: Note[]) => {
-      setNotes(next);
-      localStorage.setItem('we_notes', JSON.stringify(next));
-    },
-    []
-  );
-
-  const add = useCallback(() => {
-    if (!text.trim()) return;
-    const note: Note = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      text: text.trim(),
-      timestamp: Date.now(),
-      author,
-    };
-    save([...notes, note]);
-    setText('');
-  }, [text, author, notes, save]);
-
-  const remove = useCallback(
-    (id: string) => {
-      save(notes.filter((n) => n.id !== id));
-    },
-    [notes, save]
-  );
-
-  const exportSync = useCallback(() => {
-    const code = btoa(encodeURIComponent(JSON.stringify(notes)));
-    setSyncCode(code);
-  }, [notes]);
-
-  const importSync = useCallback(() => {
+  const handleLogout = async () => {
     try {
-      const decoded = decodeURIComponent(atob(syncCode));
-      const imported: Note[] = JSON.parse(decoded);
-      if (Array.isArray(imported)) {
-        save(imported);
-        setSyncCode('');
-        setSyncOpen(false);
-      }
-    } catch {
-      alert('同步码无效');
+      await fetch('/api/we-auth/logout', { method: 'POST' });
+    } finally {
+      router.replace('/we/login');
+      router.refresh();
     }
-  }, [syncCode, save]);
+  };
 
   return (
-    <div className="mt-20 max-w-2xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-light text-stone-700 tracking-wide">便签</h2>
-        <button
-          onClick={() => setSyncOpen(!syncOpen)}
-          className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
-        >
-          {syncOpen ? '关闭' : '同步'}
-        </button>
-      </div>
+    <div className="rounded-[30px] border border-[#eadfce] bg-[linear-gradient(180deg,rgba(255,255,255,0.92),rgba(252,247,241,0.98))] px-6 py-7 shadow-[0_24px_70px_rgba(96,73,48,0.05)] md:px-8 md:py-8">
+      <div className="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <p className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#bda58a] mb-3">
+            Private Mailbox
+          </p>
+          <h3 className="text-[22px] md:text-[24px] font-light tracking-[0.05em] text-stone-700">
+            给彼此留下可以慢慢拆开的信
+          </h3>
+          <p className="mt-3 text-[13px] leading-[1.95] text-[#8f7c69]">
+            现在 `/we` 里已经有独立信箱了。你们可以分别登录自己的账号，给彼此写信、回信，
+            每封信都会安静地保存在私密空间里，而不是像聊天记录一样被冲散。
+          </p>
+        </div>
 
-      <AnimatePresence>
-        {syncOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden mb-6"
-          >
-            <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 space-y-3">
-              <div className="flex gap-2">
-                <input
-                  value={syncCode}
-                  onChange={(e) => setSyncCode(e.target.value)}
-                  placeholder="粘贴同步码..."
-                  className="flex-1 px-3 py-2 bg-white border border-stone-200 rounded text-sm focus:outline-none focus:border-stone-400"
-                />
-                <button
-                  onClick={importSync}
-                  className="px-4 py-2 bg-stone-800 text-white rounded text-sm hover:bg-stone-700 transition-colors"
-                >
-                  导入
-                </button>
-              </div>
-              <button
-                onClick={exportSync}
-                className="text-xs text-stone-400 hover:text-stone-600 transition-colors"
-              >
-                生成同步码
-              </button>
-              {syncCode && (
-                <p className="text-[10px] text-stone-300 break-all">{syncCode}</p>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div className="bg-stone-50 border border-stone-200 rounded-lg p-4 mb-6">
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="写一段话..."
-          rows={3}
-          className="w-full bg-transparent resize-none focus:outline-none text-sm text-stone-700 placeholder:text-stone-300"
-        />
-        <div className="flex items-center justify-between mt-3">
-          <div className="flex gap-2">
-            <button
-              onClick={() => setAuthor('me')}
-              className={`px-3 py-1 rounded-full text-xs transition-colors ${
-                author === 'me'
-                  ? 'bg-stone-800 text-white'
-                  : 'bg-white text-stone-400 border border-stone-200'
-              }`}
-            >
-              我
-            </button>
-            <button
-              onClick={() => setAuthor('her')}
-              className={`px-3 py-1 rounded-full text-xs transition-colors ${
-                author === 'her'
-                  ? 'bg-rose-400 text-white'
-                  : 'bg-white text-stone-400 border border-stone-200'
-              }`}
-            >
-              她
-            </button>
+        <div className="flex items-center gap-4">
+          <div className="rounded-2xl border border-[#eee2d3] bg-white/75 px-4 py-3">
+            <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-[#bea991]">
+              Unread
+            </p>
+            <p className="mt-2 text-[12px] text-[#8a7561]">
+              {currentUser ? `${currentUser === 'hui' ? 'Hui' : 'DuDu'} ${unreadCount}` : unreadCount}
+            </p>
           </div>
-          <button
-            onClick={add}
-            disabled={!text.trim()}
-            className="px-4 py-1.5 bg-stone-800 text-white rounded text-xs hover:bg-stone-700 transition-colors disabled:opacity-30"
+          <Link
+            href="/we/letters"
+            className="inline-flex items-center gap-3 rounded-full bg-[#6d5846] px-5 py-2.5 text-[11px] uppercase tracking-[0.18em] text-white transition-colors hover:bg-[#5b4939]"
           >
-            发送
+            Open Letters
+            <span className="h-px w-6 bg-white/70" />
+          </Link>
+          <button
+            type="button"
+            onClick={() => void handleLogout()}
+            className="inline-flex items-center rounded-full border border-[#eadfce] bg-white/75 px-4 py-2.5 font-mono text-[10px] uppercase tracking-[0.18em] text-[#8f7c69] transition-colors hover:border-[#d9c0a1] hover:text-[#4f4033]"
+          >
+            Log Out
           </button>
         </div>
       </div>
 
-      <div className="space-y-3">
-        {notes.length === 0 && (
-          <p className="text-center text-sm text-stone-300 py-8">还没有便签，写第一条吧</p>
-        )}
-        {notes.map((note) => (
-          <motion.div
-            key={note.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`relative p-4 rounded-lg border ${
-              note.author === 'her'
-                ? 'bg-rose-50/50 border-rose-100'
-                : 'bg-white border-stone-100'
-            }`}
-          >
-            <p className="text-sm text-stone-700 whitespace-pre-wrap leading-relaxed">{note.text}</p>
-            <div className="flex items-center justify-between mt-3">
-              <span className="text-[10px] text-stone-300">
-                {note.author === 'me' ? '我' : '她'} · {new Date(note.timestamp).toLocaleDateString()}
-              </span>
-              <button
-                onClick={() => remove(note.id)}
-                className="text-[10px] text-stone-300 hover:text-red-400 transition-colors"
-              >
-                删除
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+      {!configured && (
+        <p className="mt-5 text-[12px] leading-[1.8] text-[#b0765a]">
+          当前服务端还没有配置 Gist 信箱环境变量，页面入口已经准备好，但需要补上
+          `WE_LETTERS_GIST_ID` 和 `WE_LETTERS_GITHUB_TOKEN` 才能真正开始收发信。
+        </p>
+      )}
     </div>
   );
 }
@@ -887,18 +790,18 @@ export default function WePage() {
             <MeetingChronicle openLightbox={openLightbox} />
           </section>
 
-          <section id="notes" className="scroll-mt-24 md:scroll-mt-16">
+          <section className="scroll-mt-24 md:scroll-mt-16">
             <div className="mt-16 md:mt-20">
               <div className="mb-6">
                 <p className="font-mono text-[10px] uppercase tracking-[0.26em] text-[#c4b39f] mb-3">
-                  Notes
+                  Letters
                 </p>
                 <h2 className="font-heading text-[22px] md:text-[26px] font-light tracking-[0.06em] text-stone-700">
-                  Things We Leave For Each Other
+                  Things We Write For Each Other
                 </h2>
               </div>
 
-              <NotesSection />
+              <LettersPreview />
             </div>
           </section>
         </div>

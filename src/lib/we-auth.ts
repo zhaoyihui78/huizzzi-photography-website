@@ -1,3 +1,5 @@
+import type { WeLetterParty } from '@/lib/we-letters';
+
 export const WE_AUTH_COOKIE = 'we_auth';
 const DEFAULT_NEXT_PATH = '/we';
 
@@ -7,38 +9,58 @@ function toHex(buffer: ArrayBuffer) {
     .join('');
 }
 
-function getWePassword() {
-  return process.env.WE_PASSWORD?.trim() || '';
+function isParty(value: string): value is WeLetterParty {
+  return value === 'hui' || value === 'dudu';
 }
 
-function getWeSalt() {
-  return process.env.WE_AUTH_SALT?.trim() || 'huizzzi-we-auth-v1';
+function getWeAuthSecret() {
+  return (
+    process.env.WE_AUTH_SECRET?.trim() ||
+    process.env.WE_AUTH_SALT?.trim() ||
+    'huizzzi-we-auth-v2'
+  );
 }
 
-export async function deriveWeSessionToken(password: string) {
-  const source = `${password}:${getWeSalt()}`;
+function getWeUserPassword(user: WeLetterParty) {
+  if (user === 'hui') return process.env.WE_USER_HUI_PASSWORD?.trim() || '';
+  if (user === 'dudu') return process.env.WE_USER_DUDU_PASSWORD?.trim() || '';
+  return '';
+}
+
+export function getWeUserLabel(user: WeLetterParty) {
+  return user === 'hui' ? 'Hui' : 'DuDu';
+}
+
+export function getWeAuthUsers() {
+  return (['hui', 'dudu'] as WeLetterParty[]).filter((user) => Boolean(getWeUserPassword(user)));
+}
+
+export async function deriveWeSessionToken(user: WeLetterParty, password?: string) {
+  const actualPassword = password ?? getWeUserPassword(user);
+  if (!actualPassword) return '';
+  const source = `${user}:${actualPassword}:${getWeAuthSecret()}`;
   const data = new TextEncoder().encode(source);
   const digest = await crypto.subtle.digest('SHA-256', data);
-  return toHex(digest);
+  return `${user}.${toHex(digest)}`;
 }
 
-export async function isValidWePassword(password: string) {
-  const expected = getWePassword();
+export async function isValidWePassword(user: WeLetterParty, password: string) {
+  const expected = getWeUserPassword(user);
   if (!expected || !password) return false;
   return password === expected;
 }
 
-export async function getExpectedWeSessionToken() {
-  const password = getWePassword();
-  if (!password) return '';
-  return deriveWeSessionToken(password);
+export async function getWeSessionUser(token?: string | null) {
+  if (!token) return null;
+  const [user] = token.split('.');
+  if (!user || !isParty(user)) return null;
+  const expected = await deriveWeSessionToken(user);
+  if (!expected) return null;
+  return token === expected ? user : null;
 }
 
 export async function hasValidWeSessionToken(token?: string | null) {
-  if (!token) return false;
-  const expected = await getExpectedWeSessionToken();
-  if (!expected) return false;
-  return token === expected;
+  return Boolean(await getWeSessionUser(token));
 }
 
 export function normalizeWeNextPath(value?: string | null) {
@@ -48,5 +70,5 @@ export function normalizeWeNextPath(value?: string | null) {
 }
 
 export function isWeAuthConfigured() {
-  return Boolean(getWePassword());
+  return getWeAuthUsers().length === 2;
 }

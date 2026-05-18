@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
   deriveWeSessionToken,
+  getWeUserLabel,
   isValidWePassword,
   isWeAuthConfigured,
   normalizeWeNextPath,
   WE_AUTH_COOKIE,
 } from '@/lib/we-auth';
+import type { WeLetterParty } from '@/lib/we-letters';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,7 +36,7 @@ function getAttemptState(key: string) {
 export async function POST(request: NextRequest) {
   if (!isWeAuthConfigured()) {
     return NextResponse.json(
-      { error: 'WE_PASSWORD is not configured on the server.' },
+      { error: 'WE_USER_HUI_PASSWORD / WE_USER_DUDU_PASSWORD 尚未在服务端配置。' },
       { status: 503 }
     );
   }
@@ -52,12 +54,18 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json().catch(() => ({}));
+  const user = body.user;
   const password = typeof body.password === 'string' ? body.password : '';
   const nextPath = normalizeWeNextPath(
     typeof body.next === 'string' ? body.next : undefined
   );
+  const isKnownUser = user === 'hui' || user === 'dudu';
 
-  const isValid = await isValidWePassword(password);
+  if (!isKnownUser) {
+    return NextResponse.json({ error: '请选择你的账号。' }, { status: 400 });
+  }
+
+  const isValid = await isValidWePassword(user as WeLetterParty, password);
   if (!isValid) {
     const nextCount = (state?.count || 0) + 1;
     attempts.set(ipKey, {
@@ -67,8 +75,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: nextCount >= MAX_ATTEMPTS
-          ? 'Too many attempts. Please try again in 60 seconds.'
-          : 'Incorrect password.',
+          ? '尝试次数过多，请在 60 秒后再试。'
+          : `${getWeUserLabel(user as WeLetterParty)} 的密码不正确。`,
       },
       { status: nextCount >= MAX_ATTEMPTS ? 429 : 401 }
     );
@@ -79,7 +87,7 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ ok: true, redirectTo: nextPath });
   response.cookies.set({
     name: WE_AUTH_COOKIE,
-    value: await deriveWeSessionToken(password),
+    value: await deriveWeSessionToken(user as WeLetterParty),
     httpOnly: true,
     sameSite: 'lax',
     secure: process.env.NODE_ENV === 'production',

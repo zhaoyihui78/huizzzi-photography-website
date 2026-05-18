@@ -58,6 +58,27 @@ html {
   background: transparent;
 }
 
+.scrollbar-warm {
+  scrollbar-width: thin;
+  scrollbar-color: #c9a96e rgba(201, 169, 110, 0.18);
+}
+
+.scrollbar-warm::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollbar-warm::-webkit-scrollbar-track {
+  background: rgba(201, 169, 110, 0.16);
+  border-radius: 999px;
+}
+
+.scrollbar-warm::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #d7b378 0%, #c79e5d 100%);
+  border-radius: 999px;
+  border: 2px solid rgba(253, 252, 249, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(255, 248, 235, 0.4);
+}
+
 /* Selection color */
 ::selection {
   background: rgba(0, 0, 0, 0.06);

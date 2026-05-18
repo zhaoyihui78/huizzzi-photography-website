@@ -406,6 +406,12 @@ function Clock({ theme, collapsed }: { theme?: 'default' | 'dark' | 'oriental'; 
 function PrivateSidebar({ pathname }: { pathname: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<'moments' | 'timeline' | 'notes'>('moments');
+  const [letterViewer, setLetterViewer] = useState<'hui' | 'dudu'>('hui');
+  const [letterUnread, setLetterUnread] = useState({ hui: 0, dudu: 0 });
+
+  const isRootWePage = pathname === '/we' || pathname === '/we/';
+  const isLettersPage = pathname === '/we/letters' || pathname === '/we/letters/';
+  const hasUnreadLetters = letterUnread[letterViewer] > 0;
 
   useEffect(() => {
     document.documentElement.style.setProperty('--sidebar-w', '236px');
@@ -447,6 +453,40 @@ function PrivateSidebar({ pathname }: { pathname: string }) {
     };
   }, []);
 
+  useEffect(() => {
+    const storedViewer = window.localStorage.getItem('we_letters_viewer');
+    if (storedViewer === 'hui' || storedViewer === 'dudu') {
+      setLetterViewer(storedViewer);
+    }
+
+    let cancelled = false;
+    let intervalId: ReturnType<typeof setInterval> | null = null;
+
+    const loadUnread = async () => {
+      try {
+        const response = await fetch('/api/we-letters/unread', { cache: 'no-store' });
+        if (!response.ok) return;
+        const payload = await response.json().catch(() => ({}));
+        if (!cancelled && payload.unread) {
+          setLetterUnread({
+            hui: Number(payload.unread.hui) || 0,
+            dudu: Number(payload.unread.dudu) || 0,
+          });
+        }
+      } catch {
+        // Ignore sidebar badge fetch errors.
+      }
+    };
+
+    void loadUnread();
+    intervalId = setInterval(loadUnread, 30000);
+
+    return () => {
+      cancelled = true;
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [pathname]);
+
   const navigateToSection = (id: 'moments' | 'timeline' | 'notes') => {
     const element = document.getElementById(id);
     setMobileMenuOpen(false);
@@ -458,13 +498,15 @@ function PrivateSidebar({ pathname }: { pathname: string }) {
 
   const navItems: Array<{
     label: string;
-    slug: 'moments' | 'timeline' | 'notes' | 'trips-map';
+    type: 'section' | 'route' | 'soon';
+    slug: 'moments' | 'timeline' | 'notes' | 'letters' | 'trips-map';
+    href?: string;
     status?: string;
   }> = [
-    { label: 'Moments', slug: 'moments' },
-    { label: 'Timeline', slug: 'timeline' },
-    { label: 'Notes', slug: 'notes' },
-    { label: 'Trips Map', slug: 'trips-map', status: 'Soon' },
+    { label: 'Moments', type: 'section', slug: 'moments', href: '/we#moments' },
+    { label: 'Timeline', type: 'section', slug: 'timeline', href: '/we#timeline' },
+    { label: 'Letters', type: 'route', slug: 'letters', href: '/we/letters' },
+    { label: 'Trips Map', type: 'soon', slug: 'trips-map', status: 'Soon' },
   ];
 
   return (
@@ -519,8 +561,12 @@ function PrivateSidebar({ pathname }: { pathname: string }) {
               Our Pages
             </span>
             {navItems.map((item) => {
-              const isSoon = item.slug === 'trips-map';
-              const isActive = !isSoon && activeSection === item.slug;
+              const isSoon = item.type === 'soon';
+              const isSectionItem = item.type === 'section';
+              const isLettersItem = item.slug === 'letters';
+              const isActive = isLettersItem
+                ? isLettersPage
+                : isSectionItem && !isLettersPage && activeSection === item.slug;
 
               if (isSoon) {
                 return (
@@ -536,26 +582,48 @@ function PrivateSidebar({ pathname }: { pathname: string }) {
                 );
               }
 
+              if (isSectionItem && isRootWePage) {
+                return (
+                  <button
+                    key={item.slug}
+                    type="button"
+                    onClick={() => {
+                      if (item.slug === 'moments' || item.slug === 'timeline' || item.slug === 'notes') {
+                        navigateToSection(item.slug);
+                      }
+                    }}
+                    className={`group relative flex w-fit items-center gap-2 text-left text-[11px] tracking-wide transition-colors duration-500 ${
+                      isActive ? 'text-[#4f4033]' : 'text-[#9f8a76] hover:text-[#6d5846]'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <span
+                      className={`absolute -bottom-[3px] left-0 h-[1px] bg-[#b59a5b] transition-all duration-500 ${
+                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}
+                    />
+                  </button>
+                );
+              }
+
               return (
-                <button
+                <Link
                   key={item.slug}
-                  type="button"
-                  onClick={() => {
-                    if (item.slug !== 'trips-map') {
-                      navigateToSection(item.slug);
-                    }
-                  }}
-                  className={`group relative w-fit text-left text-[11px] tracking-wide transition-colors duration-500 ${
+                  href={item.href || '/we'}
+                  className={`group relative flex w-fit items-center gap-2 text-[11px] tracking-wide transition-colors duration-500 ${
                     isActive ? 'text-[#4f4033]' : 'text-[#9f8a76] hover:text-[#6d5846]'
                   }`}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  {isLettersItem && hasUnreadLetters && (
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#b59a5b]" />
+                  )}
                   <span
                     className={`absolute -bottom-[3px] left-0 h-[1px] bg-[#b59a5b] transition-all duration-500 ${
                       isActive ? 'w-full' : 'w-0 group-hover:w-full'
                     }`}
                   />
-                </button>
+                </Link>
               );
             })}
           </div>

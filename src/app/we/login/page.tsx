@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { WeLetterParty } from '@/lib/we-letters';
 
 function getSafeNextPath(value: string | null) {
   if (!value || !value.startsWith('/we')) return '/we';
@@ -20,6 +21,7 @@ export default function WeLoginPage() {
     return getSafeNextPath(new URLSearchParams(window.location.search).get('next'));
   });
 
+  const [user, setUser] = useState<WeLetterParty>('hui');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -38,6 +40,7 @@ export default function WeLoginPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          user,
           password,
           next: nextPath,
         }),
@@ -93,6 +96,28 @@ export default function WeLoginPage() {
           </div>
 
           <form onSubmit={handleSubmit}>
+            <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl border border-[#ece2d3] bg-[#fbf8f3] p-1">
+              {([
+                ['hui', 'Hui'],
+                ['dudu', 'DuDu'],
+              ] as const).map(([value, label]) => {
+                const active = user === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setUser(value)}
+                    className={`rounded-lg px-4 py-2.5 text-sm tracking-[0.12em] transition-colors ${
+                      active
+                        ? 'bg-[#6d5846] text-white'
+                        : 'text-[#9d8a77] hover:text-[#6d5846]'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
             <input
               type="password"
               value={password}
@@ -100,7 +125,7 @@ export default function WeLoginPage() {
                 setPassword(event.target.value);
                 if (error) setError('');
               }}
-              placeholder="Enter password"
+              placeholder={`Enter ${user === 'hui' ? 'Hui' : 'DuDu'} password`}
               className="w-full px-4 py-3 bg-[#fbf8f3] border border-[#ece2d3] rounded-xl text-[#6d5846] placeholder:text-[#c2b29f] focus:outline-none focus:border-[#cdb58f] transition-colors text-center tracking-[0.18em]"
               autoFocus
             />
