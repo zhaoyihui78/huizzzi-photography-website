@@ -1,13 +1,10 @@
+'use client';
+
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 
 // 因为 react-three-fiber 包含浏览器特有 API，需要动态导入，禁用 SSR
 const AtlasCanvas = dynamic(() => import('@/components/atlas/AtlasCanvas'), { ssr: false });
-
-export const metadata = {
-  title: 'Memory Atlas | HUI ZZZI',
-  description: 'An infinite canvas of memories.',
-};
 
 export default function AtlasPage() {
   return (
