@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 import { seriesList, Photo, naturePhotos } from '@/data/series';
 import FadeIn from '@/components/FadeIn';
 import Slideshow from '@/components/Slideshow';
@@ -263,7 +264,18 @@ export default function Home() {
       </section>
 
       <FadeIn delay={0.2}>
-        <footer className="mt-40 pt-10 border-t border-[#f0f0f0]">
+        <div className="mt-32 text-center">
+          <Link
+            href="/atlas"
+            className="inline-block border border-[#e5e5e5] px-8 py-3 text-[11px] font-mono tracking-[0.2em] text-[#888888] uppercase transition-colors hover:border-[#cccccc] hover:text-[#333333]"
+          >
+            Enter the Atlas
+          </Link>
+        </div>
+      </FadeIn>
+
+      <FadeIn delay={0.2}>
+        <footer className="mt-32 pt-10 border-t border-[#f0f0f0]">
           <p className="font-mono text-[9px] text-[#dddddd] tracking-[0.15em]">
             © {new Date().getFullYear()} HUI ZZZI. All rights reserved.
           </p>
